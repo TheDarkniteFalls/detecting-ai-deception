@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Sensitive security report
+    url: https://github.com/TheDarkniteFalls/detecting-ai-deception/security/policy
+    about: Do not post sensitive vulnerability detail in a public issue.

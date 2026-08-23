@@ -1,0 +1,64 @@
+{
+  "schema_version": "detecting_ai_deception_source_map_v1",
+  "reviewed_through": "2026-08-23",
+  "creator": "Mike Parsons, developed transparently with AI assistance",
+  "license": "CC BY 4.0",
+  "canonical_source": "https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/data/source-map.v1.json",
+  "sources": [
+    {
+      "id": "evidencegate",
+      "role": "Revision-bound receipts, path checks and missing-evidence failure semantics",
+      "revision": "473f9cac98f6ed83446e46b692db77c76b9be524",
+      "revision_url": "https://github.com/TheDarkniteFalls/evidencegate/commit/473f9cac98f6ed83446e46b692db77c76b9be524",
+      "assets": [
+        "https://github.com/TheDarkniteFalls/evidencegate/blob/473f9cac98f6ed83446e46b692db77c76b9be524/examples/run-v1-reference.py",
+        "https://github.com/TheDarkniteFalls/evidencegate/blob/473f9cac98f6ed83446e46b692db77c76b9be524/docs/missing-evidence-is-not-safety.md",
+        "https://github.com/TheDarkniteFalls/evidencegate/blob/473f9cac98f6ed83446e46b692db77c76b9be524/examples/check_failure_semantics.py"
+      ],
+      "non_claim": "Receipt agreement does not authenticate a reviewer or prove semantic correctness."
+    },
+    {
+      "id": "local-model-reliability-example",
+      "role": "Grounded-answer evidence checks",
+      "revision": "d4eed6c7bb3750923e7ef18598e023243a6ef6e4",
+      "revision_url": "https://github.com/TheDarkniteFalls/local-model-reliability-example/commit/d4eed6c7bb3750923e7ef18598e023243a6ef6e4",
+      "assets": ["https://github.com/TheDarkniteFalls/local-model-reliability-example/blob/d4eed6c7bb3750923e7ef18598e023243a6ef6e4/grounded_answer_gate.py"],
+      "non_claim": "Grounding checks do not establish completeness, freshness or safe downstream use."
+    },
+    {
+      "id": "context-boundary-examples",
+      "role": "Evidence-boundary and refusal checks",
+      "revision": "c1b5795917f3b7926c9f7740da53896c1a4bc2e4",
+      "revision_url": "https://github.com/TheDarkniteFalls/context-boundary-examples/commit/c1b5795917f3b7926c9f7740da53896c1a4bc2e4",
+      "assets": ["https://github.com/TheDarkniteFalls/context-boundary-examples/blob/c1b5795917f3b7926c9f7740da53896c1a4bc2e4/context_boundary_check.py"],
+      "non_claim": "A bounded answer can still be incomplete or unsuitable for a decision."
+    },
+    {
+      "id": "agent-evidence-catalog",
+      "role": "Identity-first publisher-claim research",
+      "revision": "576f472e0848907dc916e161b793af53c255f3d4",
+      "revision_url": "https://github.com/TheDarkniteFalls/agent-evidence-catalog/commit/576f472e0848907dc916e161b793af53c255f3d4",
+      "assets": ["https://github.com/TheDarkniteFalls/agent-evidence-catalog/tree/576f472e0848907dc916e161b793af53c255f3d4"],
+      "non_claim": "Publisher attribution is not independent testing, ranking, certification or suitability advice."
+    },
+    {
+      "id": "agent-action-authority-examples",
+      "role": "Ambiguous external-effect recovery",
+      "revision": "cc0688fba80417b042bac45fdbb6bee0f2873aba",
+      "revision_url": "https://github.com/TheDarkniteFalls/agent-action-authority-examples/commit/cc0688fba80417b042bac45fdbb6bee0f2873aba",
+      "assets": [
+        "https://github.com/TheDarkniteFalls/agent-action-authority-examples/blob/cc0688fba80417b042bac45fdbb6bee0f2873aba/effect_recovery_check.py",
+        "https://github.com/TheDarkniteFalls/agent-action-authority-examples/blob/cc0688fba80417b042bac45fdbb6bee0f2873aba/examples/effect_recovery_cases.jsonl"
+      ],
+      "non_claim": "An operation identifier supports reconciliation but does not prove an external effect."
+    },
+    {
+      "id": "reliability-navigator",
+      "role": "Complete public-toolkit route",
+      "revision": "4072d410e119a26a37ac4205e3bd63bede4a65d0",
+      "revision_url": "https://github.com/TheDarkniteFalls/local-assistant-reliability-lab/commit/4072d410e119a26a37ac4205e3bd63bede4a65d0",
+      "assets": ["https://thedarknitefalls.github.io/local-assistant-reliability-lab/"],
+      "non_claim": "A route recommendation is not certification that a tool fits every setup."
+    }
+  ]
+}

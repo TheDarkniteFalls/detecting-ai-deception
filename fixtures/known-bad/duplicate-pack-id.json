@@ -1,0 +1,1 @@
+{"fixture_version":"known_bad_pack_v1","name":"duplicate case id","duplicate_case":"missing-file","expected_error":"duplicate case id: missing-file"}

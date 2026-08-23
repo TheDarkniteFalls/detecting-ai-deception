@@ -1,0 +1,1 @@
+{"fixture_version":"known_bad_mutation_v1","name":"finding disagrees with evidence","base_case":"missing-file","set":{"expected_finding":"supported"},"expected_error":"does not match contradicted"}

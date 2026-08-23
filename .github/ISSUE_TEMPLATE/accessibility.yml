@@ -1,0 +1,44 @@
+name: Accessibility or site defect
+description: Report a reproducible barrier or static-site problem.
+title: "Accessibility/site: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you. Use public-safe synthetic details only. Never include credentials, personal data, private logs, unpublished material or sensitive vulnerability detail.
+  - type: input
+    id: page
+    attributes:
+      label: Page or route
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+    validations:
+      required: true
+  - type: textarea
+    id: observed
+    attributes:
+      label: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Public-safe browser or assistive-technology context
+      description: Do not include device names, account data, private extensions or personal identifiers.
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Public-safety confirmation
+      options:
+        - label: This report contains no credentials, personal data, private logs, unpublished material or sensitive vulnerability detail.
+          required: true

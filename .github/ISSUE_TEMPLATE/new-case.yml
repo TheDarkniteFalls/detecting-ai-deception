@@ -1,0 +1,60 @@
+name: New synthetic case
+description: Propose an issue-first claim-and-evidence case.
+title: "Case proposal: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        New cases must be synthetic and public-safe. Do not submit private model conversations, credentials, personal data, private logs, unpublished material or sensitive vulnerability detail.
+  - type: textarea
+    id: happened
+    attributes:
+      label: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: matters
+    attributes:
+      label: Why does it matter?
+    validations:
+      required: true
+  - type: textarea
+    id: know
+    attributes:
+      label: How do we know?
+      description: Name exact public source revisions and a synthetic reproduction.
+    validations:
+      required: true
+  - type: textarea
+    id: unknown
+    attributes:
+      label: What remains unknown?
+    validations:
+      required: true
+  - type: textarea
+    id: next
+    attributes:
+      label: What can someone do next?
+    validations:
+      required: true
+  - type: dropdown
+    id: expected
+    attributes:
+      label: Expected deterministic finding
+      options:
+        - supported
+        - contradicted
+        - insufficient-evidence
+    validations:
+      required: true
+  - type: checkboxes
+    id: boundaries
+    attributes:
+      label: Boundaries
+      options:
+        - label: This proposal is synthetic and contains no sensitive or private material.
+          required: true
+        - label: Intent will remain not assessed.
+          required: true
+        - label: I can identify the creator, license, canonical source and reviewed-through date.
+          required: true

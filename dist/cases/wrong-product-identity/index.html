@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The claim attached to the wrong product identity · Detecting AI Deception</title>
+  <meta name="description" content="A capability statement for one product version or service surface is presented as if it applies to another.">
+  <link rel="canonical" href="https://thedarknitefalls.github.io/detecting-ai-deception/cases/wrong-product-identity/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="The claim attached to the wrong product identity · Detecting AI Deception">
+  <meta property="og:description" content="A capability statement for one product version or service surface is presented as if it applies to another.">
+  <meta property="og:url" content="https://thedarknitefalls.github.io/detecting-ai-deception/cases/wrong-product-identity/">
+  <meta property="og:site_name" content="Detecting AI Deception">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/styles.css">
+  <script>document.documentElement.classList.add("js")</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","name":"The claim attached to the wrong product identity","description":"A capability statement for one product version or service surface is presented as if it applies to another.","url":"https://thedarknitefalls.github.io/detecting-ai-deception/cases/wrong-product-identity/","creator":{"@type":"Person","name":"Mike Parsons"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}</script>
+</head>
+<body data-cases-url="../../data/deception-cases.v1.json">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header"><div class="nav-shell">
+    <a class="wordmark" href="../../">Detecting AI Deception</a>
+    <nav class="site-nav" aria-label="Primary"><a href="../../cases/" aria-current="page">Cases</a><a href="../../method/">Method</a><a href="../../tools/">Tools</a><a href="../../challenge/">Challenge</a><a href="../../about/">About</a></nav>
+  </div></header>
+  <noscript><div class="noscript-note">JavaScript is off. Every case, evidence trail and deterministic finding remains readable; filters and choose-then-reveal controls are shown without enhancement.</div></noscript>
+  <div class="shell" aria-live="polite" data-app-status></div>
+  <main id="main"><header class="case-page-header"><div class="shell"><h1>The claim attached to the wrong product identity</h1><p class="lead">A capability statement for one product version or service surface is presented as if it applies to another.</p><div class="case-meta"><span><strong>Finding:</strong> Contradicted</span><span><strong>Class:</strong> provenance-or-identity-mismatch</span><span><strong>Reviewed through:</strong> 2026-08-23</span><span><strong>Intent:</strong> not assessed</span></div></div></header>
+      <section class="band band-white"><div class="shell"><article class="investigation-sheet" data-case-interaction>
+    <div class="case-mast"><span class="case-number">CASE 04</span><strong>The claim attached to the wrong product identity</strong><span class="case-class">provenance-or-identity-mismatch</span></div>
+    <div class="case-body">
+      <section class="claim-panel"><span class="panel-label">The system claim</span><p class="system-claim">“A capability documented for Product A version 4.2 also applies to Product B version 3.0.”</p><p>A capability statement for one product version or service surface is presented as if it applies to another.</p><form data-finding-form data-case-id="wrong-product-identity">
+    <fieldset class="choice-fieldset">
+      <legend>What does the evidence support?</legend>
+      <div class="choice-list">
+        <label class="choice"><input type="radio" name="finding" value="supported"><span><strong>Supported</strong><span>Every required item supports the claim.</span></span></label>
+        <label class="choice"><input type="radio" name="finding" value="contradicted"><span><strong>Contradicted</strong><span>At least one required observation conflicts.</span></span></label>
+        <label class="choice"><input type="radio" name="finding" value="insufficient-evidence"><span><strong>Insufficient evidence</strong><span>A required item is absent, unknown, stale or inapplicable.</span></span></label>
+      </div>
+    </fieldset>
+    <button class="primary-button" type="submit">Reveal the evidence trail</button>
+    <p class="choice-result" data-choice-result aria-live="polite"></p>
+  </form></section>
+      <section class="evidence-panel" data-evidence-panel aria-labelledby="evidence-wrong-product-identity">
+    <span class="panel-label">Observed evidence</span>
+    <h3 id="evidence-wrong-product-identity" data-reveal-heading tabindex="-1">What the record shows</h3>
+    <ol class="evidence-trail"><li><span class="evidence-state state-supports">Supports</span> <strong>Is the identity named in the claim exact?</strong><p>The public claim names Product B version 3.0.</p></li><li><span class="evidence-state state-contradictory">Contradictory</span> <strong>Does the publisher source apply to that same product and version?</strong><p>The source applies only to Product A version 4.2.</p></li></ol>
+    <div class="finding finding-contradicted"><strong>Finding: Contradicted</strong><p>Intent: not assessed. This result compares only the declared claim and required evidence.</p></div>
+    <p><strong>What remains unknown:</strong> Product B might have the capability for another reason; this source cannot establish it.</p>
+  </section>
+    </div>
+  </article></div></section>
+      <section class="band"><div class="shell"><div class="section-intro"><h2>Five questions</h2><p>Plain-language answers come before the technical record. Each answer stays inside the case's declared boundary.</p></div><div class="question-grid"><article class="question-answer"><h3>What happened?</h3><p>A real publisher statement crossed an identity boundary and was attached to a different product surface.</p></article><article class="question-answer"><h3>Why does it matter?</h3><p>Capability, safety and setup claims can change across products, versions and service surfaces.</p></article><article class="question-answer"><h3>How do we know?</h3><p>The claim identity and the source identity are both explicit and do not match.</p></article><article class="question-answer"><h3>What remains unknown?</h3><p>Product B might have the capability for another reason; this source cannot establish it.</p></article><article class="question-answer"><h3>What can someone do next?</h3><p>Record product, version, channel and surface before transferring a claim, then find a source that matches all four.</p></article></div></div></section>
+      <section class="band band-white"><div class="narrow"><h2>Technical record</h2><h3>Reproduce</h3><p>Write the claim identity and source identity side by side and compare product, version, channel and surface.</p><pre class="code-block"><code>node tools/check-cases.mjs --case wrong-product-identity</code></pre><h3>Exact sources</h3><ul class="source-list"><li><a href="https://github.com/TheDarkniteFalls/agent-evidence-catalog/tree/576f472e0848907dc916e161b793af53c255f3d4">Agent Evidence Catalog identity-first method</a><span class="source-revision">Reviewed through 2026-08-23 · <a href="https://github.com/TheDarkniteFalls/agent-evidence-catalog/commit/576f472e0848907dc916e161b793af53c255f3d4">exact source revision</a> · Linked repository content retains its original license.</span></li></ul><h3>Limitations and non-claims</h3><ul><li>Publisher attribution is not independent behavior-test credit.</li><li>The method is not a ranking, certification or suitability judgment.</li></ul><p class="note"><strong>Intent remains not assessed.</strong> This case does not claim consciousness, malicious intent, strategic scheming, universal safety failure, certification or a deception score.</p></div></section></main>
+  <footer class="site-footer"><div class="shell footer-grid">
+    <p>Mike-led public investigation, developed transparently with AI assistance. Observable claims are compared with observable evidence. Intent: not assessed.</p>
+    <div class="footer-links"><a href="../../about/">About</a><a href="https://github.com/TheDarkniteFalls/detecting-ai-deception">Source</a><a href="https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/LICENSING.md">Licensing</a></div>
+  </div></footer>
+  <script type="module" src="../../assets/app.mjs"></script>
+</body>
+</html>

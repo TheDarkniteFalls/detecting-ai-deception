@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Detecting AI Deception</title>
+  <meta name="description" content="A calm public investigation of when AI claims and observable evidence do not match, with intent explicitly not assessed.">
+  <link rel="canonical" href="https://thedarknitefalls.github.io/detecting-ai-deception/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Detecting AI Deception">
+  <meta property="og:description" content="A calm public investigation of when AI claims and observable evidence do not match, with intent explicitly not assessed.">
+  <meta property="og:url" content="https://thedarknitefalls.github.io/detecting-ai-deception/">
+  <meta property="og:site_name" content="Detecting AI Deception">
+  <link rel="icon" href="./assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./assets/styles.css">
+  <script>document.documentElement.classList.add("js")</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Detecting AI Deception","description":"A calm public investigation of when AI claims and observable evidence do not match, with intent explicitly not assessed.","url":"https://thedarknitefalls.github.io/detecting-ai-deception/","creator":{"@type":"Person","name":"Mike Parsons"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}</script>
+</head>
+<body data-cases-url="./data/deception-cases.v1.json">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header"><div class="nav-shell">
+    <a class="wordmark" href="./">Detecting AI Deception</a>
+    <nav class="site-nav" aria-label="Primary"><a href="./cases/">Cases</a><a href="./method/">Method</a><a href="./tools/">Tools</a><a href="./challenge/">Challenge</a><a href="./about/">About</a></nav>
+  </div></header>
+  <noscript><div class="noscript-note">JavaScript is off. Every case, evidence trail and deterministic finding remains readable; filters and choose-then-reveal controls are shown without enhancement.</div></noscript>
+  <div class="shell" aria-live="polite" data-app-status></div>
+  <main id="main"><section class="hero"><div class="shell hero-grid"><div><h1>When the claim and the evidence part ways.</h1><p class="lead">AI systems can overstate, omit or misrepresent what they have done. This project shows how to inspect the difference without pretending that error proves intent.</p></div><div class="hero-note"><strong>A sixty-second method</strong><p>Name the claim. Declare the evidence it would require. Observe the evidence. Classify the mismatch. Keep intent separate.</p><span class="intent-stamp">Intent: not assessed</span></div></div></section>
+      <section class="band band-white"><div class="shell"><div class="section-intro"><h2>Try the first case</h2><p>Choose the finding you think the evidence supports. Then reveal the same deterministic trail used by the local Node.js checker.</p></div><article class="investigation-sheet" data-case-interaction>
+    <div class="case-mast"><span class="case-number">CASE 01</span><strong>The missing file</strong><span class="case-class">false-completion</span></div>
+    <div class="case-body">
+      <section class="claim-panel"><span class="panel-label">The system claim</span><p class="system-claim">“The required file reports/final-summary.json was created in the reviewed revision.”</p><p>An AI system says it created a required file. The reviewed revision contains no file at that path.</p><form data-finding-form data-case-id="missing-file">
+    <fieldset class="choice-fieldset">
+      <legend>What does the evidence support?</legend>
+      <div class="choice-list">
+        <label class="choice"><input type="radio" name="finding" value="supported"><span><strong>Supported</strong><span>Every required item supports the claim.</span></span></label>
+        <label class="choice"><input type="radio" name="finding" value="contradicted"><span><strong>Contradicted</strong><span>At least one required observation conflicts.</span></span></label>
+        <label class="choice"><input type="radio" name="finding" value="insufficient-evidence"><span><strong>Insufficient evidence</strong><span>A required item is absent, unknown, stale or inapplicable.</span></span></label>
+      </div>
+    </fieldset>
+    <button class="primary-button" type="submit">Reveal the evidence trail</button>
+    <p class="choice-result" data-choice-result aria-live="polite"></p>
+  </form></section>
+      <section class="evidence-panel" data-evidence-panel aria-labelledby="evidence-missing-file">
+    <span class="panel-label">Observed evidence</span>
+    <h3 id="evidence-missing-file" data-reveal-heading tabindex="-1">What the record shows</h3>
+    <ol class="evidence-trail"><li><span class="evidence-state state-supports">Supports</span> <strong>Is the exact reviewed Git revision named and available?</strong><p>The review names an exact Git revision.</p></li><li><span class="evidence-state state-contradictory">Contradictory</span> <strong>Does the required path exist in that exact revision?</strong><p>The named revision has no reports/final-summary.json path.</p></li></ol>
+    <div class="finding finding-contradicted"><strong>Finding: Contradicted</strong><p>Intent: not assessed. This result compares only the declared claim and required evidence.</p></div>
+    <p><strong>What remains unknown:</strong> The evidence does not show why the claim was made, whether another path was intended, or whether the missing file would have been correct.</p>
+  </section>
+    </div>
+  </article></div></section>
+      <section class="band"><div class="shell"><div class="section-intro"><h2>Six ways evidence can change the answer</h2><p>These synthetic cases cover false completion, missing evaluation outcomes, unsupported citations, identity mismatch, ambiguous external effects and one supported control.</p></div><ol class="route-list"><li><a class="route-link" href="./cases/missing-file/"><span class="route-index">01</span><span><strong>The missing file</strong>An AI system says it created a required file. The reviewed revision contains no file at that path.</span><span>Contradicted · false-completion</span></a></li><li><a class="route-link" href="./cases/reassuring-average/"><span class="route-index">02</span><span><strong>The reassuring average with missing cases</strong>An audit reports a reassuring average while failed, unscored or unavailable cases are absent from the headline.</span><span>Insufficient evidence · evaluation-gap, material-omission</span></a></li><li><a class="route-link" href="./cases/unsupported-citation/"><span class="route-index">03</span><span><strong>The citation that does not support the answer</strong>An answer provides a source link, but the supplied source states a different fact from the answer.</span><span>Contradicted · context-or-citation-escape</span></a></li><li><a class="route-link" href="./cases/wrong-product-identity/"><span class="route-index">04</span><span><strong>The claim attached to the wrong product identity</strong>A capability statement for one product version or service surface is presented as if it applies to another.</span><span>Contradicted · provenance-or-identity-mismatch</span></a></li><li><a class="route-link" href="./cases/lost-response/"><span class="route-index">05</span><span><strong>The lost response after a consequential action</strong>A tool call times out after sending a consequential request, so the system cannot tell whether the action failed or succeeded.</span><span>Insufficient evidence · ambiguous-external-effect</span></a></li><li><a class="route-link" href="./cases/revision-bound-claim/"><span class="route-index">06</span><span><strong>A supported revision-bound claim</strong>A bounded claim names its passing check, exact reviewed Git revision and touched paths, and the repository state matches the record.</span><span>Supported · control-case</span></a></li></ol></div></section>
+      <section class="band band-white"><div class="narrow"><h2>Challenge the record</h2><p class="lead">A useful investigation must be reproducible and corrigible. Run the checker, inspect an exact source revision, or propose a public-safe counterexample.</p><a class="primary-button" href="challenge/">Reproduce or challenge a case</a> <a class="secondary-button" href="method/">Read the method</a></div></section></main>
+  <footer class="site-footer"><div class="shell footer-grid">
+    <p>Mike-led public investigation, developed transparently with AI assistance. Observable claims are compared with observable evidence. Intent: not assessed.</p>
+    <div class="footer-links"><a href="./about/">About</a><a href="https://github.com/TheDarkniteFalls/detecting-ai-deception">Source</a><a href="https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/LICENSING.md">Licensing</a></div>
+  </div></footer>
+  <script type="module" src="./assets/app.mjs"></script>
+</body>
+</html>

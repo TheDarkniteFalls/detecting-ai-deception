@@ -1,0 +1,116 @@
+{
+  "schema_version": "detecting_ai_deception_build_manifest_v1",
+  "file_count": 22,
+  "files": [
+    {
+      "path": ".nojekyll",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
+      "bytes": 1
+    },
+    {
+      "path": "about/index.html",
+      "sha256": "502c47b22a2901efafa30062027610a6c72705cff6d47c1fe75dd999e18e79ac",
+      "bytes": 4557
+    },
+    {
+      "path": "assets/app.mjs",
+      "sha256": "a8c55bb5a1cc3bdb3891a852e42bb56dac23696358787e4393e263bbedd72479",
+      "bytes": 4783
+    },
+    {
+      "path": "assets/classifier.mjs",
+      "sha256": "4bda621bc157041ad15efb9a62a3d98d1aaf32e1ea9e345e11ceb7c756f6dace",
+      "bytes": 1859
+    },
+    {
+      "path": "assets/favicon.svg",
+      "sha256": "477a2ffe4a719efe9b7679bcc1c14be40caf6002dce38c627c9f7257a3a73b84",
+      "bytes": 331
+    },
+    {
+      "path": "assets/styles.css",
+      "sha256": "27a4076670475dcd8a101c4c693a3705d75aa7b3fb093179772b9b3b5cab986c",
+      "bytes": 13332
+    },
+    {
+      "path": "cases/index.html",
+      "sha256": "65933fd5ebc77cab8a531eba83f469ceec4d3130d6d25ec115072ed84e1e0135",
+      "bytes": 6725
+    },
+    {
+      "path": "cases/lost-response/index.html",
+      "sha256": "55937c82f1fa41ebe2dcfc699737a1eb30e03aaf6f95347644983ee52eaea9d7",
+      "bytes": 8854
+    },
+    {
+      "path": "cases/missing-file/index.html",
+      "sha256": "3549fbb0d068ca2bf321fa88b9900a88ac6a2a671b3166752e4840295b0ddbcf",
+      "bytes": 8514
+    },
+    {
+      "path": "cases/reassuring-average/index.html",
+      "sha256": "d25ce7a998a0fac87c4a5879056b200f7bce36fdac9ece4e809276ef5f905f3f",
+      "bytes": 9546
+    },
+    {
+      "path": "cases/revision-bound-claim/index.html",
+      "sha256": "0fa19563f58cdeb91fd8988799ddc83388e332918cb0b08bc075e7cd9667df99",
+      "bytes": 9005
+    },
+    {
+      "path": "cases/unsupported-citation/index.html",
+      "sha256": "5b8b38fa4ecc7bbcb9fbe2eae2114a40a1c80d1b5aeec689015add3a9347a19c",
+      "bytes": 9114
+    },
+    {
+      "path": "cases/wrong-product-identity/index.html",
+      "sha256": "ac455f88f0bc1ea7c5b90875b68e2e3e6d2f793b3fcee64129845345277126ea",
+      "bytes": 8707
+    },
+    {
+      "path": "challenge/index.html",
+      "sha256": "d7c205ebfe74174c3993d08cecbc13859f68cda418dfd562f64b8d156f996255",
+      "bytes": 5152
+    },
+    {
+      "path": "data/deception-cases.v1.json",
+      "sha256": "6b6a3386c3285d9ffa6b1e5aff9cd9b956066341e23ca528a37b0e2ffefc45f9",
+      "bytes": 19931
+    },
+    {
+      "path": "data/source-map.v1.json",
+      "sha256": "3f1e4adc81acfa77ceb9398f05487fc87478f480d872debe4fd1ad9d36e95600",
+      "bytes": 4120
+    },
+    {
+      "path": "index.html",
+      "sha256": "b29056904cc83e84b4790128016ee6d10d9df055025d5275993b008c78b10350",
+      "bytes": 9118
+    },
+    {
+      "path": "method/index.html",
+      "sha256": "58daf0f7c4451be56debca2e534f3b46ec511740b44f2ac7c4126b75847da25c",
+      "bytes": 5954
+    },
+    {
+      "path": "robots.txt",
+      "sha256": "47f404466b077e208163676197ab853a1c1c25bdacd2baacdf862f355fa9795d",
+      "bytes": 102
+    },
+    {
+      "path": "schemas/deception-case-v1.schema.json",
+      "sha256": "f05be7913af6c9e457f0006ac5b18559282ace07e943cddba3a51e40cb96b482",
+      "bytes": 4033
+    },
+    {
+      "path": "sitemap.xml",
+      "sha256": "0ecaf0ace31c3891c3173ae646905d4fcabd1bd5388b394a39843367f76a6850",
+      "bytes": 1251
+    },
+    {
+      "path": "tools/index.html",
+      "sha256": "4d7e188f1d2d483594e6bbb14071aba00ef4dcbb95fc0afb6a235c675cf54c95",
+      "bytes": 5542
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+{"fixture_version":"known_bad_mutation_v1","name":"invalid intent assessment","base_case":"missing-file","set":{"intent_assessment":"deceptive"},"expected_error":"intent_assessment must be not-assessed"}

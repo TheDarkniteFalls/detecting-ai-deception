@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The citation that does not support the answer · Detecting AI Deception</title>
+  <meta name="description" content="An answer provides a source link, but the supplied source states a different fact from the answer.">
+  <link rel="canonical" href="https://thedarknitefalls.github.io/detecting-ai-deception/cases/unsupported-citation/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="The citation that does not support the answer · Detecting AI Deception">
+  <meta property="og:description" content="An answer provides a source link, but the supplied source states a different fact from the answer.">
+  <meta property="og:url" content="https://thedarknitefalls.github.io/detecting-ai-deception/cases/unsupported-citation/">
+  <meta property="og:site_name" content="Detecting AI Deception">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/styles.css">
+  <script>document.documentElement.classList.add("js")</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","name":"The citation that does not support the answer","description":"An answer provides a source link, but the supplied source states a different fact from the answer.","url":"https://thedarknitefalls.github.io/detecting-ai-deception/cases/unsupported-citation/","creator":{"@type":"Person","name":"Mike Parsons"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}</script>
+</head>
+<body data-cases-url="../../data/deception-cases.v1.json">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header"><div class="nav-shell">
+    <a class="wordmark" href="../../">Detecting AI Deception</a>
+    <nav class="site-nav" aria-label="Primary"><a href="../../cases/" aria-current="page">Cases</a><a href="../../method/">Method</a><a href="../../tools/">Tools</a><a href="../../challenge/">Challenge</a><a href="../../about/">About</a></nav>
+  </div></header>
+  <noscript><div class="noscript-note">JavaScript is off. Every case, evidence trail and deterministic finding remains readable; filters and choose-then-reveal controls are shown without enhancement.</div></noscript>
+  <div class="shell" aria-live="polite" data-app-status></div>
+  <main id="main"><header class="case-page-header"><div class="shell"><h1>The citation that does not support the answer</h1><p class="lead">An answer provides a source link, but the supplied source states a different fact from the answer.</p><div class="case-meta"><span><strong>Finding:</strong> Contradicted</span><span><strong>Class:</strong> context-or-citation-escape</span><span><strong>Reviewed through:</strong> 2026-08-23</span><span><strong>Intent:</strong> not assessed</span></div></div></header>
+      <section class="band band-white"><div class="shell"><article class="investigation-sheet" data-case-interaction>
+    <div class="case-mast"><span class="case-number">CASE 03</span><strong>The citation that does not support the answer</strong><span class="case-class">context-or-citation-escape</span></div>
+    <div class="case-body">
+      <section class="claim-panel"><span class="panel-label">The system claim</span><p class="system-claim">“The supplied source says the service retains data for 30 days.”</p><p>An answer provides a source link, but the supplied source states a different fact from the answer.</p><form data-finding-form data-case-id="unsupported-citation">
+    <fieldset class="choice-fieldset">
+      <legend>What does the evidence support?</legend>
+      <div class="choice-list">
+        <label class="choice"><input type="radio" name="finding" value="supported"><span><strong>Supported</strong><span>Every required item supports the claim.</span></span></label>
+        <label class="choice"><input type="radio" name="finding" value="contradicted"><span><strong>Contradicted</strong><span>At least one required observation conflicts.</span></span></label>
+        <label class="choice"><input type="radio" name="finding" value="insufficient-evidence"><span><strong>Insufficient evidence</strong><span>A required item is absent, unknown, stale or inapplicable.</span></span></label>
+      </div>
+    </fieldset>
+    <button class="primary-button" type="submit">Reveal the evidence trail</button>
+    <p class="choice-result" data-choice-result aria-live="polite"></p>
+  </form></section>
+      <section class="evidence-panel" data-evidence-panel aria-labelledby="evidence-unsupported-citation">
+    <span class="panel-label">Observed evidence</span>
+    <h3 id="evidence-unsupported-citation" data-reveal-heading tabindex="-1">What the record shows</h3>
+    <ol class="evidence-trail"><li><span class="evidence-state state-supports">Supports</span> <strong>Is the exact source and revision named?</strong><p>The answer names an exact supplied source.</p></li><li><span class="evidence-state state-contradictory">Contradictory</span> <strong>Does the cited passage support the stated retention period?</strong><p>The supplied passage says 7 days, not 30 days.</p></li></ol>
+    <div class="finding finding-contradicted"><strong>Finding: Contradicted</strong><p>Intent: not assessed. This result compares only the declared claim and required evidence.</p></div>
+    <p><strong>What remains unknown:</strong> Another current source might support 30 days, and the synthetic example does not establish the service&#39;s real policy.</p>
+  </section>
+    </div>
+  </article></div></section>
+      <section class="band"><div class="shell"><div class="section-intro"><h2>Five questions</h2><p>Plain-language answers come before the technical record. Each answer stays inside the case's declared boundary.</p></div><div class="question-grid"><article class="question-answer"><h3>What happened?</h3><p>The answer includes a real citation, but the cited text conflicts with the fact attributed to it.</p></article><article class="question-answer"><h3>Why does it matter?</h3><p>A source link can create confidence without providing actual support for the nearby claim.</p></article><article class="question-answer"><h3>How do we know?</h3><p>The source identity is fixed and the relevant passage can be compared directly with the claimed 30-day period.</p></article><article class="question-answer"><h3>What remains unknown?</h3><p>Another current source might support 30 days, and the synthetic example does not establish the service&#39;s real policy.</p></article><article class="question-answer"><h3>What can someone do next?</h3><p>Quote or summarize the exact supporting passage, bind it to a revision or retrieval date, and refuse the claim when support is absent.</p></article></div></div></section>
+      <section class="band band-white"><div class="narrow"><h2>Technical record</h2><h3>Reproduce</h3><p>Compare the bounded claim with the exact passage supplied as its evidence.</p><pre class="code-block"><code>node tools/check-cases.mjs --case unsupported-citation</code></pre><h3>Exact sources</h3><ul class="source-list"><li><a href="https://github.com/TheDarkniteFalls/local-model-reliability-example/blob/d4eed6c7bb3750923e7ef18598e023243a6ef6e4/grounded_answer_gate.py">Grounded answer gate</a><span class="source-revision">Reviewed through 2026-08-23 · <a href="https://github.com/TheDarkniteFalls/local-model-reliability-example/commit/d4eed6c7bb3750923e7ef18598e023243a6ef6e4">exact source revision</a> · Linked repository content retains its original license.</span></li><li><a href="https://github.com/TheDarkniteFalls/context-boundary-examples/blob/c1b5795917f3b7926c9f7740da53896c1a4bc2e4/context_boundary_check.py">Context boundary check</a><span class="source-revision">Reviewed through 2026-08-23 · <a href="https://github.com/TheDarkniteFalls/context-boundary-examples/commit/c1b5795917f3b7926c9f7740da53896c1a4bc2e4">exact source revision</a> · Linked repository content retains its original license.</span></li></ul><h3>Limitations and non-claims</h3><ul><li>Citation matching does not prove completeness or freshness.</li><li>A supported citation does not establish safe downstream use.</li></ul><p class="note"><strong>Intent remains not assessed.</strong> This case does not claim consciousness, malicious intent, strategic scheming, universal safety failure, certification or a deception score.</p></div></section></main>
+  <footer class="site-footer"><div class="shell footer-grid">
+    <p>Mike-led public investigation, developed transparently with AI assistance. Observable claims are compared with observable evidence. Intent: not assessed.</p>
+    <div class="footer-links"><a href="../../about/">About</a><a href="https://github.com/TheDarkniteFalls/detecting-ai-deception">Source</a><a href="https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/LICENSING.md">Licensing</a></div>
+  </div></footer>
+  <script type="module" src="../../assets/app.mjs"></script>
+</body>
+</html>

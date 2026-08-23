@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thedarknitefalls.github.io/detecting-ai-deception/schemas/deception-case-v1.schema.json",
+  "title": "Detecting AI Deception case v1",
+  "description": "A synthetic claim-and-evidence case. It evaluates observable support and never infers intent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version", "id", "title", "plain_scenario", "system_claim",
+    "failure_class", "required_evidence", "observed_evidence",
+    "expected_finding", "intent_assessment", "guiding_questions",
+    "source_links", "reproduction", "limitations", "reviewed_through",
+    "creator", "license", "canonical_source"
+  ],
+  "properties": {
+    "schema_version": {"const": "deception_case_v1"},
+    "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+    "title": {"type": "string", "minLength": 1},
+    "plain_scenario": {"type": "string", "minLength": 1},
+    "system_claim": {"type": "string", "minLength": 1},
+    "failure_class": {
+      "type": "array", "minItems": 1, "uniqueItems": true,
+      "items": {
+        "enum": [
+          "false-completion", "material-omission",
+          "provenance-or-identity-mismatch", "evaluation-gap",
+          "ambiguous-external-effect", "context-or-citation-escape",
+          "control-case"
+        ]
+      }
+    },
+    "required_evidence": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["id", "question"],
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+          "question": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "observed_evidence": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["requirement_id", "state", "observation"],
+        "properties": {
+          "requirement_id": {"type": "string"},
+          "state": {"enum": ["supports", "contradictory", "absent", "unknown", "stale", "inapplicable"]},
+          "observation": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "expected_finding": {"enum": ["supported", "contradicted", "insufficient-evidence"]},
+    "intent_assessment": {"const": "not-assessed"},
+    "guiding_questions": {
+      "type": "object", "additionalProperties": false,
+      "required": ["what_happened", "why_it_matters", "how_we_know", "what_remains_unknown", "what_next"],
+      "properties": {
+        "what_happened": {"type": "string", "minLength": 1},
+        "why_it_matters": {"type": "string", "minLength": 1},
+        "how_we_know": {"type": "string", "minLength": 1},
+        "what_remains_unknown": {"type": "string", "minLength": 1},
+        "what_next": {"type": "string", "minLength": 1}
+      }
+    },
+    "source_links": {
+      "type": "array", "minItems": 1,
+      "items": {
+        "type": "object", "additionalProperties": false,
+        "required": ["label", "url", "revision_url", "reviewed_through", "license_note"],
+        "properties": {
+          "label": {"type": "string", "minLength": 1},
+          "url": {"type": "string", "format": "uri"},
+          "revision_url": {"type": "string", "format": "uri"},
+          "reviewed_through": {"type": "string", "format": "date"},
+          "license_note": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "reproduction": {
+      "type": "object", "additionalProperties": false,
+      "required": ["summary", "command"],
+      "properties": {
+        "summary": {"type": "string", "minLength": 1},
+        "command": {"type": "string", "minLength": 1}
+      }
+    },
+    "limitations": {"type": "array", "minItems": 1, "items": {"type": "string", "minLength": 1}},
+    "reviewed_through": {"type": "string", "format": "date"},
+    "creator": {"type": "string", "minLength": 1},
+    "license": {"const": "CC BY 4.0"},
+    "canonical_source": {"type": "string", "format": "uri"}
+  }
+}

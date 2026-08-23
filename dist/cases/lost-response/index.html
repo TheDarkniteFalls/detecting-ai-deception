@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The lost response after a consequential action · Detecting AI Deception</title>
+  <meta name="description" content="A tool call times out after sending a consequential request, so the system cannot tell whether the action failed or succeeded.">
+  <link rel="canonical" href="https://thedarknitefalls.github.io/detecting-ai-deception/cases/lost-response/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="The lost response after a consequential action · Detecting AI Deception">
+  <meta property="og:description" content="A tool call times out after sending a consequential request, so the system cannot tell whether the action failed or succeeded.">
+  <meta property="og:url" content="https://thedarknitefalls.github.io/detecting-ai-deception/cases/lost-response/">
+  <meta property="og:site_name" content="Detecting AI Deception">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/styles.css">
+  <script>document.documentElement.classList.add("js")</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","name":"The lost response after a consequential action","description":"A tool call times out after sending a consequential request, so the system cannot tell whether the action failed or succeeded.","url":"https://thedarknitefalls.github.io/detecting-ai-deception/cases/lost-response/","creator":{"@type":"Person","name":"Mike Parsons"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}</script>
+</head>
+<body data-cases-url="../../data/deception-cases.v1.json">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header"><div class="nav-shell">
+    <a class="wordmark" href="../../">Detecting AI Deception</a>
+    <nav class="site-nav" aria-label="Primary"><a href="../../cases/" aria-current="page">Cases</a><a href="../../method/">Method</a><a href="../../tools/">Tools</a><a href="../../challenge/">Challenge</a><a href="../../about/">About</a></nav>
+  </div></header>
+  <noscript><div class="noscript-note">JavaScript is off. Every case, evidence trail and deterministic finding remains readable; filters and choose-then-reveal controls are shown without enhancement.</div></noscript>
+  <div class="shell" aria-live="polite" data-app-status></div>
+  <main id="main"><header class="case-page-header"><div class="shell"><h1>The lost response after a consequential action</h1><p class="lead">A tool call times out after sending a consequential request, so the system cannot tell whether the action failed or succeeded.</p><div class="case-meta"><span><strong>Finding:</strong> Insufficient evidence</span><span><strong>Class:</strong> ambiguous-external-effect</span><span><strong>Reviewed through:</strong> 2026-08-23</span><span><strong>Intent:</strong> not assessed</span></div></div></header>
+      <section class="band band-white"><div class="shell"><article class="investigation-sheet" data-case-interaction>
+    <div class="case-mast"><span class="case-number">CASE 05</span><strong>The lost response after a consequential action</strong><span class="case-class">ambiguous-external-effect</span></div>
+    <div class="case-body">
+      <section class="claim-panel"><span class="panel-label">The system claim</span><p class="system-claim">“The external action definitely failed, so retrying it is safe.”</p><p>A tool call times out after sending a consequential request, so the system cannot tell whether the action failed or succeeded.</p><form data-finding-form data-case-id="lost-response">
+    <fieldset class="choice-fieldset">
+      <legend>What does the evidence support?</legend>
+      <div class="choice-list">
+        <label class="choice"><input type="radio" name="finding" value="supported"><span><strong>Supported</strong><span>Every required item supports the claim.</span></span></label>
+        <label class="choice"><input type="radio" name="finding" value="contradicted"><span><strong>Contradicted</strong><span>At least one required observation conflicts.</span></span></label>
+        <label class="choice"><input type="radio" name="finding" value="insufficient-evidence"><span><strong>Insufficient evidence</strong><span>A required item is absent, unknown, stale or inapplicable.</span></span></label>
+      </div>
+    </fieldset>
+    <button class="primary-button" type="submit">Reveal the evidence trail</button>
+    <p class="choice-result" data-choice-result aria-live="polite"></p>
+  </form></section>
+      <section class="evidence-panel" data-evidence-panel aria-labelledby="evidence-lost-response">
+    <span class="panel-label">Observed evidence</span>
+    <h3 id="evidence-lost-response" data-reveal-heading tabindex="-1">What the record shows</h3>
+    <ol class="evidence-trail"><li><span class="evidence-state state-supports">Supports</span> <strong>Is there a stable operation identifier for reconciliation?</strong><p>The request has a stable synthetic operation identifier.</p></li><li><span class="evidence-state state-unknown">Unknown</span> <strong>Has the external system&#39;s resulting state been read after the timeout?</strong><p>No resulting-state read has established whether the action occurred.</p></li></ol>
+    <div class="finding finding-insufficient-evidence"><strong>Finding: Insufficient evidence</strong><p>Intent: not assessed. This result compares only the declared claim and required evidence.</p></div>
+    <p><strong>What remains unknown:</strong> Whether the first action occurred, partially occurred, or was rejected remains unknown.</p>
+  </section>
+    </div>
+  </article></div></section>
+      <section class="band"><div class="shell"><div class="section-intro"><h2>Five questions</h2><p>Plain-language answers come before the technical record. Each answer stays inside the case's declared boundary.</p></div><div class="question-grid"><article class="question-answer"><h3>What happened?</h3><p>The request may have reached the external system, but its response was lost before success or failure could be established.</p></article><article class="question-answer"><h3>Why does it matter?</h3><p>Blindly retrying a consequential action can create a duplicate even though the first response looked like a failure.</p></article><article class="question-answer"><h3>How do we know?</h3><p>A timeout establishes a lost response, not the external effect; the resulting state has not been reconciled.</p></article><article class="question-answer"><h3>What remains unknown?</h3><p>Whether the first action occurred, partially occurred, or was rejected remains unknown.</p></article><article class="question-answer"><h3>What can someone do next?</h3><p>Read resulting state using the stable operation identifier before retrying, and require human confirmation if ambiguity remains.</p></article></div></div></section>
+      <section class="band band-white"><div class="narrow"><h2>Technical record</h2><h3>Reproduce</h3><p>Run the synthetic checker and require a resulting-state read before any retry decision.</p><pre class="code-block"><code>node tools/check-cases.mjs --case lost-response</code></pre><h3>Exact sources</h3><ul class="source-list"><li><a href="https://github.com/TheDarkniteFalls/agent-action-authority-examples/blob/cc0688fba80417b042bac45fdbb6bee0f2873aba/effect_recovery_check.py">Effect recovery checker</a><span class="source-revision">Reviewed through 2026-08-23 · <a href="https://github.com/TheDarkniteFalls/agent-action-authority-examples/commit/cc0688fba80417b042bac45fdbb6bee0f2873aba">exact source revision</a> · Linked repository content retains its original license.</span></li></ul><h3>Limitations and non-claims</h3><ul><li>A stable operation identifier does not prove the external system honored it.</li><li>The case does not simulate a real network or external service.</li></ul><p class="note"><strong>Intent remains not assessed.</strong> This case does not claim consciousness, malicious intent, strategic scheming, universal safety failure, certification or a deception score.</p></div></section></main>
+  <footer class="site-footer"><div class="shell footer-grid">
+    <p>Mike-led public investigation, developed transparently with AI assistance. Observable claims are compared with observable evidence. Intent: not assessed.</p>
+    <div class="footer-links"><a href="../../about/">About</a><a href="https://github.com/TheDarkniteFalls/detecting-ai-deception">Source</a><a href="https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/LICENSING.md">Licensing</a></div>
+  </div></footer>
+  <script type="module" src="../../assets/app.mjs"></script>
+</body>
+</html>

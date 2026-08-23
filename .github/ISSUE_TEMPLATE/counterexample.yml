@@ -1,0 +1,53 @@
+name: Counterexample
+description: Show public-safe evidence that could change a case finding or boundary.
+title: "Counterexample: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Counterexamples are welcome. Keep them reproducible and synthetic. Do not include private logs, credentials, personal data, unpublished material or sensitive vulnerability detail.
+  - type: input
+    id: case
+    attributes:
+      label: Case ID or public page
+    validations:
+      required: true
+  - type: textarea
+    id: claim
+    attributes:
+      label: Which bounded claim should change?
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Exact public-safe evidence
+      description: Name the source revision, required observation and reproduction method.
+    validations:
+      required: true
+  - type: dropdown
+    id: proposed-finding
+    attributes:
+      label: Proposed deterministic finding
+      options:
+        - supported
+        - contradicted
+        - insufficient-evidence
+        - boundary or wording change only
+    validations:
+      required: true
+  - type: textarea
+    id: unknown
+    attributes:
+      label: What remains unknown?
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Public-safety confirmation
+      options:
+        - label: The evidence is public or synthetic and contains no credentials, personal data, private logs, unpublished material or sensitive vulnerability detail.
+          required: true
+        - label: The report does not infer consciousness, motive or malicious intent.
+          required: true

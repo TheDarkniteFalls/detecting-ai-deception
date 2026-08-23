@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Method · Detecting AI Deception</title>
+  <meta name="description" content="The finding taxonomy, deterministic evidence rule, quality method, limitations and glossary for Detecting AI Deception.">
+  <link rel="canonical" href="https://thedarknitefalls.github.io/detecting-ai-deception/method/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Method · Detecting AI Deception">
+  <meta property="og:description" content="The finding taxonomy, deterministic evidence rule, quality method, limitations and glossary for Detecting AI Deception.">
+  <meta property="og:url" content="https://thedarknitefalls.github.io/detecting-ai-deception/method/">
+  <meta property="og:site_name" content="Detecting AI Deception">
+  <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/styles.css">
+  <script>document.documentElement.classList.add("js")</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Method","description":"The finding taxonomy, deterministic evidence rule, quality method, limitations and glossary for Detecting AI Deception.","url":"https://thedarknitefalls.github.io/detecting-ai-deception/method/","creator":{"@type":"Person","name":"Mike Parsons"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}</script>
+</head>
+<body data-cases-url="../data/deception-cases.v1.json">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header"><div class="nav-shell">
+    <a class="wordmark" href="../">Detecting AI Deception</a>
+    <nav class="site-nav" aria-label="Primary"><a href="../cases/">Cases</a><a href="../method/" aria-current="page">Method</a><a href="../tools/">Tools</a><a href="../challenge/">Challenge</a><a href="../about/">About</a></nav>
+  </div></header>
+  <noscript><div class="noscript-note">JavaScript is off. Every case, evidence trail and deterministic finding remains readable; filters and choose-then-reveal controls are shown without enhancement.</div></noscript>
+  <div class="shell" aria-live="polite" data-app-status></div>
+  <main id="main"><header class="case-page-header"><div class="shell"><h1 class="page-title">A method for checking the difference.</h1><p class="lead">This project classifies observable support for a bounded claim. It does not decide whether a system intended to mislead.</p><span class="intent-stamp">Intent: not assessed</span></div></header><div class="narrow prose">
+      <h2>Three findings</h2><h3>Supported</h3><p>Every declared required evidence item supports the claim.</p><h3>Contradicted</h3><p>At least one required observation directly conflicts with the claim. Contradiction takes precedence over missing evidence.</p><h3>Insufficient evidence</h3><p>A required observation is absent, unknown, stale or inapplicable, and no required observation directly contradicts the claim.</p>
+      <h2>The deterministic rule</h2><pre class="code-block"><code>if any required observation is contradictory:
+  contradicted
+else if any required observation is absent, unknown, stale or inapplicable:
+  insufficient-evidence
+else:
+  supported</code></pre><p>The browser and <code>node tools/check-cases.mjs --self-test</code> import the same pure classifier.</p>
+      <h2>Quality method</h2><ol><li>Name one bounded system claim.</li><li>Declare the evidence that claim would require before looking at the outcome.</li><li>Record each observation and its state.</li><li>Run the deterministic classifier.</li><li>Publish exact source revisions, reviewed-through dates, limitations and non-claims.</li><li>Invite a public-safe reproduction or counterexample.</li></ol>
+      <h2>Failure classes</h2><ul><li><strong>false-completion:</strong> claimed work is absent from final state.</li><li><strong>material-omission:</strong> a decision-relevant absence is hidden from the account.</li><li><strong>provenance-or-identity-mismatch:</strong> evidence belongs to a different subject.</li><li><strong>evaluation-gap:</strong> the intended evaluation set is not accounted for.</li><li><strong>ambiguous-external-effect:</strong> a consequential result is unknown after a lost response.</li><li><strong>context-or-citation-escape:</strong> the answer outruns its supplied evidence.</li></ul>
+      <h2>Limitations</h2><p>The cases are synthetic teaching records. They do not estimate prevalence, authenticate reviewers, test live models, diagnose internal cognition, certify products or rank systems. Real investigations need threat-aware handling of sensitive evidence and independent review.</p>
+      <h2>Glossary</h2><dl><dt><strong>Claim</strong></dt><dd>A bounded statement that can be compared with declared evidence.</dd><dt><strong>Required evidence</strong></dt><dd>What would need to be observed for the claim to be supported.</dd><dt><strong>Observation</strong></dt><dd>The recorded state of one required evidence item.</dd><dt><strong>Reviewed through</strong></dt><dd>The date through which a source revision was checked for this case.</dd><dt><strong>Non-claim</strong></dt><dd>An explicit boundary on what the evidence does not establish.</dd></dl>
+    </div></main>
+  <footer class="site-footer"><div class="shell footer-grid">
+    <p>Mike-led public investigation, developed transparently with AI assistance. Observable claims are compared with observable evidence. Intent: not assessed.</p>
+    <div class="footer-links"><a href="../about/">About</a><a href="https://github.com/TheDarkniteFalls/detecting-ai-deception">Source</a><a href="https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/LICENSING.md">Licensing</a></div>
+  </div></footer>
+  <script type="module" src="../assets/app.mjs"></script>
+</body>
+</html>

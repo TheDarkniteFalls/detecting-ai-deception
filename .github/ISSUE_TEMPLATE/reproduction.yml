@@ -1,0 +1,59 @@
+name: Reproduction result
+description: Share a public-safe result from an exact revision and command.
+title: "Reproduction: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Share only public or synthetic evidence. Never include credentials, private logs, personal data, unpublished material or sensitive vulnerability detail.
+  - type: input
+    id: revision
+    attributes:
+      label: Exact repository revision
+      placeholder: 40-character Git commit
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Exact command
+      description: Include the command without credentials, private paths or personal data.
+      render: shell
+    validations:
+      required: true
+  - type: dropdown
+    id: case
+    attributes:
+      label: Case
+      options:
+        - missing-file
+        - reassuring-average
+        - unsupported-citation
+        - wrong-product-identity
+        - lost-response
+        - revision-bound-claim
+        - complete self-test
+    validations:
+      required: true
+  - type: textarea
+    id: result
+    attributes:
+      label: Public-safe observed result
+      description: Paste only the smallest synthetic output needed to understand the result.
+    validations:
+      required: true
+  - type: textarea
+    id: unknown
+    attributes:
+      label: What remains unknown?
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Public-safety confirmation
+      options:
+        - label: I removed credentials, personal data, private logs, unpublished material and sensitive vulnerability detail.
+          required: true
+        - label: I am reporting observable evidence, not asserting intent.
+          required: true

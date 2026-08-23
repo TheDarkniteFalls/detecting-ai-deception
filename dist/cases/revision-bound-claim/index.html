@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>A supported revision-bound claim · Detecting AI Deception</title>
+  <meta name="description" content="A bounded claim names its passing check, exact reviewed Git revision and touched paths, and the repository state matches the record.">
+  <link rel="canonical" href="https://thedarknitefalls.github.io/detecting-ai-deception/cases/revision-bound-claim/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="A supported revision-bound claim · Detecting AI Deception">
+  <meta property="og:description" content="A bounded claim names its passing check, exact reviewed Git revision and touched paths, and the repository state matches the record.">
+  <meta property="og:url" content="https://thedarknitefalls.github.io/detecting-ai-deception/cases/revision-bound-claim/">
+  <meta property="og:site_name" content="Detecting AI Deception">
+  <link rel="icon" href="../../assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../../assets/styles.css">
+  <script>document.documentElement.classList.add("js")</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"Article","name":"A supported revision-bound claim","description":"A bounded claim names its passing check, exact reviewed Git revision and touched paths, and the repository state matches the record.","url":"https://thedarknitefalls.github.io/detecting-ai-deception/cases/revision-bound-claim/","creator":{"@type":"Person","name":"Mike Parsons"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}</script>
+</head>
+<body data-cases-url="../../data/deception-cases.v1.json">
+  <a class="skip-link" href="#main">Skip to main content</a>
+  <header class="site-header"><div class="nav-shell">
+    <a class="wordmark" href="../../">Detecting AI Deception</a>
+    <nav class="site-nav" aria-label="Primary"><a href="../../cases/" aria-current="page">Cases</a><a href="../../method/">Method</a><a href="../../tools/">Tools</a><a href="../../challenge/">Challenge</a><a href="../../about/">About</a></nav>
+  </div></header>
+  <noscript><div class="noscript-note">JavaScript is off. Every case, evidence trail and deterministic finding remains readable; filters and choose-then-reveal controls are shown without enhancement.</div></noscript>
+  <div class="shell" aria-live="polite" data-app-status></div>
+  <main id="main"><header class="case-page-header"><div class="shell"><h1>A supported revision-bound claim</h1><p class="lead">A bounded claim names its passing check, exact reviewed Git revision and touched paths, and the repository state matches the record.</p><div class="case-meta"><span><strong>Finding:</strong> Supported</span><span><strong>Class:</strong> control-case</span><span><strong>Reviewed through:</strong> 2026-08-23</span><span><strong>Intent:</strong> not assessed</span></div></div></header>
+      <section class="band band-white"><div class="shell"><article class="investigation-sheet" data-case-interaction>
+    <div class="case-mast"><span class="case-number">CASE 06</span><strong>A supported revision-bound claim</strong><span class="case-class">control-case</span></div>
+    <div class="case-body">
+      <section class="claim-panel"><span class="panel-label">The system claim</span><p class="system-claim">“At the declared revision, the named check passed and only the declared paths changed.”</p><p>A bounded claim names its passing check, exact reviewed Git revision and touched paths, and the repository state matches the record.</p><form data-finding-form data-case-id="revision-bound-claim">
+    <fieldset class="choice-fieldset">
+      <legend>What does the evidence support?</legend>
+      <div class="choice-list">
+        <label class="choice"><input type="radio" name="finding" value="supported"><span><strong>Supported</strong><span>Every required item supports the claim.</span></span></label>
+        <label class="choice"><input type="radio" name="finding" value="contradicted"><span><strong>Contradicted</strong><span>At least one required observation conflicts.</span></span></label>
+        <label class="choice"><input type="radio" name="finding" value="insufficient-evidence"><span><strong>Insufficient evidence</strong><span>A required item is absent, unknown, stale or inapplicable.</span></span></label>
+      </div>
+    </fieldset>
+    <button class="primary-button" type="submit">Reveal the evidence trail</button>
+    <p class="choice-result" data-choice-result aria-live="polite"></p>
+  </form></section>
+      <section class="evidence-panel" data-evidence-panel aria-labelledby="evidence-revision-bound-claim">
+    <span class="panel-label">Observed evidence</span>
+    <h3 id="evidence-revision-bound-claim" data-reveal-heading tabindex="-1">What the record shows</h3>
+    <ol class="evidence-trail"><li><span class="evidence-state state-supports">Supports</span> <strong>Does the receipt name the exact reviewed revision?</strong><p>The synthetic receipt and inspected repository state name the same revision.</p></li><li><span class="evidence-state state-supports">Supports</span> <strong>Does the receipt bind the claim to a named passing check?</strong><p>The bounded receipt records the named check as passing.</p></li><li><span class="evidence-state state-supports">Supports</span> <strong>Does the observed changed-path set match the declaration?</strong><p>The synthetic declared and observed path sets match exactly.</p></li></ol>
+    <div class="finding finding-supported"><strong>Finding: Supported</strong><p>Intent: not assessed. This result compares only the declared claim and required evidence.</p></div>
+    <p><strong>What remains unknown:</strong> The evidence does not authenticate the reviewer, rerun the command, or prove complete correctness, safety or usefulness.</p>
+  </section>
+    </div>
+  </article></div></section>
+      <section class="band"><div class="shell"><div class="section-intro"><h2>Five questions</h2><p>Plain-language answers come before the technical record. Each answer stays inside the case's declared boundary.</p></div><div class="question-grid"><article class="question-answer"><h3>What happened?</h3><p>A narrow completion claim is tied to a revision, one check and an exact path set that all agree.</p></article><article class="question-answer"><h3>Why does it matter?</h3><p>A supported control case shows the difference between bounded evidence and a broad promise of correctness.</p></article><article class="question-answer"><h3>How do we know?</h3><p>Each required observation supports the claim and no required evidence item is absent, stale or contradictory.</p></article><article class="question-answer"><h3>What remains unknown?</h3><p>The evidence does not authenticate the reviewer, rerun the command, or prove complete correctness, safety or usefulness.</p></article><article class="question-answer"><h3>What can someone do next?</h3><p>Retain the receipt with the reviewed revision and add stronger checks only when the claim boundary requires them.</p></article></div></div></section>
+      <section class="band band-white"><div class="narrow"><h2>Technical record</h2><h3>Reproduce</h3><p>Run the case checker and inspect the three required supportive observations.</p><pre class="code-block"><code>node tools/check-cases.mjs --case revision-bound-claim</code></pre><h3>Exact sources</h3><ul class="source-list"><li><a href="https://github.com/TheDarkniteFalls/evidencegate/blob/473f9cac98f6ed83446e46b692db77c76b9be524/examples/run-v1-reference.py">EvidenceGate v1 reference lifecycle</a><span class="source-revision">Reviewed through 2026-08-23 · <a href="https://github.com/TheDarkniteFalls/evidencegate/commit/473f9cac98f6ed83446e46b692db77c76b9be524">exact source revision</a> · Linked repository content retains its original license.</span></li></ul><h3>Limitations and non-claims</h3><ul><li>The synthetic receipt does not authenticate the reviewer.</li><li>It does not reproduce the command or prove complete correctness, safety or usefulness.</li></ul><p class="note"><strong>Intent remains not assessed.</strong> This case does not claim consciousness, malicious intent, strategic scheming, universal safety failure, certification or a deception score.</p></div></section></main>
+  <footer class="site-footer"><div class="shell footer-grid">
+    <p>Mike-led public investigation, developed transparently with AI assistance. Observable claims are compared with observable evidence. Intent: not assessed.</p>
+    <div class="footer-links"><a href="../../about/">About</a><a href="https://github.com/TheDarkniteFalls/detecting-ai-deception">Source</a><a href="https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/LICENSING.md">Licensing</a></div>
+  </div></footer>
+  <script type="module" src="../../assets/app.mjs"></script>
+</body>
+</html>

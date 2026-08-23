@@ -1,0 +1,1 @@
+{"fixture_version":"known_bad_mutation_v1","name":"unsupported failure class","base_case":"missing-file","set":{"failure_class":["deception-score"]},"expected_error":"failure_class contains an unsupported value"}

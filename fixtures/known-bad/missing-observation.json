@@ -1,0 +1,1 @@
+{"fixture_version":"known_bad_mutation_v1","name":"required evidence lacks observation","base_case":"revision-bound-claim","remove_observation":2,"expected_error":"every required evidence item needs an observation"}

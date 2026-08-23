@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://thedarknitefalls.github.io/detecting-ai-deception/sitemap.xml

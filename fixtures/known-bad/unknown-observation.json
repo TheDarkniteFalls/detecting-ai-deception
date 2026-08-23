@@ -1,0 +1,1 @@
+{"fixture_version":"known_bad_mutation_v1","name":"observation names unknown requirement","base_case":"lost-response","set_observation_requirement":{"index":1,"value":"unbound-effect"},"expected_error":"unknown observed requirement unbound-effect"}
