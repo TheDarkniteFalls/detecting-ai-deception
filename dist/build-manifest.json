@@ -9,13 +9,13 @@
     },
     {
       "path": "about/index.html",
-      "sha256": "81608ebc201d0422336a7f54fa752d6a0110d2419a731b03225d63753055bcb8",
-      "bytes": 5052
+      "sha256": "86bb59202104fe85eb1c453fd896afb4e9d62472d06785be14d929a0c692a695",
+      "bytes": 5122
     },
     {
       "path": "assets/app.mjs",
-      "sha256": "a2f9d09bb08937be8ce973a77fa47455a3a1b5c029aef6b884c67c8849cdeacd",
-      "bytes": 5420
+      "sha256": "537a7df7fa18656b01e4e5baefcb5a030a35980acdb70dc9366c1867d420bb09",
+      "bytes": 5867
     },
     {
       "path": "assets/claim-record-evidence-sculpture.png",
@@ -34,43 +34,43 @@
     },
     {
       "path": "assets/styles.css",
-      "sha256": "9e17192b15500005f4850aedf7003eb22287f306f161b1a219486c2a04d01caa",
-      "bytes": 52851
+      "sha256": "2cbea3b288c67e1e9cdef21dc5f2204cf530da9bab7cdb8ebc50fa2a3de7e971",
+      "bytes": 57020
     },
     {
       "path": "cases/index.html",
-      "sha256": "9fec195a1fb3c2ddaea8685af831626af1c47cb4d6d2b752d8c7133b38b263bd",
-      "bytes": 13054
+      "sha256": "3749b300291acf8977486bd5c46b21a1f2a3b1e5eba8fd7e54c53a37ebdcdc0a",
+      "bytes": 13264
     },
     {
       "path": "cases/lost-response/index.html",
-      "sha256": "826a7f596030e4bdb678798893e3d579a52a5bc152f143ea7031c698a08ea7d2",
-      "bytes": 14168
+      "sha256": "80999214ab191dbaefa951af66ebb43fbfb0a4baa55f9b740cf528b66048ead4",
+      "bytes": 14203
     },
     {
       "path": "cases/missing-file/index.html",
-      "sha256": "07504ff0c22c827db2973f0f6890fdb78a9759cb3e041a85bb9928312e0c7195",
-      "bytes": 13840
+      "sha256": "0736b4d199111a995a32925abd190ae6446265a45c134a9db1118042018f1fff",
+      "bytes": 13875
     },
     {
       "path": "cases/reassuring-average/index.html",
-      "sha256": "6cda23b0493fac5b04ab94fa70c1a1e90a43058478af901776783d5a9e202bac",
-      "bytes": 15116
+      "sha256": "1c7564b7a562c7270ba772e7c9d048db95acd2be41d14f714307fe7545a6d4fb",
+      "bytes": 15151
     },
     {
       "path": "cases/revision-bound-claim/index.html",
-      "sha256": "e878e4813fa978e5ac1fdfa91bd6d42ad57bca30a6cdcff7ece7ff5b4235456b",
-      "bytes": 14427
+      "sha256": "8e768815b6cdf21d3c2ef1f309d0d1da382ba0a682e536af29f4863eec5307d4",
+      "bytes": 14462
     },
     {
       "path": "cases/unsupported-citation/index.html",
-      "sha256": "1ee3121b3017b1b2c4a600b57610596d874222b9db562b8ab4c858f96ead3c2a",
-      "bytes": 14508
+      "sha256": "ede96e656b3f3bbf4dd3a7eb409f2ae99622bd981375ba4a1dbbac2e5f8ddc0e",
+      "bytes": 14543
     },
     {
       "path": "cases/wrong-product-identity/index.html",
-      "sha256": "205a3f731c3af9ee67e17273066ff7521938921a55e6e3c04a093e4291b3e62b",
-      "bytes": 14076
+      "sha256": "3fd5ee2061948280fcf6e1a605087f8ad7e43465d3b5e67b9b0427b945329f6e",
+      "bytes": 14111
     },
     {
       "path": "challenge/index.html",
@@ -89,13 +89,13 @@
     },
     {
       "path": "index.html",
-      "sha256": "9f3955196dee5c27f3a9dcec9abc52ff8e80fbbf2a3d28ba6e57eaef9e1fefb3",
-      "bytes": 21381
+      "sha256": "28f315efe47982ad3272f9696d1171d9c7defbddfee7a80ea4e4e28a75ed589e",
+      "bytes": 15022
     },
     {
       "path": "method/index.html",
-      "sha256": "06c4290456c9af4fda2f01bc10fbab0b8fa657e2f6c5886268a0dac3bf4420b1",
-      "bytes": 6524
+      "sha256": "2323d05617da58f5c8b2ff03f7cb5f241d98fb730c8c4d68e49d4b368490395e",
+      "bytes": 6692
     },
     {
       "path": "robots.txt",

@@ -3,18 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Method · Detecting AI Deception</title>
-  <meta name="description" content="The finding taxonomy, deterministic evidence rule, quality method, limitations and glossary for Detecting AI Deception.">
+  <title>Evidence-checking method · Detecting AI Deception</title>
+  <meta name="description" content="A four-step method for checking whether an AI claim is supported, contradicted or unresolved by the available evidence.">
   <link rel="canonical" href="https://thedarknitefalls.github.io/detecting-ai-deception/method/">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Method · Detecting AI Deception">
-  <meta property="og:description" content="The finding taxonomy, deterministic evidence rule, quality method, limitations and glossary for Detecting AI Deception.">
+  <meta property="og:title" content="Evidence-checking method · Detecting AI Deception">
+  <meta property="og:description" content="A four-step method for checking whether an AI claim is supported, contradicted or unresolved by the available evidence.">
   <meta property="og:url" content="https://thedarknitefalls.github.io/detecting-ai-deception/method/">
   <meta property="og:site_name" content="Detecting AI Deception">
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../assets/styles.css">
   <script>document.documentElement.classList.add("js")</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Method","description":"The finding taxonomy, deterministic evidence rule, quality method, limitations and glossary for Detecting AI Deception.","url":"https://thedarknitefalls.github.io/detecting-ai-deception/method/","creator":{"@type":"Person","name":"Mike Parsons"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Evidence-checking method","description":"A four-step method for checking whether an AI claim is supported, contradicted or unresolved by the available evidence.","url":"https://thedarknitefalls.github.io/detecting-ai-deception/method/","creator":{"@type":"Person","name":"Mike Parsons"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}</script>
 </head>
 <body data-page="method" data-cases-url="../data/deception-cases.v1.json">
   <a class="skip-link" href="#main">Skip to main content</a>
@@ -31,7 +31,7 @@
   </div></header>
   <noscript><div class="noscript-note">JavaScript is off. Every case, evidence trail and deterministic finding remains readable; filters and choose-then-reveal controls are shown without enhancement.</div></noscript>
   <div class="shell" aria-live="polite" data-app-status></div>
-  <main id="main"><header class="case-page-header"><div class="shell"><h1 class="page-title">A method for checking the difference.</h1><p class="lead">This project classifies observable support for a bounded claim. It does not decide whether a system intended to mislead.</p><div class="intent-boundary intent-boundary-compact"><span aria-hidden="true"></span><strong>Intent: not assessed</strong></div></div></header><div class="narrow prose">
+  <main id="main"><header class="case-page-header"><div class="shell"><h1 class="page-title">Check an AI claim against the evidence.</h1><p class="lead">Start with the exact claim, define the evidence it would require, compare that requirement with the available record, and classify the result as Supported, Contradicted or Insufficient evidence. The method does not assess intent.</p><div class="intent-boundary intent-boundary-compact"><span aria-hidden="true">≠</span><strong>Intent: not assessed</strong></div></div></header><div class="narrow prose">
       <h2>Three findings</h2><h3>Supported</h3><p>Every declared required evidence item supports the claim.</p><h3>Contradicted</h3><p>At least one required observation directly conflicts with the claim. Contradiction takes precedence over missing evidence.</p><h3>Insufficient evidence</h3><p>A required observation is absent, unknown, stale or inapplicable, and no required observation directly contradicts the claim.</p>
       <h2>The deterministic rule</h2><pre class="code-block"><code>if any required observation is contradictory:
   contradicted

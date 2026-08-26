@@ -5,6 +5,7 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
+import { isSameDocumentFragmentHref } from "../src/site/app.mjs";
 import { build } from "../tools/build.mjs";
 import { checkHttp } from "../tools/check-http.mjs";
 import { checkSite } from "../tools/check-site.mjs";
@@ -20,6 +21,16 @@ function contrastRatio(first, second) {
   const values = [luminance(first), luminance(second)].sort((a, b) => b - a);
   return (values[0] + 0.05) / (values[1] + 0.05);
 }
+
+test("same-document fragment links preserve native anchor scrolling", () => {
+  const current = "https://example.test/detecting-ai-deception/?view=compact";
+  assert.equal(isSameDocumentFragmentHref("#method-overview", current), true);
+  assert.equal(isSameDocumentFragmentHref("https://example.test/detecting-ai-deception/?view=compact#practice-cases", current), true);
+  assert.equal(isSameDocumentFragmentHref("#", current), false);
+  assert.equal(isSameDocumentFragmentHref("?view=full#method-overview", current), false);
+  assert.equal(isSameDocumentFragmentHref("/detecting-ai-deception/method/#overview", current), false);
+  assert.equal(isSameDocumentFragmentHref("https://other.test/detecting-ai-deception/?view=compact#method-overview", current), false);
+});
 
 test("the complete static site builds and passes its semantic contract", async () => {
   const root = await mkdtemp(join(tmpdir(), "detecting-ai-deception-site-test-"));
@@ -76,7 +87,7 @@ test("the site check rejects concatenated evidence status and question text", as
   }
 });
 
-test("the Claim / Record design contract stays bounded and code-native", async () => {
+test("the visitor-first design stays bounded, useful and code-native", async () => {
   const root = await mkdtemp(join(tmpdir(), "detecting-ai-deception-site-test-"));
   try {
     await build(root);
@@ -87,8 +98,23 @@ test("the Claim / Record design contract stays bounded and code-native", async (
     assert.equal((home.match(/data-home-preview="unsupported-citation"/g) ?? []).length, 1);
     assert.equal((home.match(/data-synthetic-case/g) ?? []).length, 1);
     assert.equal((home.match(/data-spine-case=/g) ?? []).length, 6);
-    assert.match(home, /Existing synthetic case · 03 of 06/);
-    assert.match(home, /Confidence is a style\. Support is a relationship you can inspect\./);
+    assert.match(home, /Check whether an AI answer is backed by the evidence\./);
+    assert.match(home, /This site helps anyone reviewing an AI answer compare the claim with the evidence it would need and the record that exists\./);
+    assert.match(home, /Featured synthetic case 03/);
+    assert.match(home, /<dt>Claim<\/dt><dd>30 days<\/dd>/);
+    assert.match(home, /<dt>Required evidence<\/dt><dd>30 days<\/dd>/);
+    assert.match(home, /<dt>Observed record<\/dt><dd>7 days<\/dd>/);
+    assert.match(home, /<dt>Finding<\/dt><dd>Contradicted<\/dd>/);
+    assert.match(home, /The cited passage does not support the answer\./);
+    assert.match(home, /href="#method-overview"/);
+    assert.match(home, /id="method-overview"/);
+    assert.match(home, /id="practice-cases"/);
+    assert.doesNotMatch(home, /hero-evidence-object|case-index-band/);
+    const homeOrder = ["home-opening", "method-band", "home-case-index", "trust-band", "challenge-band"]
+      .map((className) => home.indexOf(`class="${className}`));
+    assert.ok(homeOrder.every((position, index) => position >= 0 && (index === 0 || position > homeOrder[index - 1])));
+    assert.ok(citation.indexOf("case-record-band") < citation.indexOf("case-spine-band"));
+    assert.match(citation, /Choose another practice case/);
     for (const part of ["claim", "required-evidence", "observed-record", "finding"]) {
       assert.match(citation, new RegExp(`data-composition-part="${part}"`));
     }
@@ -103,7 +129,7 @@ test("the Claim / Record design contract stays bounded and code-native", async (
   }
 });
 
-test("contrast, 320px case rows and the extracted sculpture remain regression-bound", async () => {
+test("contrast, responsive case selectors and the preserved sculpture asset remain regression-bound", async () => {
   const root = await mkdtemp(join(tmpdir(), "detecting-ai-deception-site-test-"));
   try {
     await build(root);
@@ -116,7 +142,11 @@ test("contrast, 320px case rows and the extracted sculpture remain regression-bo
     assert.doesNotMatch(styles, /data:image\/png;base64/);
     assert.match(styles, /--evidence-sculpture: url\("\.\/claim-record-evidence-sculpture\.png"\)/);
     assert.match(styles, /\.home-row-title\s*\{[^}]*overflow-wrap:\s*normal;[^}]*word-break:\s*normal;/s);
-    assert.match(styles, /@media \(max-width: 22rem\)[\s\S]*?grid-template-columns:\s*3\.25rem minmax\(0, 1fr\) 4rem 1\.5rem;/s);
+    assert.match(styles, /\.finding-summary h3\s*\{[^}]*overflow-wrap:\s*normal;[^}]*word-break:\s*normal;/s);
+    assert.match(styles, /body\s*\{[^}]*overflow-wrap:\s*normal;[^}]*word-break:\s*normal;/s);
+    assert.match(styles, /@media \(max-width: 22\.5rem\)[\s\S]*?\.home-case-grid\s*\{\s*grid-template-columns:\s*1fr;/s);
+    assert.match(styles, /@media \(max-width: 52rem\)[\s\S]*?\.home-case-grid\s*\{[^}]*grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\);/s);
+    assert.doesNotMatch(styles, /\.case-short-label\s*\{[^}]*color:\s*var\(--cobalt\)/s);
     assert.deepEqual(builtSculpture, sourceSculpture);
     assert.equal(createHash("sha256").update(builtSculpture).digest("hex"), "8c9080e23d909c3d80835c7d5f1f8e52843ba32cc30883a91ec3e434a8b0a4a6");
   } finally {

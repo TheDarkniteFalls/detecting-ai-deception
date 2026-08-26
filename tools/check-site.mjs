@@ -120,7 +120,11 @@ export async function checkSite(root = join(ROOT, "dist")) {
   if (!bone || !violet || contrastRatio(bone, violet) < 4.5) errors.push("bone text on violet does not meet WCAG AA contrast");
   if (!black || !violetBright || contrastRatio(black, violetBright) < 4.5) errors.push("bright violet text on black does not meet WCAG AA contrast");
   if (!/\.home-row-title\s*\{[^}]*overflow-wrap:\s*normal;[^}]*word-break:\s*normal;/s.test(styles)) errors.push("home case titles can break inside ordinary words");
-  if (!/@media \(max-width: 22rem\)[\s\S]*?grid-template-columns:\s*3\.25rem minmax\(0, 1fr\) 4rem 1\.5rem;/s.test(styles)) errors.push("styles lack the exact 320px case-row allocation");
+  if (!/\.finding-summary h3\s*\{[^}]*overflow-wrap:\s*normal;[^}]*word-break:\s*normal;/s.test(styles)) errors.push("finding headings can break inside ordinary words");
+  if (!/body\s*\{[^}]*overflow-wrap:\s*normal;[^}]*word-break:\s*normal;/s.test(styles)) errors.push("body text can break inside ordinary words");
+  if (!/@media \(max-width: 52rem\)[\s\S]*?\.home-case-grid\s*\{[^}]*grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\);/s.test(styles)) errors.push("styles lack the two-column mobile practice-case selector");
+  if (!/@media \(max-width: 22\.5rem\)[\s\S]*?\.home-case-grid\s*\{\s*grid-template-columns:\s*1fr;/s.test(styles)) errors.push("styles lack the one-column 320px practice-case selector");
+  if (/\.case-short-label\s*\{[^}]*color:\s*var\(--cobalt\)/s.test(styles)) errors.push("dark cobalt text is used on the black case-list surface");
   if (/(?:linear|radial|conic)-gradient\s*\(/i.test(styles)) errors.push("styles include a prohibited gradient");
   if (/@import|url\(\s*["']?https?:/i.test(styles)) errors.push("styles include an external font or network asset");
   if (!styles.includes("@media (prefers-reduced-motion: reduce)")) errors.push("styles lack a reduced-motion mode");
@@ -134,10 +138,43 @@ export async function checkSite(root = join(ROOT, "dist")) {
     errors.push("home must contain exactly one synthetic case preview");
   }
   if ((home.match(/data-spine-case=/g) ?? []).length !== 6) {
-    errors.push("home case spine must contain exactly six cases");
+    errors.push("home practice-case selector must contain exactly six cases");
   }
-  if (!home.includes("Existing synthetic case · 03 of 06")) {
-    errors.push("home preview is not clearly identified as existing synthetic case 03 of 06");
+  if (!home.includes("Featured synthetic case 03")) {
+    errors.push("home preview is not clearly identified as synthetic case 03");
+  }
+  for (const required of [
+    "Check whether an AI answer is backed by the evidence.",
+    "This site helps anyone reviewing an AI answer compare the claim with the evidence it would need and the record that exists.",
+    "How the method helps you reach a defensible result.",
+    "Practice with six synthetic cases.",
+    "Know what the evidence can—and cannot—tell you.",
+    "Challenge a result with evidence.",
+    'href="#method-overview"',
+    'id="method-overview"',
+    'id="practice-cases"',
+  ]) if (!home.includes(required)) errors.push(`home is missing visitor-first contract: ${required}`);
+  for (const [label, value] of [["Claim", "30 days"], ["Required evidence", "30 days"], ["Observed record", "7 days"], ["Finding", "Contradicted"]]) {
+    if (!home.includes(`<dt>${label}</dt><dd>${value}</dd>`)) errors.push(`home featured case has incorrect ${label}`);
+  }
+  if (!home.includes("The cited passage does not support the answer.")) errors.push("home featured case lacks its plain-language conclusion");
+  if (home.includes("hero-evidence-object")) errors.push("home still renders the evidence sculpture");
+  if (home.includes("case-index-band")) errors.push("home still renders the duplicate detailed case inventory");
+  if ((home.match(/class="home-case-index"/g) ?? []).length !== 1) errors.push("home must contain exactly one compact practice-case inventory");
+  const homeSectionOrder = ["home-opening", "method-band", "home-case-index", "trust-band", "challenge-band"]
+    .map((className) => home.indexOf(`class="${className}`));
+  if (!homeSectionOrder.every((position, index) => position >= 0 && (index === 0 || position > homeSectionOrder[index - 1]))) {
+    errors.push("home visitor-first sections are out of order");
+  }
+
+  const supportingRoutes = [
+    ["cases/index.html", "Practice checking AI claims against the evidence."],
+    ["method/index.html", "Check an AI claim against the evidence."],
+    ["about/index.html", "Inspect how every result was produced."],
+  ];
+  for (const [path, heading] of supportingRoutes) {
+    const html = await readFile(join(root, path), "utf8");
+    if (!html.includes(heading)) errors.push(`${path}: missing visitor-centered introduction`);
   }
 
   for (const path of caseHtml) {
@@ -149,11 +186,16 @@ export async function checkSite(root = join(ROOT, "dist")) {
     }
     if (!html.includes("data-evidence-rail")) errors.push(`${relative(root, path)}: missing semantic evidence rail`);
     if (!html.includes("data-artifact-id=")) errors.push(`${relative(root, path)}: missing case-specific evidence object`);
+    if (!html.includes("Choose another practice case")) errors.push(`${relative(root, path)}: missing compact practice-case chooser`);
+    if (html.indexOf("case-record-band") > html.indexOf("case-spine-band")) errors.push(`${relative(root, path)}: case chooser appears before the evidence interaction`);
   }
   for (const forbidden of ["localStorage", "sessionStorage", "document.cookie", "sendBeacon", "WebSocket", "XMLHttpRequest"]) {
     if (app.includes(forbidden)) errors.push(`app includes forbidden persistence/network primitive ${forbidden}`);
   }
   if (/fetch\s*\(\s*["']https?:/i.test(app)) errors.push("app includes external fetch");
+  if (!/target instanceof HTMLAnchorElement && isSameDocumentFragmentHref\(target\.href, location\.href\)\) return;/.test(app)) {
+    errors.push("same-document fragment links do not bypass focus recentering");
+  }
   const sourceClassifier = await readFile(join(ROOT, "src", "classifier.mjs"));
   const builtClassifier = await readFile(join(root, "assets", "classifier.mjs"));
   if (!sourceClassifier.equals(builtClassifier)) errors.push("browser classifier differs from Node source classifier");
