@@ -16,15 +16,22 @@
   <script>document.documentElement.classList.add("js")</script>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebPage","name":"Method","description":"The finding taxonomy, deterministic evidence rule, quality method, limitations and glossary for Detecting AI Deception.","url":"https://thedarknitefalls.github.io/detecting-ai-deception/method/","creator":{"@type":"Person","name":"Mike Parsons"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true}</script>
 </head>
-<body data-cases-url="../data/deception-cases.v1.json">
+<body data-page="method" data-cases-url="../data/deception-cases.v1.json">
   <a class="skip-link" href="#main">Skip to main content</a>
   <header class="site-header"><div class="nav-shell">
     <a class="wordmark" href="../">Detecting AI Deception</a>
-    <nav class="site-nav" aria-label="Primary"><a href="../cases/">Cases</a><a href="../method/" aria-current="page">Method</a><a href="../tools/">Tools</a><a href="../challenge/">Challenge</a><a href="../about/">About</a></nav>
+    <nav class="site-nav" aria-label="Primary"><a href="../cases/">Cases</a><a href="../method/" aria-current="page">Method</a><a href="../about/">About</a></nav>
+    <span class="nav-boundary">Intent: not assessed</span>
+    <div class="mobile-navigation">
+      <a class="mobile-cases-link" href="../cases/">Cases</a>
+      <details class="mobile-menu"><summary><span class="menu-lines" aria-hidden="true"><span></span><span></span><span></span></span>Menu</summary>
+        <nav aria-label="Mobile primary"><a href="../method/" aria-current="page">Method</a><a href="../about/">About</a></nav>
+      </details>
+    </div>
   </div></header>
   <noscript><div class="noscript-note">JavaScript is off. Every case, evidence trail and deterministic finding remains readable; filters and choose-then-reveal controls are shown without enhancement.</div></noscript>
   <div class="shell" aria-live="polite" data-app-status></div>
-  <main id="main"><header class="case-page-header"><div class="shell"><h1 class="page-title">A method for checking the difference.</h1><p class="lead">This project classifies observable support for a bounded claim. It does not decide whether a system intended to mislead.</p><span class="intent-stamp">Intent: not assessed</span></div></header><div class="narrow prose">
+  <main id="main"><header class="case-page-header"><div class="shell"><h1 class="page-title">A method for checking the difference.</h1><p class="lead">This project classifies observable support for a bounded claim. It does not decide whether a system intended to mislead.</p><div class="intent-boundary intent-boundary-compact"><span aria-hidden="true"></span><strong>Intent: not assessed</strong></div></div></header><div class="narrow prose">
       <h2>Three findings</h2><h3>Supported</h3><p>Every declared required evidence item supports the claim.</p><h3>Contradicted</h3><p>At least one required observation directly conflicts with the claim. Contradiction takes precedence over missing evidence.</p><h3>Insufficient evidence</h3><p>A required observation is absent, unknown, stale or inapplicable, and no required observation directly contradicts the claim.</p>
       <h2>The deterministic rule</h2><pre class="code-block"><code>if any required observation is contradictory:
   contradicted
@@ -38,8 +45,8 @@ else:
       <h2>Glossary</h2><dl><dt><strong>Claim</strong></dt><dd>A bounded statement that can be compared with declared evidence.</dd><dt><strong>Required evidence</strong></dt><dd>What would need to be observed for the claim to be supported.</dd><dt><strong>Observation</strong></dt><dd>The recorded state of one required evidence item.</dd><dt><strong>Reviewed through</strong></dt><dd>The date through which a source revision was checked for this case.</dd><dt><strong>Non-claim</strong></dt><dd>An explicit boundary on what the evidence does not establish.</dd></dl>
     </div></main>
   <footer class="site-footer"><div class="shell footer-grid">
-    <p>Mike-led public investigation, developed transparently with AI assistance. Observable claims are compared with observable evidence. Intent: not assessed.</p>
-    <div class="footer-links"><a href="../about/">About</a><a href="https://github.com/TheDarkniteFalls/detecting-ai-deception">Source</a><a href="https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/LICENSING.md">Licensing</a></div>
+    <p>Mike-led public investigation, developed transparently with AI assistance. Six synthetic cases compare observable claims with observable evidence. Intent: not assessed.</p>
+    <div class="footer-links"><a href="../tools/">Tools</a><a href="../challenge/">Challenge</a><a href="../about/">About</a><a href="https://github.com/TheDarkniteFalls/detecting-ai-deception">Source</a><a href="https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/LICENSING.md">Licensing</a></div>
   </div></footer>
   <script type="module" src="../assets/app.mjs"></script>
 </body>

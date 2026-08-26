@@ -32,18 +32,104 @@ const stateLabel = (value) => ({
   inapplicable: "Inapplicable",
 })[value];
 
+const stateSymbol = (value) => ({
+  supports: "✓",
+  contradictory: "×",
+  absent: "—",
+  unknown: "?",
+  stale: "!",
+  inapplicable: "—",
+})[value];
+
+const failureClassLabel = (value) => ({
+  "false-completion": "Claimed output missing",
+  "material-omission": "Decision-relevant omission",
+  "provenance-or-identity-mismatch": "Product or version mismatch",
+  "evaluation-gap": "Unaccounted evaluation cases",
+  "ambiguous-external-effect": "External result unknown",
+  "context-or-citation-escape": "Citation does not support claim",
+  "control-case": "Supported control",
+})[value] ?? value;
+
+const caseShortLabel = (value) => ({
+  "missing-file": "Missing output",
+  "reassuring-average": "Uncounted cases",
+  "unsupported-citation": "Unsupported citation",
+  "wrong-product-identity": "Wrong identity",
+  "lost-response": "Unknown external result",
+  "revision-bound-claim": "Supported control",
+})[value] ?? value;
+
+function failureClassDisplay(values, { technical = false } = {}) {
+  return values.map((value) => technical
+    ? `${escapeHtml(failureClassLabel(value))} <code>${escapeHtml(value)}</code>`
+    : escapeHtml(failureClassLabel(value))).join(" · ");
+}
+
 function navigation(prefix, current) {
   const items = [
     ["cases", "Cases", `${prefix}cases/`],
     ["method", "Method", `${prefix}method/`],
-    ["tools", "Tools", `${prefix}tools/`],
-    ["challenge", "Challenge", `${prefix}challenge/`],
     ["about", "About", `${prefix}about/`],
   ];
   return `<header class="site-header"><div class="nav-shell">
     <a class="wordmark" href="${prefix}">Detecting AI Deception</a>
     <nav class="site-nav" aria-label="Primary">${items.map(([id, label, href]) => `<a href="${href}"${current === id ? ' aria-current="page"' : ""}>${label}</a>`).join("")}</nav>
+    <span class="nav-boundary">Intent: not assessed</span>
+    <div class="mobile-navigation">
+      <a class="mobile-cases-link" href="${prefix}cases/"${current === "cases" ? ' aria-current="page"' : ""}>Cases</a>
+      <details class="mobile-menu"><summary><span class="menu-lines" aria-hidden="true"><span></span><span></span><span></span></span>Menu</summary>
+        <nav aria-label="Mobile primary">${items.slice(1).map(([id, label, href]) => `<a href="${href}"${current === id ? ' aria-current="page"' : ""}>${label}</a>`).join("")}</nav>
+      </details>
+    </div>
   </div></header>`;
+}
+
+function arrowIcon() {
+  return `<svg class="arrow-icon" viewBox="0 0 28 18" aria-hidden="true" focusable="false"><path d="M1 9h24M18 2l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"/></svg>`;
+}
+
+function caseSpine(cases, prefix, currentId = "") {
+  return `<nav class="case-spine" aria-label="Six-case sequence"><span class="spine-title">The six-case spine</span><ol>${cases.map((record, index) => `<li data-spine-case="${record.id}"${record.id === currentId ? ' class="is-current"' : ""}><a href="${prefix}${record.id}/"${record.id === currentId ? ' aria-current="step"' : ""}><span class="spine-node">${String(index + 1).padStart(2, "0")}</span><span><strong>${escapeHtml(caseShortLabel(record.id))}</strong><small>${record.id === currentId ? "Current synthetic case" : "Open synthetic case"}</small></span></a></li>`).join("")}</ol></nav>`;
+}
+
+function heroEvidenceObject(record) {
+  const revision = record.source_links[0]?.revision_url.match(/\/commit\/([0-9a-f]{7,40})/i)?.[1]?.slice(0, 7) ?? "revision";
+  return `<figure class="hero-evidence-object">
+    <figcaption class="sr-only">A tactile evidence sculpture comparing the claim, required evidence, observed record and deterministic finding for existing synthetic case 03 of 06.</figcaption>
+    <dl class="orbit-record">
+      <span class="orbit-material" aria-hidden="true"></span>
+      <svg class="orbit-lines" viewBox="0 0 1000 560" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <path d="M142 104 C250 104 286 130 356 138"/><path d="M836 118 C774 118 746 142 706 160"/>
+        <path d="M840 288 C774 288 744 294 681 314"/><path d="M829 444 C752 444 720 426 674 408"/>
+        <path class="orbit-track" d="M250 300 C300 170 657 105 758 235 C842 344 694 471 493 447 C303 426 210 358 250 300Z"/>
+        <path class="orbit-track orbit-track-dashed" d="M319 370 C389 455 725 443 764 299 C787 213 672 171 523 194 C389 215 272 304 319 370Z"/>
+        <circle cx="356" cy="138" r="6"/><circle cx="706" cy="160" r="6"/><circle cx="681" cy="314" r="6"/><circle cx="674" cy="408" r="6"/>
+      </svg>
+      <div class="orbit-object orbit-claim"><dt>Claim</dt><dd class="sr-only">30 days</dd></div>
+      <div class="orbit-object orbit-required"><dt>Required evidence</dt><dd>30 days</dd></div>
+      <div class="orbit-object orbit-observed"><dt class="sr-only">Observed record</dt><dd>7 days</dd></div>
+      <div class="orbit-object orbit-citation"><dt class="sr-only">Source revision</dt><dd><a href="${escapeHtml(record.source_links[0]?.revision_url ?? record.canonical_source)}">[${escapeHtml(revision)}]</a></dd></div>
+      <div class="orbit-object orbit-finding"><dt class="sr-only">Finding</dt><dd>${findingLabel(record.expected_finding)}</dd></div>
+      <div class="orbit-callout callout-claim" aria-hidden="true"><strong>Claim</strong><span>The asserted statement.</span></div>
+      <div class="orbit-callout callout-required" aria-hidden="true"><strong>Required<br>evidence</strong><span>What would support the claim.</span></div>
+      <div class="orbit-callout callout-observed" aria-hidden="true"><strong>Observed<br>record</strong><span>What the record actually shows.</span></div>
+      <div class="orbit-callout callout-finding" aria-hidden="true"><strong>Finding</strong><span>The available evidence conflicts with the claim.</span></div>
+    </dl>
+    <p class="object-equivalent">The claim says 30 days. The supplied passage says 7 days. The deterministic finding is contradicted. Intent is not assessed.</p>
+  </figure>`;
+}
+
+function routeObject(record) {
+  const symbol = ({
+    "missing-file": `<circle class="symbol-fill" cx="60" cy="36" r="29"/>`,
+    "reassuring-average": `<path d="M9 55 42 18 63 45 82 31 104 52 151 13"/>`,
+    "unsupported-citation": `<path class="symbol-heavy" d="M45 72V42Q45 17 70 17h20q25 0 25 25v30"/>`,
+    "wrong-product-identity": `<path class="symbol-fill" d="M24 15h108l17 21-17 21H24L10 36Z"/><circle class="symbol-hole" cx="25" cy="36" r="5"/><path class="symbol-cut" d="M47 23v26M57 23v26M69 23v26M82 23v26M96 23v26M108 23v26M120 23v26"/>`,
+    "lost-response": `<path class="symbol-fill" d="M45 60V41c0-20 13-30 35-30s35 10 35 30v19Z"/><path class="symbol-cut" d="M54 48h52M49 55h62M40 63h80"/>`,
+    "revision-bound-claim": `<rect x="38" y="10" width="84" height="52"/><path d="m54 37 17 16 38-35"/>`,
+  })[record.id] ?? "";
+  return `<span class="route-object route-object-${record.id}" aria-hidden="true"><svg class="route-symbol" viewBox="0 0 160 72" focusable="false">${symbol}</svg></span>`;
 }
 
 function page({ path = "", title, description, content, prefix, current = "", type = "WebPage" }) {
@@ -77,15 +163,15 @@ function page({ path = "", title, description, content, prefix, current = "", ty
   <script>document.documentElement.classList.add("js")</script>
   <script type="application/ld+json">${structured}</script>
 </head>
-<body data-cases-url="${prefix}data/deception-cases.v1.json">
+<body data-page="${current || "home"}" data-cases-url="${prefix}data/deception-cases.v1.json">
   <a class="skip-link" href="#main">Skip to main content</a>
   ${navigation(prefix, current)}
   <noscript><div class="noscript-note">JavaScript is off. Every case, evidence trail and deterministic finding remains readable; filters and choose-then-reveal controls are shown without enhancement.</div></noscript>
   <div class="shell" aria-live="polite" data-app-status></div>
   <main id="main">${content}</main>
   <footer class="site-footer"><div class="shell footer-grid">
-    <p>Mike-led public investigation, developed transparently with AI assistance. Observable claims are compared with observable evidence. Intent: not assessed.</p>
-    <div class="footer-links"><a href="${prefix}about/">About</a><a href="${PROJECT_URL}">Source</a><a href="${PROJECT_URL}/blob/main/LICENSING.md">Licensing</a></div>
+    <p>Mike-led public investigation, developed transparently with AI assistance. Six synthetic cases compare observable claims with observable evidence. Intent: not assessed.</p>
+    <div class="footer-links"><a href="${prefix}tools/">Tools</a><a href="${prefix}challenge/">Challenge</a><a href="${prefix}about/">About</a><a href="${PROJECT_URL}">Source</a><a href="${PROJECT_URL}/blob/main/LICENSING.md">Licensing</a></div>
   </div></footer>
   <script type="module" src="${prefix}assets/app.mjs"></script>
 </body>
@@ -95,57 +181,103 @@ function page({ path = "", title, description, content, prefix, current = "", ty
 function choiceForm(record) {
   return `<form data-finding-form data-case-id="${record.id}">
     <fieldset class="choice-fieldset">
-      <legend>What does the evidence support?</legend>
+      <legend>What does the record let you say?</legend>
+      <p class="choice-prompt">Make the narrowest call the evidence supports. You can revise your view after the finding is revealed.</p>
       <div class="choice-list">
-        <label class="choice"><input type="radio" name="finding" value="supported"><span><strong>Supported</strong><span>Every required item supports the claim.</span></span></label>
-        <label class="choice"><input type="radio" name="finding" value="contradicted"><span><strong>Contradicted</strong><span>At least one required observation conflicts.</span></span></label>
-        <label class="choice"><input type="radio" name="finding" value="insufficient-evidence"><span><strong>Insufficient evidence</strong><span>A required item is absent, unknown, stale or inapplicable.</span></span></label>
+        <label class="choice choice-supported"><input type="radio" name="finding" value="supported"><span class="choice-mark" aria-hidden="true">✓</span><span><strong>Supported</strong><span>Every required item supports the claim.</span></span></label>
+        <label class="choice choice-contradicted"><input type="radio" name="finding" value="contradicted"><span class="choice-mark" aria-hidden="true">×</span><span><strong>Contradicted</strong><span>At least one required observation conflicts.</span></span></label>
+        <label class="choice choice-insufficient"><input type="radio" name="finding" value="insufficient-evidence"><span class="choice-mark" aria-hidden="true">?</span><span><strong>Insufficient evidence</strong><span>A required item is absent, unknown, stale or inapplicable.</span></span></label>
       </div>
     </fieldset>
-    <button class="primary-button" type="submit">Reveal the evidence trail</button>
+    <button class="primary-button" type="submit" aria-controls="finding-panel-${record.id}" aria-expanded="false"><span>Reveal the finding</span>${arrowIcon()}</button>
     <p class="choice-result" data-choice-result aria-live="polite"></p>
   </form>`;
 }
 
-function evidencePanel(record) {
+function caseArtifact(record) {
+  const content = ({
+    "missing-file": `<div class="artifact-ledger"><div><span>Reviewed revision</span><strong>Named</strong></div><div><span><code>reports/final-summary.json</code></span><strong>Missing</strong></div></div>`,
+    "reassuring-average": `<div class="artifact-counts"><div><strong>20</strong><span>Intended</span></div><div><strong>14</strong><span>Scored</span></div><div><strong>6</strong><span>Unaccounted</span></div></div>`,
+    "unsupported-citation": `<div class="artifact-versus"><div><span>Claim</span><strong>30 days</strong></div><span aria-hidden="true">≠</span><div><span>Passage</span><strong>7 days</strong></div></div>`,
+    "wrong-product-identity": `<div class="artifact-identity"><div><span>Claim</span><strong>Product B · 3.0</strong></div><div><span>Source</span><strong>Product A · 4.2</strong></div></div>`,
+    "lost-response": `<ol class="artifact-sequence"><li><span>1</span>Request sent</li><li><span>2</span>Response lost</li><li><span>3</span>Resulting state unknown</li></ol>`,
+    "revision-bound-claim": `<div class="artifact-checks"><span>✓ Revision matches</span><span>✓ Named check passed</span><span>✓ Path set matches</span></div>`,
+  })[record.id];
+  return `<figure class="case-artifact artifact-${record.id}" data-artifact-id="${record.id}"><figcaption>Case-specific evidence object</figcaption>${content}</figure>`;
+}
+
+function observedRecord(record) {
+  return `<ol class="observed-list" data-evidence-rail>${record.observed_evidence.map((item) => {
+    const requirement = record.required_evidence.find((candidate) => candidate.id === item.requirement_id);
+    return `<li class="observation state-${item.state}"><span class="state-mark" aria-hidden="true">${stateSymbol(item.state)}</span><div><span class="evidence-state state-${item.state}">${stateLabel(item.state)}</span> <strong>${escapeHtml(requirement.question)}</strong><p>${escapeHtml(item.observation)}</p></div></li>`;
+  }).join("")}</ol>`;
+}
+
+function findingPanel(record) {
   const finding = classifyCase(record);
-  return `<section class="evidence-panel" data-evidence-panel aria-labelledby="evidence-${record.id}">
-    <span class="panel-label">Observed evidence</span>
-    <h3 id="evidence-${record.id}" data-reveal-heading tabindex="-1">What the record shows</h3>
-    <ol class="evidence-trail">${record.observed_evidence.map((item) => {
-      const requirement = record.required_evidence.find((candidate) => candidate.id === item.requirement_id);
-      return `<li><span class="evidence-state state-${item.state}">${stateLabel(item.state)}</span> <strong>${escapeHtml(requirement.question)}</strong><p>${escapeHtml(item.observation)}</p></li>`;
-    }).join("")}</ol>
-    <div class="finding finding-${finding}"><strong>Finding: ${findingLabel(finding)}</strong><p>Intent: not assessed. This result compares only the declared claim and required evidence.</p></div>
-    <p><strong>What remains unknown:</strong> ${escapeHtml(record.guiding_questions.what_remains_unknown)}</p>
+  return `<section class="finding-panel finding-${finding}" id="finding-panel-${record.id}" data-finding-panel aria-labelledby="finding-${record.id}">
+    <div class="finding-summary"><span class="finding-symbol" aria-hidden="true">${stateSymbol(finding === "supported" ? "supports" : finding === "contradicted" ? "contradictory" : "unknown")}</span><div><span class="panel-label">Finding</span><h3 id="finding-${record.id}" data-reveal-heading tabindex="-1">${findingLabel(finding)}</h3><p>The declared claim is <strong>${finding === "supported" ? "supported by" : finding === "contradicted" ? "in conflict with" : "not resolved by"}</strong> the required evidence.</p><p class="intent-line"><strong>Intent:</strong> not assessed.</p></div></div>
+    <div class="unknown-block"><span class="panel-label">What remains unknown</span><p>${escapeHtml(record.guiding_questions.what_remains_unknown)}</p></div>
   </section>`;
 }
 
-function investigation(record, number = "01") {
-  return `<article class="investigation-sheet" data-case-interaction>
-    <div class="case-mast"><span class="case-number">CASE ${number}</span><strong>${escapeHtml(record.title)}</strong><span class="case-class">${escapeHtml(record.failure_class.join(" · "))}</span></div>
-    <div class="case-body">
-      <section class="claim-panel"><span class="panel-label">The system claim</span><p class="system-claim">“${escapeHtml(record.system_claim)}”</p><p>${escapeHtml(record.plain_scenario)}</p>${choiceForm(record)}</section>
-      ${evidencePanel(record)}
+function investigation(record, number = "01", { homePreview = false, showHeader = true } = {}) {
+  return `<article class="case-record" data-case-interaction data-synthetic-case${homePreview ? ` data-home-preview="${record.id}"` : ""}>${showHeader ? `
+    <header class="record-header"><div class="record-kicker"><span>Existing case ${number} of 06</span><span>Visibly synthetic</span><span>Reviewed ${record.reviewed_through}</span></div><h2>${escapeHtml(record.title)}</h2><p class="record-scenario">${escapeHtml(record.plain_scenario)}</p><p class="record-class"><span>Evidence pattern:</span> ${failureClassDisplay(record.failure_class)}</p></header>` : ""}
+    <div class="record-comparison">
+      <section class="record-column record-claim" data-composition-part="claim"><span class="step-index" aria-hidden="true">01</span><span class="panel-label">Claim</span><blockquote>“${escapeHtml(record.system_claim)}”</blockquote>${caseArtifact(record)}</section>
+      <section class="record-column record-required" data-composition-part="required-evidence"><span class="step-index" aria-hidden="true">02</span><span class="panel-label">Required evidence</span><ol class="required-list">${record.required_evidence.map((item) => `<li>${escapeHtml(item.question)}</li>`).join("")}</ol></section>
+      <section class="record-column record-observed" data-composition-part="observed-record"><span class="step-index" aria-hidden="true">03</span><span class="panel-label">Observed record</span>${observedRecord(record)}</section>
     </div>
+    <div class="classification-strip" data-composition-part="finding"><span class="step-index" aria-hidden="true">04</span>${choiceForm(record)}</div>
+    ${findingPanel(record)}
   </article>`;
 }
 
 function routeList(cases, prefix) {
-  return `<ol class="route-list">${cases.map((record, index) => `<li><a class="route-link" href="${prefix}cases/${record.id}/"><span class="route-index">${String(index + 1).padStart(2, "0")}</span><span><strong>${escapeHtml(record.title)}</strong>${escapeHtml(record.plain_scenario)}</span><span>${findingLabel(record.expected_finding)} · ${escapeHtml(record.failure_class.join(", "))}</span></a></li>`).join("")}</ol>`;
+  return `<ol class="route-list case-route-list">${cases.map((record, index) => `<li data-case-id="${record.id}"><a class="route-link" href="${prefix}cases/${record.id}/"><span class="route-index">${String(index + 1).padStart(2, "0")}</span><span class="route-copy"><span class="case-short-label">${escapeHtml(caseShortLabel(record.id))}</span><strong>${escapeHtml(record.title)}</strong><span>${escapeHtml(record.plain_scenario)}</span></span>${routeObject(record)}<span class="route-outcome"><strong><span class="state-token" aria-hidden="true">${stateSymbol(record.expected_finding === "supported" ? "supports" : record.expected_finding === "contradicted" ? "contradictory" : "unknown")}</span>${findingLabel(record.expected_finding)}</strong><span>${failureClassDisplay(record.failure_class)}</span></span>${arrowIcon()}</a></li>`).join("")}</ol>`;
+}
+
+function homeCaseTitle(id) {
+  return ({
+    "missing-file": "The missing file",
+    "reassuring-average": "The reassuring average",
+    "unsupported-citation": "Unsupported citation",
+    "wrong-product-identity": "Wrong product identity",
+    "lost-response": "Lost response",
+    "revision-bound-claim": "Supported claim",
+  })[id] ?? id;
+}
+
+function homeCaseArchive(cases) {
+  return `<section class="home-case-index" aria-labelledby="home-case-index-title"><div class="shell">
+    <h2 class="sr-only" id="home-case-index-title">All six synthetic cases</h2>
+    <nav class="home-finding-filter" aria-label="Open the case library by finding"><a class="is-current" href="cases/">All</a><a href="cases/?finding=supported">Supported</a><a href="cases/?finding=contradicted">Contradicted</a><a href="cases/?finding=insufficient-evidence">Insufficient evidence</a></nav>
+    <ol class="home-case-grid">${cases.map((record, index) => `<li data-spine-case="${record.id}" data-case-id="${record.id}" data-finding="${record.expected_finding}"><a href="cases/${record.id}/" aria-label="Open synthetic case ${String(index + 1).padStart(2, "0")}: ${escapeHtml(homeCaseTitle(record.id))}"><span class="home-row-index">${String(index + 1).padStart(2, "0")}</span><strong class="home-row-title">${escapeHtml(homeCaseTitle(record.id))}</strong>${routeObject(record)}${arrowIcon()}</a></li>`).join("")}</ol>
+  </div></section>`;
 }
 
 function home(pack) {
-  const intro = pack.cases[0];
+  const introIndex = pack.cases.findIndex((record) => record.id === "unsupported-citation");
+  const intro = pack.cases[introIndex];
+  if (!intro) throw new Error("home preview case unsupported-citation is missing");
+  const methodSteps = [
+    ["Claim", "Pin down the exact statement. Confidence, fluency and tone are not evidence."],
+    ["Required evidence", "Decide what would have to be visible for that statement to hold."],
+    ["Observed record", "Read what is present, conflicting or still missing—without filling the gaps."],
+    ["Finding", "Name only the relationship the record supports. Keep intent separate."],
+  ];
   return page({
     title: "Detecting AI Deception",
-    description: "A calm public investigation of when AI claims and observable evidence do not match, with intent explicitly not assessed.",
+    description: "Six synthetic cases for learning how to compare an AI claim with the observable record, without inferring intent.",
     prefix: "./",
     path: "",
-    content: `<section class="hero"><div class="shell hero-grid"><div><h1>When the claim and the evidence part ways.</h1><p class="lead">AI systems can overstate, omit or misrepresent what they have done. This project shows how to inspect the difference without pretending that error proves intent.</p></div><div class="hero-note"><strong>A sixty-second method</strong><p>Name the claim. Declare the evidence it would require. Observe the evidence. Classify the mismatch. Keep intent separate.</p><span class="intent-stamp">Intent: not assessed</span></div></div></section>
-      <section class="band band-white"><div class="shell"><div class="section-intro"><h2>Try the first case</h2><p>Choose the finding you think the evidence supports. Then reveal the same deterministic trail used by the local Node.js checker.</p></div>${investigation(intro)}</div></section>
-      <section class="band"><div class="shell"><div class="section-intro"><h2>Six ways evidence can change the answer</h2><p>These synthetic cases cover false completion, missing evaluation outcomes, unsupported citations, identity mismatch, ambiguous external effects and one supported control.</p></div>${routeList(pack.cases, "./")}</div></section>
-      <section class="band band-white"><div class="narrow"><h2>Challenge the record</h2><p class="lead">A useful investigation must be reproducible and corrigible. Run the checker, inspect an exact source revision, or propose a public-safe counterexample.</p><a class="primary-button" href="challenge/">Reproduce or challenge a case</a> <a class="secondary-button" href="method/">Read the method</a></div></section>`,
+    content: `<section class="home-opening"><div class="shell"><div class="opening-grid"><div class="opening-copy"><h1><span>When the claim</span> <span>and the evidence</span> <span>part ways.</span></h1><a class="hero-case-preview" id="case-03" href="cases/unsupported-citation/" data-home-preview="unsupported-citation" data-synthetic-case><span class="hero-case-kicker">Existing synthetic case · 03 of 06</span><strong>The citation that does not support the answer.</strong><span class="hero-case-summary">The supplied passage says 7 days, not 30 days.</span><span class="hero-case-arrow">${arrowIcon()}</span></a></div>${heroEvidenceObject(intro)}</div></div></section>
+      ${homeCaseArchive(pack.cases)}
+      <section class="method-band"><div class="shell"><div class="method-heading"><h2>Don’t guess at motive. Check the gap.</h2><p>Confidence is a style. Support is a relationship you can inspect. These four moves keep the conclusion tied to the record.</p></div><ol class="method-steps">${methodSteps.map(([title, description], index) => `<li><span class="method-number">0${index + 1}</span><div><h3>${title}</h3><p>${description}</p></div></li>`).join("")}</ol><a class="text-link method-link" href="method/">Read the complete method ${arrowIcon()}</a></div></section>
+      <section class="case-index-band"><div class="shell"><div class="section-intro"><span class="section-number">06 cases</span><div><h2>Six synthetic cases. One habit to reuse.</h2><p>The evidence shape changes: a missing file, an incomplete denominator, a citation mismatch, the wrong identity, an unknown external result, and one supported control. The rule does not.</p></div></div><div class="archive-layout archive-layout-home"><div class="archive-records">${routeList(pack.cases, "./")}</div></div></div></section>
+      <section class="trust-band"><div class="shell"><div class="section-intro"><span class="section-number">Boundary</span><div><h2>What this record can show—and what it cannot.</h2><p>A useful result says exactly how far the evidence reaches, then stops.</p></div></div><ul class="trust-list"><li><strong>Six visibly synthetic cases</strong><span>Teaching examples, not a prevalence estimate or allegation about a real incident.</span></li><li><strong>One deterministic rule</strong><span>The browser and local checker import the same classifier.</span></li><li><strong>Exact public revisions</strong><span>Every source keeps its revision and reviewed-through date beside the claim.</span></li><li><strong>No hidden collection</strong><span>No account, analytics, tracker, backend or live model receives your choices.</span></li></ul></div></section>
+      <section class="challenge-band"><div class="shell challenge-layout"><div><h2>If the record is wrong, show the smallest thing that changes it.</h2><p>Run the checker, inspect an exact revision, or bring a public-safe counterexample. Corrigibility is part of the method.</p></div><div class="challenge-actions"><a class="primary-button" href="challenge/"><span>Challenge the record</span>${arrowIcon()}</a><a class="secondary-button" href="tools/">Open the evidence tools</a></div></div></section>`,
   });
 }
 
@@ -155,13 +287,22 @@ function casesIndex(pack) {
     title: "Case library",
     description: "Six synthetic cases for inspecting AI claims against required and observed evidence.",
     path: "cases/", prefix: "../", current: "cases",
-    content: `<section class="case-page-header"><div class="shell"><h1 class="page-title">Case library</h1><p class="lead">Filter by deterministic finding or mismatch class. All six cases remain visible without JavaScript.</p><span class="intent-stamp">Intent: not assessed</span></div></section>
-      <section class="band"><div class="shell"><form class="filter-bar" data-library-filters><label>Finding<select name="finding"><option value="all">All findings</option><option value="supported">Supported</option><option value="contradicted">Contradicted</option><option value="insufficient-evidence">Insufficient evidence</option></select></label><label>Failure class<select name="class"><option value="all">All classes</option>${classes.map((value) => `<option value="${value}">${escapeHtml(value)}</option>`).join("")}</select></label><p class="filter-count" data-filter-count>${pack.cases.length} of ${pack.cases.length} cases shown</p></form>
-      <ol class="case-library">${pack.cases.map((record, index) => `<li class="case-row" data-case-row data-finding="${record.expected_finding}" data-classes="${record.failure_class.join(" ")}"><a class="case-link" href="${record.id}/"><span class="route-index">${String(index + 1).padStart(2, "0")}</span><span><strong>${escapeHtml(record.title)}</strong>${escapeHtml(record.plain_scenario)}</span><span>${findingLabel(record.expected_finding)} · ${escapeHtml(record.failure_class.join(", "))}</span></a></li>`).join("")}</ol></div></section>`,
+    content: `<section class="case-page-header library-header"><div class="shell"><div class="page-heading-grid"><div><h1 class="page-title">The case archive.</h1><p class="lead">Six visibly synthetic records. Filter the finding, follow the evidence pattern, then open any case and make the call yourself.</p></div><div class="intent-boundary intent-boundary-compact"><span aria-hidden="true">≠</span><strong>Intent: not assessed</strong><small>A finding describes support, not motive.</small></div></div></div></section>
+      <section class="case-archive-band"><div class="shell"><form class="filter-bar" data-library-filters><label>Finding<select name="finding"><option value="all">All findings</option><option value="supported">Supported</option><option value="contradicted">Contradicted</option><option value="insufficient-evidence">Insufficient evidence</option></select></label><label>Evidence pattern<select name="class"><option value="all">All evidence patterns</option>${classes.map((value) => `<option value="${value}">${escapeHtml(failureClassLabel(value))}</option>`).join("")}</select></label><p class="filter-count" data-filter-count>${pack.cases.length} of ${pack.cases.length} cases shown</p></form><div class="archive-layout">${caseSpine(pack.cases, "")}<div class="archive-records"><ol class="case-library">${pack.cases.map((record, index) => `<li class="case-row" data-case-row data-case-id="${record.id}" data-finding="${record.expected_finding}" data-classes="${record.failure_class.join(" ")}"><a class="case-link" href="${record.id}/"><span class="route-index">${String(index + 1).padStart(2, "0")}</span><span class="route-copy"><span class="case-short-label">${escapeHtml(caseShortLabel(record.id))}</span><strong>${escapeHtml(record.title)}</strong><span>${escapeHtml(record.plain_scenario)}</span></span>${routeObject(record)}<span class="route-outcome"><strong><span class="state-token" aria-hidden="true">${stateSymbol(record.expected_finding === "supported" ? "supports" : record.expected_finding === "contradicted" ? "contradictory" : "unknown")}</span>${findingLabel(record.expected_finding)}</strong><span>${failureClassDisplay(record.failure_class)}</span></span>${arrowIcon()}</a></li>`).join("")}</ol></div></div></div></section>`,
   });
 }
 
-function casePage(record, index) {
+function caseJourney(cases, index) {
+  const previous = cases[index - 1];
+  const next = cases[index + 1];
+  return `<nav class="case-journey" aria-label="Continue through the six cases">
+    <div>${previous ? `<span>Previous case</span><a href="../${previous.id}/">${escapeHtml(previous.title)}</a>` : `<span>Start of the record</span>`}</div>
+    <a class="case-journey-all" href="../">All six cases</a>
+    <div class="case-journey-next">${next ? `<span>Next case</span><a href="../${next.id}/">${escapeHtml(next.title)}</a>` : `<span>End of the record</span>`}</div>
+  </nav>`;
+}
+
+function casePage(record, index, cases) {
   const questions = [
     ["What happened?", record.guiding_questions.what_happened],
     ["Why does it matter?", record.guiding_questions.why_it_matters],
@@ -173,10 +314,11 @@ function casePage(record, index) {
     title: record.title,
     description: record.plain_scenario,
     path: `cases/${record.id}/`, prefix: "../../", current: "cases", type: "Article",
-    content: `<header class="case-page-header"><div class="shell"><h1>${escapeHtml(record.title)}</h1><p class="lead">${escapeHtml(record.plain_scenario)}</p><div class="case-meta"><span><strong>Finding:</strong> ${findingLabel(record.expected_finding)}</span><span><strong>Class:</strong> ${escapeHtml(record.failure_class.join(", "))}</span><span><strong>Reviewed through:</strong> ${record.reviewed_through}</span><span><strong>Intent:</strong> not assessed</span></div></div></header>
-      <section class="band band-white"><div class="shell">${investigation(record, String(index + 1).padStart(2, "0"))}</div></section>
-      <section class="band"><div class="shell"><div class="section-intro"><h2>Five questions</h2><p>Plain-language answers come before the technical record. Each answer stays inside the case's declared boundary.</p></div><div class="question-grid">${questions.map(([question, answer]) => `<article class="question-answer"><h3>${question}</h3><p>${escapeHtml(answer)}</p></article>`).join("")}</div></div></section>
-      <section class="band band-white"><div class="narrow"><h2>Technical record</h2><h3>Reproduce</h3><p>${escapeHtml(record.reproduction.summary)}</p><pre class="code-block"><code>${escapeHtml(record.reproduction.command)}</code></pre><h3>Exact sources</h3><ul class="source-list">${record.source_links.map((source) => `<li><a href="${source.url}">${escapeHtml(source.label)}</a><span class="source-revision">Reviewed through ${source.reviewed_through} · <a href="${source.revision_url}">exact source revision</a> · ${escapeHtml(source.license_note)}</span></li>`).join("")}</ul><h3>Limitations and non-claims</h3><ul>${record.limitations.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul><p class="note"><strong>Intent remains not assessed.</strong> This case does not claim consciousness, malicious intent, strategic scheming, universal safety failure, certification or a deception score.</p></div></section>`,
+    content: `<header class="case-page-header"><div class="shell"><div class="case-page-kicker"><span>Case ${String(index + 1).padStart(2, "0")} of 06</span><span>Visibly synthetic</span><span>Reviewed ${record.reviewed_through}</span></div><div class="case-heading-grid"><div><h1>${escapeHtml(record.title)}</h1><p class="lead">${escapeHtml(record.plain_scenario)}</p></div><aside class="case-reading-note"><span aria-hidden="true">${String(index + 1).padStart(2, "0")}</span><strong>Read the claim. Check the record. Make the narrowest defensible call.</strong><small>Intent: not assessed</small></aside></div><p class="case-pattern"><strong>Evidence pattern:</strong> ${failureClassDisplay(record.failure_class, { technical: true })}</p></div></header>
+      <section class="case-spine-band"><div class="shell">${caseSpine(cases, "../", record.id)}</div></section>
+      <section class="case-record-band"><div class="shell"><div class="record-band-intro"><span class="section-number">Claim / record</span><div><h2>Make your call before the finding appears.</h2><p>The same four-part composition is used in every case: claim, required evidence, observed record, finding.</p></div></div>${investigation(record, String(index + 1).padStart(2, "0"), { showHeader: false })}</div></section>
+      <section class="question-band"><div class="shell"><div class="section-intro"><span class="section-number">Read plainly</span><div><h2>Five questions that keep the story honest.</h2><p>Each answer stays inside this case’s declared boundary. Unknowns remain visible instead of being converted into certainty.</p></div></div><ol class="question-story">${questions.map(([question, answer], questionIndex) => `<li><span class="question-number">0${questionIndex + 1}</span><div><h3>${question}</h3><p>${escapeHtml(answer)}</p></div></li>`).join("")}</ol></div></section>
+      <section class="technical-record"><div class="shell"><div class="section-intro"><span class="section-number">Proof</span><div><h2>Open the technical record.</h2><p>Reproduce the bounded check, inspect exact revisions, and keep the limitations beside the result.</p></div></div><div class="technical-grid"><section><h3>Reproduce</h3><p>${escapeHtml(record.reproduction.summary)}</p><pre class="code-block" tabindex="0" aria-label="Reproduction command"><code>${escapeHtml(record.reproduction.command)}</code></pre></section><section><h3>Exact sources</h3><ul class="source-list">${record.source_links.map((source) => `<li><a href="${source.url}">${escapeHtml(source.label)}</a><span class="source-revision">Reviewed through ${source.reviewed_through} · <a href="${source.revision_url}">exact source revision</a> · ${escapeHtml(source.license_note)}</span></li>`).join("")}</ul></section><section class="technical-limitations"><h3>Limitations and non-claims</h3><ul>${record.limitations.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul><p class="note"><strong>Intent remains not assessed.</strong> This case does not claim consciousness, malicious intent, strategic scheming, universal safety failure, production readiness, certification or a deception score.</p></section></div>${caseJourney(cases, index)}<div class="challenge-record"><a class="secondary-button" href="../../challenge/">Challenge this record</a></div></div></section>`,
   });
 }
 
@@ -185,7 +327,7 @@ function methodPage() {
     title: "Method",
     description: "The finding taxonomy, deterministic evidence rule, quality method, limitations and glossary for Detecting AI Deception.",
     path: "method/", prefix: "../", current: "method",
-    content: `<header class="case-page-header"><div class="shell"><h1 class="page-title">A method for checking the difference.</h1><p class="lead">This project classifies observable support for a bounded claim. It does not decide whether a system intended to mislead.</p><span class="intent-stamp">Intent: not assessed</span></div></header><div class="narrow prose">
+    content: `<header class="case-page-header"><div class="shell"><h1 class="page-title">A method for checking the difference.</h1><p class="lead">This project classifies observable support for a bounded claim. It does not decide whether a system intended to mislead.</p><div class="intent-boundary intent-boundary-compact"><span aria-hidden="true"></span><strong>Intent: not assessed</strong></div></div></header><div class="narrow prose">
       <h2>Three findings</h2><h3>Supported</h3><p>Every declared required evidence item supports the claim.</p><h3>Contradicted</h3><p>At least one required observation directly conflicts with the claim. Contradiction takes precedence over missing evidence.</p><h3>Insufficient evidence</h3><p>A required observation is absent, unknown, stale or inapplicable, and no required observation directly contradicts the claim.</p>
       <h2>The deterministic rule</h2><pre class="code-block"><code>if any required observation is contradictory:
   contradicted
@@ -262,7 +404,7 @@ export async function build(outRoot) {
 
   await write(outRoot, "index.html", home(pack));
   await write(outRoot, "cases/index.html", casesIndex(pack));
-  for (const [index, record] of pack.cases.entries()) await write(outRoot, `cases/${record.id}/index.html`, casePage(record, index));
+  for (const [index, record] of pack.cases.entries()) await write(outRoot, `cases/${record.id}/index.html`, casePage(record, index, pack.cases));
   await write(outRoot, "method/index.html", methodPage());
   await write(outRoot, "tools/index.html", toolsPage(sourceMap));
   await write(outRoot, "challenge/index.html", challengePage());
@@ -270,6 +412,7 @@ export async function build(outRoot) {
 
   await mkdir(join(outRoot, "assets"), { recursive: true });
   await cp(join(ROOT, "src", "site", "styles.css"), join(outRoot, "assets", "styles.css"));
+  await cp(join(ROOT, "src", "site", "assets", "claim-record-evidence-sculpture.png"), join(outRoot, "assets", "claim-record-evidence-sculpture.png"));
   const browserApp = (await readFile(join(ROOT, "src", "site", "app.mjs"), "utf8"))
     .replace('from "../classifier.mjs"', 'from "./classifier.mjs"');
   await write(outRoot, "assets/app.mjs", browserApp);
