@@ -1,6 +1,6 @@
 {
   "schema_version": "detecting_ai_deception_build_manifest_v1",
-  "file_count": 22,
+  "file_count": 23,
   "files": [
     {
       "path": ".nojekyll",
@@ -9,13 +9,18 @@
     },
     {
       "path": "about/index.html",
-      "sha256": "502c47b22a2901efafa30062027610a6c72705cff6d47c1fe75dd999e18e79ac",
-      "bytes": 4557
+      "sha256": "81608ebc201d0422336a7f54fa752d6a0110d2419a731b03225d63753055bcb8",
+      "bytes": 5052
     },
     {
       "path": "assets/app.mjs",
-      "sha256": "a8c55bb5a1cc3bdb3891a852e42bb56dac23696358787e4393e263bbedd72479",
-      "bytes": 4783
+      "sha256": "a2f9d09bb08937be8ce973a77fa47455a3a1b5c029aef6b884c67c8849cdeacd",
+      "bytes": 5420
+    },
+    {
+      "path": "assets/claim-record-evidence-sculpture.png",
+      "sha256": "8c9080e23d909c3d80835c7d5f1f8e52843ba32cc30883a91ec3e434a8b0a4a6",
+      "bytes": 178258
     },
     {
       "path": "assets/classifier.mjs",
@@ -29,48 +34,48 @@
     },
     {
       "path": "assets/styles.css",
-      "sha256": "27a4076670475dcd8a101c4c693a3705d75aa7b3fb093179772b9b3b5cab986c",
-      "bytes": 13332
+      "sha256": "9e17192b15500005f4850aedf7003eb22287f306f161b1a219486c2a04d01caa",
+      "bytes": 52851
     },
     {
       "path": "cases/index.html",
-      "sha256": "65933fd5ebc77cab8a531eba83f469ceec4d3130d6d25ec115072ed84e1e0135",
-      "bytes": 6725
+      "sha256": "9fec195a1fb3c2ddaea8685af831626af1c47cb4d6d2b752d8c7133b38b263bd",
+      "bytes": 13054
     },
     {
       "path": "cases/lost-response/index.html",
-      "sha256": "55937c82f1fa41ebe2dcfc699737a1eb30e03aaf6f95347644983ee52eaea9d7",
-      "bytes": 8854
+      "sha256": "826a7f596030e4bdb678798893e3d579a52a5bc152f143ea7031c698a08ea7d2",
+      "bytes": 14168
     },
     {
       "path": "cases/missing-file/index.html",
-      "sha256": "3549fbb0d068ca2bf321fa88b9900a88ac6a2a671b3166752e4840295b0ddbcf",
-      "bytes": 8514
+      "sha256": "07504ff0c22c827db2973f0f6890fdb78a9759cb3e041a85bb9928312e0c7195",
+      "bytes": 13840
     },
     {
       "path": "cases/reassuring-average/index.html",
-      "sha256": "d25ce7a998a0fac87c4a5879056b200f7bce36fdac9ece4e809276ef5f905f3f",
-      "bytes": 9546
+      "sha256": "6cda23b0493fac5b04ab94fa70c1a1e90a43058478af901776783d5a9e202bac",
+      "bytes": 15116
     },
     {
       "path": "cases/revision-bound-claim/index.html",
-      "sha256": "0fa19563f58cdeb91fd8988799ddc83388e332918cb0b08bc075e7cd9667df99",
-      "bytes": 9005
+      "sha256": "e878e4813fa978e5ac1fdfa91bd6d42ad57bca30a6cdcff7ece7ff5b4235456b",
+      "bytes": 14427
     },
     {
       "path": "cases/unsupported-citation/index.html",
-      "sha256": "5b8b38fa4ecc7bbcb9fbe2eae2114a40a1c80d1b5aeec689015add3a9347a19c",
-      "bytes": 9114
+      "sha256": "1ee3121b3017b1b2c4a600b57610596d874222b9db562b8ab4c858f96ead3c2a",
+      "bytes": 14508
     },
     {
       "path": "cases/wrong-product-identity/index.html",
-      "sha256": "ac455f88f0bc1ea7c5b90875b68e2e3e6d2f793b3fcee64129845345277126ea",
-      "bytes": 8707
+      "sha256": "205a3f731c3af9ee67e17273066ff7521938921a55e6e3c04a093e4291b3e62b",
+      "bytes": 14076
     },
     {
       "path": "challenge/index.html",
-      "sha256": "d7c205ebfe74174c3993d08cecbc13859f68cda418dfd562f64b8d156f996255",
-      "bytes": 5152
+      "sha256": "70f569945029ff99dbced709f15318dfcec12096751e7a8f795c14d6badb510c",
+      "bytes": 5611
     },
     {
       "path": "data/deception-cases.v1.json",
@@ -84,13 +89,13 @@
     },
     {
       "path": "index.html",
-      "sha256": "b29056904cc83e84b4790128016ee6d10d9df055025d5275993b008c78b10350",
-      "bytes": 9118
+      "sha256": "9f3955196dee5c27f3a9dcec9abc52ff8e80fbbf2a3d28ba6e57eaef9e1fefb3",
+      "bytes": 21381
     },
     {
       "path": "method/index.html",
-      "sha256": "58daf0f7c4451be56debca2e534f3b46ec511740b44f2ac7c4126b75847da25c",
-      "bytes": 5954
+      "sha256": "06c4290456c9af4fda2f01bc10fbab0b8fa657e2f6c5886268a0dac3bf4420b1",
+      "bytes": 6524
     },
     {
       "path": "robots.txt",
@@ -109,8 +114,8 @@
     },
     {
       "path": "tools/index.html",
-      "sha256": "4d7e188f1d2d483594e6bbb14071aba00ef4dcbb95fc0afb6a235c675cf54c95",
-      "bytes": 5542
+      "sha256": "f9bd4e6dd2ecb3386f96ca6c45951284b82a2dcca60cf143b290a84b2b23af9a",
+      "bytes": 5997
     }
   ]
 }

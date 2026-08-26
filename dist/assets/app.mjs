@@ -8,7 +8,7 @@ const FINDING_LABELS = {
 
 function announceChoice(form, record, selected) {
   const finding = classifyCase(record);
-  const panel = form.closest("[data-case-interaction]")?.querySelector("[data-evidence-panel]");
+  const panel = form.closest("[data-case-interaction]")?.querySelector("[data-finding-panel]");
   const result = form.querySelector("[data-choice-result]");
   if (!panel || !result) return;
 
@@ -17,6 +17,7 @@ function announceChoice(form, record, selected) {
   result.dataset.match = matched ? "yes" : "no";
   panel.hidden = false;
   panel.classList.add("is-revealed");
+  form.querySelector("button[aria-controls]")?.setAttribute("aria-expanded", "true");
   panel.querySelector("[data-reveal-heading]")?.focus({ preventScroll: true });
   panel.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
 }
@@ -24,8 +25,8 @@ function announceChoice(form, record, selected) {
 export function choiceMessage(selected, finding) {
   if (!FINDINGS.includes(selected) || !FINDINGS.includes(finding)) throw new TypeError("choice and finding must be valid findings");
   return selected === finding
-    ? `Your choice matches the deterministic finding: ${FINDING_LABELS[finding]}.`
-    : `You chose ${FINDING_LABELS[selected]}. The evidence rule finds ${FINDING_LABELS[finding]}.`;
+    ? `Your call matches the deterministic finding: ${FINDING_LABELS[finding]}.`
+    : `Your call was ${FINDING_LABELS[selected]}. The evidence rule finds ${FINDING_LABELS[finding]}. Compare the observed record with the claim.`;
 }
 
 export function caseMatchesFilters(caseFinding, caseClasses, findingFilter, classFilter) {
@@ -44,7 +45,7 @@ function setupCaseInteractions(cases) {
       event.preventDefault();
       const selected = new FormData(form).get("finding");
       if (!FINDINGS.includes(selected)) {
-        form.querySelector("[data-choice-result]").textContent = "Choose one finding before revealing the evidence.";
+        form.querySelector("[data-choice-result]").textContent = "Make a call first: supported, contradicted or insufficient evidence.";
         form.querySelector("input[name='finding']")?.focus();
         return;
       }
@@ -89,7 +90,24 @@ function setupLibraryFilters() {
   apply();
 }
 
+function setupFocusVisibility() {
+  document.addEventListener("focusin", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    requestAnimationFrame(() => {
+      const rect = target.getBoundingClientRect();
+      const inset = 12;
+      if (rect.top >= inset && rect.bottom <= innerHeight - inset) return;
+      target.scrollIntoView({
+        behavior: "auto",
+        block: "center",
+      });
+    });
+  });
+}
+
 async function main() {
+  setupFocusVisibility();
   const casesUrl = document.body.dataset.casesUrl;
   if (!casesUrl) return;
   const response = await fetch(casesUrl, { credentials: "same-origin" });
