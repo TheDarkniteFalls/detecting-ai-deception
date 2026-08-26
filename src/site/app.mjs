@@ -36,6 +36,16 @@ export function caseMatchesFilters(caseFinding, caseClasses, findingFilter, clas
   return findingMatch && classMatch;
 }
 
+export function isSameDocumentFragmentHref(href, currentHref) {
+  if (!href) return false;
+  const target = new URL(href, currentHref);
+  const current = new URL(currentHref);
+  return target.origin === current.origin
+    && target.pathname === current.pathname
+    && target.search === current.search
+    && target.hash.length > 1;
+}
+
 function setupCaseInteractions(cases) {
   const byId = new Map(cases.map((record) => [record.id, record]));
   for (const form of document.querySelectorAll("[data-finding-form]")) {
@@ -94,6 +104,7 @@ function setupFocusVisibility() {
   document.addEventListener("focusin", (event) => {
     const target = event.target;
     if (!(target instanceof HTMLElement)) return;
+    if (target instanceof HTMLAnchorElement && isSameDocumentFragmentHref(target.href, location.href)) return;
     requestAnimationFrame(() => {
       const rect = target.getBoundingClientRect();
       const inset = 12;
