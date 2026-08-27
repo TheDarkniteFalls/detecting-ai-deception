@@ -95,6 +95,10 @@ unique metadata, canonical and Open Graph URLs, conservative structured data,
 real breadcrumb links, `llms.txt`, `robots.txt`, a dated `sitemap.xml`, a
 favicon and a file-by-file build manifest.
 
+An optional project-scoped IndexNow ownership file can support an authorized
+later change notification for the 12 canonical pages; it does not guarantee
+crawling, indexing or ranking.
+
 ## Source boundaries
 
 The cases cite accepted public revisions of EvidenceGate, Local Model

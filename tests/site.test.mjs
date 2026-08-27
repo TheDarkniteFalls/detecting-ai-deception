@@ -1,12 +1,12 @@
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { isSameDocumentFragmentHref } from "../src/site/app.mjs";
-import { build } from "../tools/build.mjs";
+import { build, INDEXNOW_KEY } from "../tools/build.mjs";
 import { checkHttp } from "../tools/check-http.mjs";
 import { checkSite } from "../tools/check-site.mjs";
 
@@ -41,7 +41,7 @@ test("the complete static site builds and passes its semantic contract", async (
     assert.deepEqual(result.errors, []);
     assert.equal(result.html_count, 12);
     assert.equal(result.permanent_case_count, 6);
-    assert.equal(result.file_count, 25);
+    assert.equal(result.file_count, 26);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -53,8 +53,39 @@ test("the HTTP publication check stays loopback-only and covers every public rou
   assert.doesNotMatch(source, /0\.0\.0\.0|127\.0\.0\.1/);
   const result = await checkHttp();
   assert.equal(result.result, "pass");
-  assert.equal(result.route_count, 15);
+  assert.equal(result.route_count, 16);
   assert.ok(result.routes.every(({ status, bytes }) => status === 200 && bytes > 0));
+  assert.ok(result.routes.some(({ route }) => route === `/${INDEXNOW_KEY}.txt`));
+});
+
+test("the project-scoped IndexNow ownership file is deterministic and inert", async () => {
+  const root = await mkdtemp(join(tmpdir(), "detecting-ai-deception-site-test-"));
+  try {
+    await build(root);
+    assert.match(INDEXNOW_KEY, /^[0-9a-f]{32}$/);
+    const rootFiles = await readdir(root);
+    assert.deepEqual(rootFiles.filter((name) => /^[0-9a-f]{32}\.txt$/.test(name)), [`${INDEXNOW_KEY}.txt`]);
+    assert.equal(await readFile(join(root, `${INDEXNOW_KEY}.txt`), "utf8"), `${INDEXNOW_KEY}\n`);
+
+    for (const path of ["index.html", "cases/index.html", "cases/unsupported-citation/index.html", "llms.txt", "robots.txt", "sitemap.xml", "assets/app.mjs"]) {
+      assert.doesNotMatch(await readFile(join(root, path), "utf8"), new RegExp(INDEXNOW_KEY));
+    }
+    const sitemap = await readFile(join(root, "sitemap.xml"), "utf8");
+    assert.equal((sitemap.match(/<url>/g) ?? []).length, 12);
+
+    const buildSource = await readFile(join(ROOT, "tools", "build.mjs"), "utf8");
+    assert.ok(buildSource.includes(`export const INDEXNOW_KEY = "${INDEXNOW_KEY}";`));
+    assert.doesNotMatch(buildSource, /api\.indexnow\.org|fetch\s*\(/i);
+    const app = await readFile(join(ROOT, "src", "site", "app.mjs"), "utf8");
+    assert.doesNotMatch(app, /indexnow|api\.indexnow\.org/i);
+
+    const readme = await readFile(join(ROOT, "README.md"), "utf8");
+    assert.match(readme, /project-scoped IndexNow ownership file/);
+    assert.match(readme, /does not guarantee\s+crawling, indexing or ranking/);
+    assert.doesNotMatch(readme, new RegExp(INDEXNOW_KEY));
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
 });
 
 test("the Pages workflow is manual, least-privilege and validates committed output before deployment", async () => {

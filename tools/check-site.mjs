@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { readFile, readdir, stat } from "node:fs/promises";
 import { dirname, join, relative, resolve, sep } from "node:path";
 import { fileURLToPath } from "node:url";
+import { INDEXNOW_KEY } from "./build.mjs";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SITE_PREFIX = "/detecting-ai-deception/";
@@ -65,15 +66,24 @@ export async function checkSite(root = join(ROOT, "dist")) {
     SCULPTURE_ASSET,
     "data/deception-cases.v1.json", "data/source-map.v1.json",
     "schemas/deception-case-v1.schema.json", "llms.txt", "robots.txt", "sitemap.xml",
+    `${INDEXNOW_KEY}.txt`,
     ".nojekyll", "build-manifest.json",
   ];
   for (const required of requiredOutputs) if (!relativeFiles.has(required)) errors.push(`missing output ${required}`);
   const expectedOutput = new Set([...requiredRoutes, ...requiredOutputs]);
   for (const path of relativeFiles) if (!expectedOutput.has(path)) errors.push(`unexpected output ${path}`);
+  if (!/^[0-9a-f]{32}$/.test(INDEXNOW_KEY)) errors.push("IndexNow key must be exactly 32 lowercase hexadecimal characters");
+  const ownershipFiles = [...relativeFiles].filter((path) => /^[0-9a-f]{32}\.txt$/.test(path));
+  if (ownershipFiles.length !== 1 || ownershipFiles[0] !== `${INDEXNOW_KEY}.txt`) errors.push("generated output must contain exactly one matching IndexNow ownership file");
+  if (relativeFiles.has(`${INDEXNOW_KEY}.txt`)) {
+    const keyText = await readFile(join(root, `${INDEXNOW_KEY}.txt`), "utf8");
+    if (keyText !== `${INDEXNOW_KEY}\n`) errors.push("IndexNow ownership file bytes must contain only the key plus one newline");
+  }
 
   for (const path of htmlFiles) {
     const pagePath = relative(root, path).split(sep).join("/").replace(/index\.html$/, "");
     const html = await readFile(path, "utf8");
+    if (html.includes(INDEXNOW_KEY)) errors.push(`${pagePath}: IndexNow key must not appear in visible HTML or structured data`);
     const title = html.match(/<title>([^<]+)<\/title>/)?.[1];
     if (!title) errors.push(`${pagePath}: missing title`);
     else if (titles.has(title)) errors.push(`${pagePath}: duplicate title ${title}`);
@@ -137,6 +147,7 @@ export async function checkSite(root = join(ROOT, "dist")) {
   }
 
   const app = await readFile(join(root, "assets", "app.mjs"), "utf8");
+  if (app.includes(INDEXNOW_KEY) || /api\.indexnow\.org|indexnow\.org/i.test(app)) errors.push("client runtime must not contain IndexNow key or submission behavior");
   const styles = await readFile(join(root, "assets", "styles.css"), "utf8");
   const sourceSculpture = await readFile(join(ROOT, "src", "site", "assets", "claim-record-evidence-sculpture.png"));
   const builtSculpture = await readFile(join(root, SCULPTURE_ASSET));
@@ -268,6 +279,7 @@ export async function checkSite(root = join(ROOT, "dist")) {
   }
 
   const llms = await readFile(join(root, "llms.txt"), "utf8");
+  if (llms.includes(INDEXNOW_KEY)) errors.push("llms.txt must not expose the IndexNow key location");
   for (const marker of [
     "# Detecting AI Deception",
     "> Check whether an AI answer or citation is backed by the available evidence without guessing at intent.",
@@ -298,12 +310,14 @@ export async function checkSite(root = join(ROOT, "dist")) {
   if (!llms.includes("It does not claim search ranking or inclusion.")) errors.push("llms.txt lacks its no-ranking boundary");
 
   const robots = await readFile(join(root, "robots.txt"), "utf8");
+  if (robots.includes(INDEXNOW_KEY)) errors.push("robots.txt must not contain the IndexNow key");
   for (const agent of ["OAI-SearchBot", "ChatGPT-User", "Claude-SearchBot", "Claude-User", "PerplexityBot", "Perplexity-User", "*"]) {
     if (!robots.includes(`User-agent: ${agent}\nAllow: /`)) errors.push(`robots.txt lacks an allow directive for ${agent}`);
   }
   if (!robots.includes(`Sitemap: https://thedarknitefalls.github.io${SITE_PREFIX}sitemap.xml`)) errors.push("robots.txt lacks the canonical sitemap pointer");
 
   const sitemap = await readFile(join(root, "sitemap.xml"), "utf8");
+  if (sitemap.includes(INDEXNOW_KEY)) errors.push("sitemap must contain only canonical HTML routes, not the IndexNow key file");
   const sitemapEntries = [...sitemap.matchAll(/<url><loc>([^<]+)<\/loc><lastmod>([^<]+)<\/lastmod><\/url>/g)]
     .map((match) => ({ url: match[1], lastmod: match[2] }));
   if (sitemapEntries.length !== 12) errors.push(`sitemap must contain 12 dated routes, found ${sitemapEntries.length}`);

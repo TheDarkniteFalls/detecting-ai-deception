@@ -1,11 +1,16 @@
 {
   "schema_version": "detecting_ai_deception_build_manifest_v1",
-  "file_count": 24,
+  "file_count": 25,
   "files": [
     {
       "path": ".nojekyll",
       "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b",
       "bytes": 1
+    },
+    {
+      "path": "9b73d8320f260bfd96685d71e08434bd.txt",
+      "sha256": "88d058d1ec93af774776e7f752641f9facbd732002aa7afe5623c0105644aada",
+      "bytes": 33
     },
     {
       "path": "about/index.html",
