@@ -6,6 +6,7 @@ import { fileURLToPath } from "node:url";
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SITE_PREFIX = "/detecting-ai-deception/";
+const SITE_URL = `https://thedarknitefalls.github.io${SITE_PREFIX}`;
 const SCULPTURE_ASSET = "assets/claim-record-evidence-sculpture.png";
 const SCULPTURE_SHA256 = "8c9080e23d909c3d80835c7d5f1f8e52843ba32cc30883a91ec3e434a8b0a4a6";
 
@@ -50,6 +51,7 @@ export async function checkSite(root = join(ROOT, "dist")) {
   const relativeFiles = new Set(files.map((path) => relative(root, path).split(sep).join("/")));
   const htmlFiles = files.filter((path) => path.endsWith(".html"));
   const titles = new Set();
+  const descriptions = new Set();
   const requiredRoutes = [
     "index.html", "cases/index.html", "cases/missing-file/index.html",
     "cases/reassuring-average/index.html", "cases/unsupported-citation/index.html",
@@ -62,7 +64,7 @@ export async function checkSite(root = join(ROOT, "dist")) {
     "assets/styles.css", "assets/app.mjs", "assets/classifier.mjs", "assets/favicon.svg",
     SCULPTURE_ASSET,
     "data/deception-cases.v1.json", "data/source-map.v1.json",
-    "schemas/deception-case-v1.schema.json", "robots.txt", "sitemap.xml",
+    "schemas/deception-case-v1.schema.json", "llms.txt", "robots.txt", "sitemap.xml",
     ".nojekyll", "build-manifest.json",
   ];
   for (const required of requiredOutputs) if (!relativeFiles.has(required)) errors.push(`missing output ${required}`);
@@ -76,11 +78,43 @@ export async function checkSite(root = join(ROOT, "dist")) {
     if (!title) errors.push(`${pagePath}: missing title`);
     else if (titles.has(title)) errors.push(`${pagePath}: duplicate title ${title}`);
     else titles.add(title);
+    const description = html.match(/<meta name="description" content="([^"]+)">/)?.[1];
+    if (!description) errors.push(`${pagePath}: missing description content`);
+    else if (descriptions.has(description)) errors.push(`${pagePath}: duplicate description ${description}`);
+    else descriptions.add(description);
     for (const marker of [
       '<meta name="description"', '<link rel="canonical"', 'property="og:title"',
       'type="application/ld+json"', 'class="skip-link"', '<main id="main">',
-      '<noscript>', 'data-cases-url=', 'Intent: not assessed',
+      '<meta name="robots" content="index,follow,max-snippet:-1">',
+      '<link rel="describedby"', '<noscript>', 'data-cases-url=', 'Intent: not assessed',
     ]) if (!html.includes(marker)) errors.push(`${pagePath}: missing ${marker}`);
+    if (/<meta\s+name=["']keywords["']/i.test(html)) errors.push(`${pagePath}: meta keywords are prohibited`);
+    if (html.includes('"@type":"FAQPage"')) errors.push(`${pagePath}: FAQPage structured data is prohibited`);
+    const structuredText = html.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)?.[1];
+    if (!structuredText) {
+      errors.push(`${pagePath}: missing parseable structured data`);
+    } else {
+      try {
+        const structured = JSON.parse(structuredText);
+        const graph = structured["@graph"];
+        if (!Array.isArray(graph)) errors.push(`${pagePath}: structured data does not use @graph`);
+        else {
+          const website = graph.find((item) => item["@type"] === "WebSite");
+          const webPage = graph.find((item) => item["@type"] === "WebPage");
+          if (website?.name !== "Detecting AI Deception" || website?.alternateName !== "DAID") errors.push(`${pagePath}: missing stable WebSite identity`);
+          if (!webPage?.dateModified) errors.push(`${pagePath}: WebPage lacks deterministic dateModified`);
+          const breadcrumb = graph.find((item) => item["@type"] === "BreadcrumbList");
+          if (pagePath) {
+            if (!html.includes('class="breadcrumbs" aria-label="Breadcrumb"')) errors.push(`${pagePath}: missing visible breadcrumb`);
+            if (!breadcrumb || !Array.isArray(breadcrumb.itemListElement)) errors.push(`${pagePath}: missing BreadcrumbList structured data`);
+          } else if (html.includes('class="breadcrumbs"') || breadcrumb) {
+            errors.push("home must not render a redundant breadcrumb");
+          }
+        }
+      } catch (error) {
+        errors.push(`${pagePath}: invalid structured data JSON (${error.message})`);
+      }
+    }
     if (/<span class="evidence-state [^"]+">[^<]+<\/span><strong>/.test(html)) {
       errors.push(`${pagePath}: evidence status is concatenated with its question`);
     }
@@ -166,6 +200,117 @@ export async function checkSite(root = join(ROOT, "dist")) {
   if (!homeSectionOrder.every((position, index) => position >= 0 && (index === 0 || position > homeSectionOrder[index - 1]))) {
     errors.push("home visitor-first sections are out of order");
   }
+
+  const expectedTitles = new Map([
+    ["index.html", "Detecting AI Deception: Check AI Claims Against Evidence"],
+    ["cases/index.html", "Practice Checking AI Claims Against Evidence · Detecting AI Deception"],
+    ["method/index.html", "How to Check AI Claims Against Evidence · Detecting AI Deception"],
+    ["tools/index.html", "AI Evidence-Checking Tools and Exact Sources · Detecting AI Deception"],
+    ["challenge/index.html", "Reproduce or Challenge an AI Evidence Finding · Detecting AI Deception"],
+    ["about/index.html", "How Detecting AI Deception Produces Reproducible Findings · Detecting AI Deception"],
+  ]);
+  for (const [path, expected] of expectedTitles) {
+    const html = await readFile(join(root, path), "utf8");
+    if (!html.includes(`<title>${expected}</title>`)) errors.push(`${path}: search title does not match the visitor intent`);
+  }
+
+  const method = await readFile(join(root, "method", "index.html"), "utf8");
+  for (const question of [
+    "How do I check whether an AI answer is supported?",
+    "How do I verify an AI citation?",
+    "What is the difference between contradicted and insufficient evidence?",
+    "Does an unsupported claim prove AI deception or intent?",
+  ]) if (!method.includes(question)) errors.push(`method page is missing search-intent answer: ${question}`);
+  for (const term of ["AI hallucination", "fabricated citation", "Intent is always not assessed"]) {
+    if (!method.includes(term)) errors.push(`method page is missing bounded ordinary-language term: ${term}`);
+  }
+  if (!method.includes('href="../cases/unsupported-citation/"')) errors.push("method citation guidance lacks a crawlable practice-case link");
+
+  const about = await readFile(join(root, "about", "index.html"), "utf8");
+  for (const target of [
+    'href="../llms.txt"',
+    'href="../data/deception-cases.v1.json"',
+    'href="../schemas/deception-case-v1.schema.json"',
+    'href="../data/source-map.v1.json"',
+    'href="../tools/"',
+    'href="../challenge/"',
+  ]) if (!about.includes(target)) errors.push(`about page is missing automated-reader route ${target}`);
+  if (!about.includes("Machines can rely on the published classifier relationship")) errors.push("about page lacks a bounded automated-reader reliability statement");
+
+  const casesLanding = await readFile(join(root, "cases", "index.html"), "utf8");
+  if (!casesLanding.includes('<link rel="alternate" href="../data/deception-cases.v1.json" type="application/json"')) errors.push("cases landing page lacks its collection-level JSON alternate");
+  const casesStructured = JSON.parse(casesLanding.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1]);
+  const dataset = casesStructured["@graph"].find((item) => item["@type"] === "Dataset");
+  if (!dataset) errors.push("cases landing page lacks Dataset structured data");
+  else {
+    if (dataset.version !== "deception_case_pack_v1" || dataset.dateModified !== "2026-08-23") errors.push("Dataset version or reviewed-through date is inaccurate");
+    if (dataset.license !== "https://creativecommons.org/licenses/by/4.0/") errors.push("Dataset license is inaccurate");
+    if (dataset.distribution?.encodingFormat !== "application/json" || dataset.distribution?.contentUrl !== `${SITE_URL}data/deception-cases.v1.json`) errors.push("Dataset DataDownload is inaccurate");
+    if (dataset.hasPart?.length !== 6) errors.push("Dataset must reference exactly six case resources");
+  }
+  for (const path of caseHtml) {
+    const html = await readFile(path, "utf8");
+    const structured = JSON.parse(html.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1]);
+    const webPage = structured["@graph"].find((item) => item["@type"] === "WebPage");
+    const resource = structured["@graph"].find((item) => item["@type"] === "LearningResource");
+    if (webPage?.dateModified !== "2026-08-27") errors.push(`${relative(root, path)}: WebPage dateModified must reflect the discovery-page change`);
+    if (html.includes('<link rel="alternate"') && html.includes('type="application/json"')) errors.push(`${relative(root, path)}: case page incorrectly treats the six-case pack as its alternate representation`);
+    if (!resource) errors.push(`${relative(root, path)}: missing LearningResource structured data`);
+    else {
+      if (resource.learningResourceType !== "Synthetic practice case" || resource.educationalUse !== "Practice") errors.push(`${relative(root, path)}: inaccurate learning-resource semantics`);
+      if (resource.dateModified !== "2026-08-23") errors.push(`${relative(root, path)}: LearningResource reviewed date is inaccurate`);
+      const aboutNames = new Set(resource.about?.filter((item) => item["@type"] === "Thing").map((item) => item.name));
+      if (![...aboutNames].some((name) => typeof name === "string" && name.startsWith("Finding: "))) errors.push(`${relative(root, path)}: structured data omits the exact finding`);
+      if (!aboutNames.has("Intent: not assessed")) errors.push(`${relative(root, path)}: structured data omits the intent boundary`);
+      if (!aboutNames.has("Synthetic practice case")) errors.push(`${relative(root, path)}: structured data omits the synthetic boundary`);
+      if ("additionalProperty" in resource) errors.push(`${relative(root, path)}: LearningResource uses unsupported additionalProperty semantics`);
+    }
+  }
+
+  const llms = await readFile(join(root, "llms.txt"), "utf8");
+  for (const marker of [
+    "# Detecting AI Deception",
+    "> Check whether an AI answer or citation is backed by the available evidence without guessing at intent.",
+    "## Start",
+    "## Exact practice-case records",
+    "## Machine-readable evidence",
+    "## Reproduce, challenge and inspect",
+    "## Evidence boundaries",
+    "Intent is always not assessed.",
+  ]) if (!llms.includes(marker)) errors.push(`llms.txt is missing ${marker}`);
+  for (const id of ["missing-file", "reassuring-average", "unsupported-citation", "wrong-product-identity", "lost-response", "revision-bound-claim"]) {
+    const expected = `${SITE_PREFIX}cases/${id}/`;
+    if (!llms.includes(expected)) errors.push(`llms.txt is missing exact case route ${id}`);
+  }
+  for (const route of ["data/deception-cases.v1.json", "schemas/deception-case-v1.schema.json", "data/source-map.v1.json", "method/", "tools/", "challenge/", "about/"]) {
+    if (!llms.includes(`${SITE_PREFIX}${route}`)) errors.push(`llms.txt is missing authoritative route ${route}`);
+  }
+  const llmsLinesAfterFirstH2 = llms.slice(llms.indexOf("## ")).split("\n");
+  for (const line of llmsLinesAfterFirstH2) {
+    if (!line || line.startsWith("## ") || /^- \[[^\]]+\]\(https:\/\/[^)]+\): .+/.test(line)) continue;
+    errors.push(`llms.txt has non-link-list content after its first H2: ${line}`);
+  }
+  for (const section of llms.split(/^## /m).slice(1)) {
+    const lines = section.split("\n").slice(1).filter(Boolean);
+    if (!lines.length || lines.some((line) => !/^- \[[^\]]+\]\(https:\/\/[^)]+\): .+/.test(line))) errors.push("llms.txt H2 sections must contain only descriptive file links");
+  }
+  if ((llms.match(/^# /gm) ?? []).length !== 1 || !/^# Detecting AI Deception\n\n> /m.test(llms)) errors.push("llms.txt must have one H1 followed by one blockquote summary");
+  if (!llms.includes("It does not claim search ranking or inclusion.")) errors.push("llms.txt lacks its no-ranking boundary");
+
+  const robots = await readFile(join(root, "robots.txt"), "utf8");
+  for (const agent of ["OAI-SearchBot", "ChatGPT-User", "Claude-SearchBot", "Claude-User", "PerplexityBot", "Perplexity-User", "*"]) {
+    if (!robots.includes(`User-agent: ${agent}\nAllow: /`)) errors.push(`robots.txt lacks an allow directive for ${agent}`);
+  }
+  if (!robots.includes(`Sitemap: https://thedarknitefalls.github.io${SITE_PREFIX}sitemap.xml`)) errors.push("robots.txt lacks the canonical sitemap pointer");
+
+  const sitemap = await readFile(join(root, "sitemap.xml"), "utf8");
+  const sitemapEntries = [...sitemap.matchAll(/<url><loc>([^<]+)<\/loc><lastmod>([^<]+)<\/lastmod><\/url>/g)]
+    .map((match) => ({ url: match[1], lastmod: match[2] }));
+  if (sitemapEntries.length !== 12) errors.push(`sitemap must contain 12 dated routes, found ${sitemapEntries.length}`);
+  for (const entry of sitemapEntries) {
+    if (entry.lastmod !== "2026-08-27") errors.push(`sitemap lastmod mismatch for ${entry.url}: ${entry.lastmod}`);
+  }
+  if (/<(?:priority|changefreq)>/.test(sitemap)) errors.push("sitemap includes ignored priority or changefreq fields");
 
   const supportingRoutes = [
     ["cases/index.html", "Practice checking AI claims against the evidence."],

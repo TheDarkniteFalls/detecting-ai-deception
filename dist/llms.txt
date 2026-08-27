@@ -1,0 +1,45 @@
+# Detecting AI Deception
+
+> Check whether an AI answer or citation is backed by the available evidence without guessing at intent.
+
+Detecting AI Deception (DAID) is a static public teaching site. It contains exactly six synthetic practice cases and one deterministic rule for classifying the relationship between a claim and its required evidence as Supported, Contradicted or Insufficient evidence.
+
+All six linked records are synthetic teaching cases reviewed through 2026-08-23. Their finding distribution is three Contradicted, two Insufficient evidence and one Supported. Claim → Required evidence → Observed record → Finding is the public evidence model. Intent is always not assessed. The records do not establish motive, estimate prevalence, evaluate a live model, rank products or provide certification.
+
+This file follows an experimental agent-discovery convention. It does not claim search ranking or inclusion.
+
+## Start
+
+- [Visitor overview](https://thedarknitefalls.github.io/detecting-ai-deception/): Understand the problem, inspect the featured citation case and choose a practice case.
+- [Evidence-checking method](https://thedarknitefalls.github.io/detecting-ai-deception/method/): Learn how to record a claim, define required evidence, compare the observed record and report the narrowest finding.
+- [Six practice cases](https://thedarknitefalls.github.io/detecting-ai-deception/cases/): Compare each claim with the required and observed evidence before revealing its finding.
+
+## Exact practice-case records
+
+- [01 · The missing file · Contradicted](https://thedarknitefalls.github.io/detecting-ai-deception/cases/missing-file/): An AI system says it created a required file. The reviewed revision contains no file at that path.
+- [02 · The reassuring average with missing cases · Insufficient evidence](https://thedarknitefalls.github.io/detecting-ai-deception/cases/reassuring-average/): An audit reports a reassuring average while failed, unscored or unavailable cases are absent from the headline.
+- [03 · The citation that does not support the answer · Contradicted](https://thedarknitefalls.github.io/detecting-ai-deception/cases/unsupported-citation/): An answer provides a source link, but the supplied source states a different fact from the answer.
+- [04 · The claim attached to the wrong product identity · Contradicted](https://thedarknitefalls.github.io/detecting-ai-deception/cases/wrong-product-identity/): A capability statement for one product version or service surface is presented as if it applies to another.
+- [05 · The lost response after a consequential action · Insufficient evidence](https://thedarknitefalls.github.io/detecting-ai-deception/cases/lost-response/): A tool call times out after sending a consequential request, so the system cannot tell whether the action failed or succeeded.
+- [06 · A supported revision-bound claim · Supported](https://thedarknitefalls.github.io/detecting-ai-deception/cases/revision-bound-claim/): A bounded claim names its passing check, exact reviewed Git revision and touched paths, and the repository state matches the record.
+
+## Machine-readable evidence
+
+- [Six-case JSON pack](https://thedarknitefalls.github.io/detecting-ai-deception/data/deception-cases.v1.json): Canonical structured case content and expected findings.
+- [JSON Schema](https://thedarknitefalls.github.io/detecting-ai-deception/schemas/deception-case-v1.schema.json): Validation contract for one case record.
+- [Exact-revision source map](https://thedarknitefalls.github.io/detecting-ai-deception/data/source-map.v1.json): Public source revisions, narrow roles and non-claims.
+- [Local checker and source repository](https://github.com/TheDarkniteFalls/detecting-ai-deception): Dependency-free deterministic classifier, tests and build source.
+
+## Reproduce, challenge and inspect
+
+- [Evidence tools](https://thedarknitefalls.github.io/detecting-ai-deception/tools/): Exact reviewed routes for deeper public checks.
+- [Challenge a finding](https://thedarknitefalls.github.io/detecting-ai-deception/challenge/): Reproduction commands and public-safe counterexample routes.
+- [Method, provenance and AI-assistance disclosure](https://thedarknitefalls.github.io/detecting-ai-deception/about/): How results are produced and what machines can rely on.
+- [Licensing](https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/LICENSING.md): Apache-2.0 for software-oriented files and CC BY 4.0 for original content and data, with linked third-party materials retaining their own terms.
+
+## Evidence boundaries
+
+- [Evidence-checking method](https://thedarknitefalls.github.io/detecting-ai-deception/method/): Claim → Required evidence → Observed record → Finding; missing or unresolved evidence is not converted into certainty.
+- [Six synthetic practice cases](https://thedarknitefalls.github.io/detecting-ai-deception/cases/): Intent is always not assessed, and the records do not establish motive or estimate prevalence.
+- [Limitations and non-claims](https://thedarknitefalls.github.io/detecting-ai-deception/about/): The site does not evaluate a live model, rank products or provide certification.
+- [Deterministic source and privacy boundary](https://github.com/TheDarkniteFalls/detecting-ai-deception): The browser and local checker share one classifier; no account, analytics, tracker, backend or live model receives visitor choices.

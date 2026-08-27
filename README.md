@@ -1,12 +1,22 @@
 # Detecting AI Deception
 
-**When AI systems overstate, omit, or misrepresent what they have done—and how
-evidence can expose the difference.**
+**Check whether an AI answer or citation is backed by the available evidence.**
+
+[Open the live Detecting AI Deception site](https://thedarknitefalls.github.io/detecting-ai-deception/)
 
 This is a public investigation led by Mike Parsons and developed transparently
-with AI assistance. It is not a claim that every incorrect AI output is an
-intentional lie. Version one compares observable claims with observable
-evidence and records intent as `not-assessed`.
+with AI assistance. AI answers can sound certain when their sources are
+missing, contradictory or too weak to support the claim. The site gives people
+reviewing an AI answer a four-step method for AI answer verification. It uses
+claim checking and citation verification: record the claim, define the evidence
+it would require, compare the observed record and report only the relationship
+the evidence supports.
+
+People often use terms such as *AI hallucination* or *fabricated citation* for
+different failures. Detecting AI Deception (DAID) asks the narrower question
+that a public record can answer: is this exact claim Supported, Contradicted or
+left with Insufficient evidence? It is not a claim that every incorrect AI
+output is an intentional lie. Version one records intent as `not-assessed`.
 
 The repository contains a static public site, six synthetic teaching cases and
 a dependency-free classifier shared by the browser and Node.js checker. It has
@@ -33,7 +43,7 @@ Then open `http://localhost:8080/`.
 
 ## What the site contains
 
-- `/` — a sixty-second explanation and introductory choose-then-reveal case.
+- `/` — a benefit-led explanation and introductory practice case.
 - `/cases/` — a filterable library of six synthetic cases.
 - `/cases/<case-id>/` — permanent evidence pages.
 - `/method/` — finding taxonomy, deterministic rule and limitations.
@@ -82,7 +92,8 @@ digests. `npm run check:http` separately serves all public routes on an
 ephemeral loopback-only HTTP listener and requires meaningful 200 responses.
 The committed/generated publication surface includes semantic HTML,
 unique metadata, canonical and Open Graph URLs, conservative structured data,
-`robots.txt`, `sitemap.xml`, a favicon and a file-by-file build manifest.
+real breadcrumb links, `llms.txt`, `robots.txt`, a dated `sitemap.xml`, a
+favicon and a file-by-file build manifest.
 
 ## Source boundaries
 
