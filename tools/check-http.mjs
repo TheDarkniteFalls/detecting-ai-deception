@@ -4,6 +4,7 @@ import { getDefaultResultOrder, setDefaultResultOrder } from "node:dns";
 import { readFile } from "node:fs/promises";
 import { extname, join, normalize, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { INDEXNOW_KEY } from "./build.mjs";
 
 const ROOT = resolve(fileURLToPath(new URL("..", import.meta.url)));
 const DIST = join(ROOT, "dist");
@@ -15,6 +16,7 @@ const ROUTES = [
   "/cases/lost-response/", "/cases/revision-bound-claim/", "/method/",
   "/tools/", "/challenge/", "/about/", "/assets/app.mjs",
   "/assets/classifier.mjs", "/data/deception-cases.v1.json",
+  `/${INDEXNOW_KEY}.txt`,
 ];
 
 function targetFor(pathname) {
@@ -25,7 +27,7 @@ function targetFor(pathname) {
 }
 
 function contentType(path) {
-  return ({ ".html": "text/html; charset=utf-8", ".mjs": "text/javascript; charset=utf-8", ".json": "application/json; charset=utf-8" })[extname(path)] ?? "application/octet-stream";
+  return ({ ".html": "text/html; charset=utf-8", ".mjs": "text/javascript; charset=utf-8", ".json": "application/json; charset=utf-8", ".txt": "text/plain; charset=utf-8" })[extname(path)] ?? "application/octet-stream";
 }
 
 export async function checkHttp() {
@@ -54,6 +56,7 @@ export async function checkHttp() {
       const text = await response.text();
       if (response.status !== 200) throw new Error(`${route} returned ${response.status}`);
       if (route.endsWith("/") && (!text.includes("<main id=\"main\">") || !text.includes("Intent: not assessed"))) throw new Error(`${route} lacks meaningful HTML`);
+      if (route === `/${INDEXNOW_KEY}.txt` && text !== `${INDEXNOW_KEY}\n`) throw new Error("IndexNow ownership file has incorrect bytes");
       results.push({ route, status: response.status, bytes: Buffer.byteLength(text) });
     }
   } finally {

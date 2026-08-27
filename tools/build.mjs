@@ -11,6 +11,7 @@ const SITE_URL = "https://thedarknitefalls.github.io/detecting-ai-deception/";
 const PROJECT_URL = "https://github.com/TheDarkniteFalls/detecting-ai-deception";
 const SITE_NAME = "Detecting AI Deception";
 const SITE_UPDATED = "2026-08-27";
+export const INDEXNOW_KEY = "9b73d8320f260bfd96685d71e08434bd";
 const LICENSE_URL = "https://creativecommons.org/licenses/by/4.0/";
 const CREATOR_ID = `${PROJECT_URL}#mike-parsons`;
 const WEBSITE_ID = `${SITE_URL}#website`;
@@ -644,6 +645,7 @@ export async function build(outRoot) {
   await write(outRoot, "llms.txt", llmsText(pack));
   await write(outRoot, "robots.txt", robotsText());
   await write(outRoot, "sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${routes.map((route) => `<url><loc>${new URL(route.path, SITE_URL).href}</loc><lastmod>${route.lastmod}</lastmod></url>`).join("")}</urlset>`);
+  await write(outRoot, `${INDEXNOW_KEY}.txt`, INDEXNOW_KEY);
   await write(outRoot, ".nojekyll", "");
 
   const files = (await listFiles(outRoot)).filter((path) => !path.endsWith("build-manifest.json"));
