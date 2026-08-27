@@ -41,7 +41,7 @@ test("the complete static site builds and passes its semantic contract", async (
     assert.deepEqual(result.errors, []);
     assert.equal(result.html_count, 12);
     assert.equal(result.permanent_case_count, 6);
-    assert.equal(result.file_count, 24);
+    assert.equal(result.file_count, 25);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -124,6 +124,103 @@ test("the visitor-first design stays bounded, useful and code-native", async () 
     assert.doesNotMatch(styles, /(?:linear|radial|conic)-gradient\s*\(/i);
     assert.doesNotMatch(styles, /@import|url\(\s*["']?https?:/i);
     assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("people and automated readers receive one truthful discovery contract", async () => {
+  const root = await mkdtemp(join(tmpdir(), "detecting-ai-deception-site-test-"));
+  try {
+    await build(root);
+    const home = await readFile(join(root, "index.html"), "utf8");
+    const method = await readFile(join(root, "method", "index.html"), "utf8");
+    const about = await readFile(join(root, "about", "index.html"), "utf8");
+    const cases = await readFile(join(root, "cases", "index.html"), "utf8");
+    const citation = await readFile(join(root, "cases", "unsupported-citation", "index.html"), "utf8");
+    const llms = await readFile(join(root, "llms.txt"), "utf8");
+    const robots = await readFile(join(root, "robots.txt"), "utf8");
+    const sitemap = await readFile(join(root, "sitemap.xml"), "utf8");
+
+    assert.match(home, /<title>Detecting AI Deception: Check AI Claims Against Evidence<\/title>/);
+    assert.match(method, /<title>How to Check AI Claims Against Evidence · Detecting AI Deception<\/title>/);
+    assert.match(method, /How do I check whether an AI answer is supported\?/);
+    assert.match(method, /How do I verify an AI citation\?/);
+    assert.match(method, /What is the difference between contradicted and insufficient evidence\?/);
+    assert.match(method, /Does an unsupported claim prove AI deception or intent\?/);
+    assert.match(method, /AI hallucination/);
+    assert.match(method, /fabricated citation/);
+    assert.match(method, /href="\.\.\/cases\/unsupported-citation\/"/);
+    assert.doesNotMatch(method, /"@type":"FAQPage"|<meta\s+name="keywords"/i);
+
+    assert.doesNotMatch(home, /class="breadcrumbs"/);
+    for (const html of [method, about, cases, citation]) {
+      assert.match(html, /class="breadcrumbs" aria-label="Breadcrumb"/);
+      assert.match(html, /"@type":"BreadcrumbList"/);
+      assert.match(html, /"@type":"WebSite"/);
+      assert.match(html, /"alternateName":"DAID"/);
+      assert.match(html, /<link rel="describedby" href="[^"]*llms\.txt" type="text\/markdown">/);
+    }
+
+    const casesGraph = JSON.parse(cases.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1])["@graph"];
+    const dataset = casesGraph.find((item) => item["@type"] === "Dataset");
+    assert.equal(dataset.version, "deception_case_pack_v1");
+    assert.equal(dataset.dateModified, "2026-08-23");
+    assert.equal(dataset.license, "https://creativecommons.org/licenses/by/4.0/");
+    assert.deepEqual(dataset.distribution, {
+      "@type": "DataDownload",
+      name: "Six-case JSON pack",
+      encodingFormat: "application/json",
+      contentUrl: "https://thedarknitefalls.github.io/detecting-ai-deception/data/deception-cases.v1.json",
+    });
+    assert.equal(dataset.hasPart.length, 6);
+
+    const caseGraph = JSON.parse(citation.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1])["@graph"];
+    const caseWebPage = caseGraph.find((item) => item["@type"] === "WebPage");
+    const learningResource = caseGraph.find((item) => item["@type"] === "LearningResource");
+    assert.equal(caseWebPage.dateModified, "2026-08-27");
+    assert.equal(learningResource.learningResourceType, "Synthetic practice case");
+    assert.equal(learningResource.educationalUse, "Practice");
+    assert.equal(learningResource.dateModified, "2026-08-23");
+    assert.deepEqual(learningResource.about, [
+      { "@type": "Thing", name: "Finding: Contradicted" },
+      { "@type": "Thing", name: "Intent: not assessed" },
+      { "@type": "Thing", name: "Synthetic practice case" },
+    ]);
+    assert.equal("additionalProperty" in learningResource, false);
+    assert.match(cases, /<link rel="alternate" href="\.\.\/data\/deception-cases\.v1\.json" type="application\/json"/);
+    assert.doesNotMatch(citation, /<link rel="alternate"[^>]+type="application\/json"/);
+
+    for (const marker of ["# Detecting AI Deception", "## Exact practice-case records", "## Machine-readable evidence", "## Evidence boundaries"]) {
+      assert.ok(llms.includes(marker), `llms.txt omits ${marker}`);
+    }
+    for (const id of ["missing-file", "reassuring-average", "unsupported-citation", "wrong-product-identity", "lost-response", "revision-bound-claim"]) {
+      assert.match(llms, new RegExp(`/cases/${id}/`));
+    }
+    assert.match(llms, /Intent is always not assessed\./);
+    assert.doesNotMatch(llms, /prevalence estimate|time to complete/i);
+    assert.match(llms, /It does not claim search ranking or inclusion\./);
+    const llmsSections = llms.split(/^## /m).slice(1);
+    assert.ok(llmsSections.length > 0);
+    for (const section of llmsSections) {
+      const lines = section.split("\n").slice(1).filter(Boolean);
+      assert.ok(lines.length > 0);
+      assert.ok(lines.every((line) => /^- \[[^\]]+\]\(https:\/\/[^)]+\): .+/.test(line)));
+    }
+
+    for (const agent of ["OAI-SearchBot", "ChatGPT-User", "Claude-SearchBot", "Claude-User", "PerplexityBot", "Perplexity-User", "*"]) {
+      assert.ok(robots.includes(`User-agent: ${agent}\nAllow: /`));
+    }
+    assert.match(robots, /Sitemap: https:\/\/thedarknitefalls\.github\.io\/detecting-ai-deception\/sitemap\.xml/);
+
+    const sitemapEntries = [...sitemap.matchAll(/<url><loc>([^<]+)<\/loc><lastmod>([^<]+)<\/lastmod><\/url>/g)];
+    assert.equal(sitemapEntries.length, 12);
+    for (const [, , date] of sitemapEntries) assert.equal(date, "2026-08-27");
+    assert.doesNotMatch(sitemap, /<(?:priority|changefreq)>/);
+
+    for (const route of ["llms.txt", "data/deception-cases.v1.json", "schemas/deception-case-v1.schema.json", "data/source-map.v1.json", "tools/", "challenge/"]) {
+      assert.ok(about.includes(route), `automated-reader section omits ${route}`);
+    }
   } finally {
     await rm(root, { recursive: true, force: true });
   }

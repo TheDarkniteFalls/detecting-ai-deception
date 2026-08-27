@@ -25,6 +25,7 @@ export async function checkRepository() {
     "THIRD_PARTY_NOTICES.md", "CONTRIBUTING.md", "SECURITY.md", "package.json",
     "data/deception-cases.v1.json", "data/source-map.v1.json",
     "schemas/deception-case-v1.schema.json", "src/classifier.mjs",
+    "src/site/styles.css", "tools/build.mjs", "tests/site.test.mjs",
     "tools/check-cases.mjs", "tools/check-site.mjs", "tools/check-all.mjs",
     "tools/check-http.mjs",
     ".github/workflows/checks.yml",
@@ -81,6 +82,35 @@ export async function checkRepository() {
     if (runtime.includes(forbidden)) errors.push(`runtime contains forbidden primitive ${forbidden}`);
   }
   if (/fetch\s*\(\s*["']https?:/i.test(runtime)) errors.push("runtime performs an external request");
+
+  const buildSource = await readFile(join(ROOT, "tools", "build.mjs"), "utf8");
+  for (const marker of [
+    'const SITE_UPDATED = "2026-08-27";',
+    '"@type": "WebSite"',
+    '"@type": "BreadcrumbList"',
+    '"@type": "Dataset"',
+    '"@type": "LearningResource"',
+    'about: [',
+    'name: "Intent: not assessed"',
+    'name: "Synthetic practice case"',
+    'await write(outRoot, "llms.txt", llmsText(pack));',
+    'User-agent: ${agent}\\nAllow: /',
+  ]) if (!buildSource.includes(marker)) errors.push(`build source lacks discoverability contract ${marker}`);
+  for (const forbidden of ["llms-full.txt", "additionalProperty:", 'name="keywords"', '"@type": "FAQPage"', "changefreq", "<priority>"]) {
+    if (buildSource.includes(forbidden)) errors.push(`build source includes prohibited search surface ${forbidden}`);
+  }
+
+  const readme = await readFile(join(ROOT, "README.md"), "utf8");
+  for (const marker of [
+    "https://thedarknitefalls.github.io/detecting-ai-deception/",
+    "AI answer verification",
+    "claim checking",
+    "citation verification",
+    "AI hallucination",
+    "Detecting AI Deception (DAID) asks the narrower question",
+    "intent as `not-assessed`",
+  ]) if (!readme.includes(marker)) errors.push(`README lacks bounded discovery language ${marker}`);
+  if (/sixty-second|minutes? to complete/i.test(readme)) errors.push("README includes an unproven time-to-complete claim");
 
   return { schema_version: "detecting_ai_deception_repository_check_v1", result: errors.length ? "fail" : "pass", errors, file_count: files.length };
 }

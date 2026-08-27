@@ -1,6 +1,6 @@
 {
   "schema_version": "detecting_ai_deception_build_manifest_v1",
-  "file_count": 23,
+  "file_count": 24,
   "files": [
     {
       "path": ".nojekyll",
@@ -9,8 +9,8 @@
     },
     {
       "path": "about/index.html",
-      "sha256": "86bb59202104fe85eb1c453fd896afb4e9d62472d06785be14d929a0c692a695",
-      "bytes": 5122
+      "sha256": "e16f78cbe314598c13a455f1d520313769e88f86ab180f2eef5921b91ae298c2",
+      "bytes": 8168
     },
     {
       "path": "assets/app.mjs",
@@ -34,48 +34,48 @@
     },
     {
       "path": "assets/styles.css",
-      "sha256": "2cbea3b288c67e1e9cdef21dc5f2204cf530da9bab7cdb8ebc50fa2a3de7e971",
-      "bytes": 57020
+      "sha256": "159809bad765bb13b7e23f3f040af006614fbce55a7c46c6ba3000fe8c112f07",
+      "bytes": 57664
     },
     {
       "path": "cases/index.html",
-      "sha256": "3749b300291acf8977486bd5c46b21a1f2a3b1e5eba8fd7e54c53a37ebdcdc0a",
-      "bytes": 13264
+      "sha256": "0c35fbc758c1ce0410c9f4454db0a239624418d148597b05d7ffd54fda95ff9b",
+      "bytes": 17010
     },
     {
       "path": "cases/lost-response/index.html",
-      "sha256": "80999214ab191dbaefa951af66ebb43fbfb0a4baa55f9b740cf528b66048ead4",
-      "bytes": 14203
+      "sha256": "b6d0a7f702dc37d464991404fb520a37211a1fd4c10da33db5948926585530d8",
+      "bytes": 17612
     },
     {
       "path": "cases/missing-file/index.html",
-      "sha256": "0736b4d199111a995a32925abd190ae6446265a45c134a9db1118042018f1fff",
-      "bytes": 13875
+      "sha256": "f04b8634c13813d4ca356123e2a86986bead789fe4cccf585b270d01e459736f",
+      "bytes": 17104
     },
     {
       "path": "cases/reassuring-average/index.html",
-      "sha256": "1c7564b7a562c7270ba772e7c9d048db95acd2be41d14f714307fe7545a6d4fb",
-      "bytes": 15151
+      "sha256": "760a17c1d656b889c6c9cc0c1a04ddfd35c327fef79edc38c857b59439ee960a",
+      "bytes": 18645
     },
     {
       "path": "cases/revision-bound-claim/index.html",
-      "sha256": "8e768815b6cdf21d3c2ef1f309d0d1da382ba0a682e536af29f4863eec5307d4",
-      "bytes": 14462
+      "sha256": "294e5b46d86c9a2df35daac7a769e82ae374c263f76e74aab08a4d1f1c8d1fe8",
+      "bytes": 17817
     },
     {
       "path": "cases/unsupported-citation/index.html",
-      "sha256": "ede96e656b3f3bbf4dd3a7eb409f2ae99622bd981375ba4a1dbbac2e5f8ddc0e",
-      "bytes": 14543
+      "sha256": "a8b2e49c5db17fdfa586c67c3173a6e0079e76867a15baf3167e07e8cbaf8cfa",
+      "bytes": 18046
     },
     {
       "path": "cases/wrong-product-identity/index.html",
-      "sha256": "3fd5ee2061948280fcf6e1a605087f8ad7e43465d3b5e67b9b0427b945329f6e",
-      "bytes": 14111
+      "sha256": "0ef105b88f6ba5708e91b4e5d4a5b4447fbdc52dd584ebde111a71631ed548b8",
+      "bytes": 17525
     },
     {
       "path": "challenge/index.html",
-      "sha256": "70f569945029ff99dbced709f15318dfcec12096751e7a8f795c14d6badb510c",
-      "bytes": 5611
+      "sha256": "085e8d34119b11148e24dba01848870c909512f93ed58bb3521c468e3518eace",
+      "bytes": 7481
     },
     {
       "path": "data/deception-cases.v1.json",
@@ -89,18 +89,23 @@
     },
     {
       "path": "index.html",
-      "sha256": "28f315efe47982ad3272f9696d1171d9c7defbddfee7a80ea4e4e28a75ed589e",
-      "bytes": 15022
+      "sha256": "a9c4ce785ab56b9cb8e0eee18fa86efc13b2d9a65620f7f0f33ae47f9a635e2d",
+      "bytes": 16250
+    },
+    {
+      "path": "llms.txt",
+      "sha256": "f8b63c284506c2f9a922e4efcef0db7b59063d7ceb1b4bd0c19bdb58e6c8e95e",
+      "bytes": 5427
     },
     {
       "path": "method/index.html",
-      "sha256": "2323d05617da58f5c8b2ff03f7cb5f241d98fb730c8c4d68e49d4b368490395e",
-      "bytes": 6692
+      "sha256": "74576673649fa8404038577ddf906308cca4c4ea8d9466991d10d84bf824cb3d",
+      "bytes": 10396
     },
     {
       "path": "robots.txt",
-      "sha256": "47f404466b077e208163676197ab853a1c1c25bdacd2baacdf862f355fa9795d",
-      "bytes": 102
+      "sha256": "d32d729aa7e0c76b1b3fc76abf57998d6c9c3dd781daea7c75b18b5da4e42278",
+      "bytes": 321
     },
     {
       "path": "schemas/deception-case-v1.schema.json",
@@ -109,13 +114,13 @@
     },
     {
       "path": "sitemap.xml",
-      "sha256": "0ecaf0ace31c3891c3173ae646905d4fcabd1bd5388b394a39843367f76a6850",
-      "bytes": 1251
+      "sha256": "5d9e25b9de94bf9fdbcc6f273392ec56299907d98a2e387249c9e6cf10606f32",
+      "bytes": 1599
     },
     {
       "path": "tools/index.html",
-      "sha256": "f9bd4e6dd2ecb3386f96ca6c45951284b82a2dcca60cf143b290a84b2b23af9a",
-      "bytes": 5997
+      "sha256": "5c02475fb14a645d250d51387ffdff4f08880dd1d300681d889854efb66c609b",
+      "bytes": 7843
     }
   ]
 }

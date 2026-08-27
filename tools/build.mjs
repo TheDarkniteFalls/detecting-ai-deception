@@ -9,6 +9,12 @@ import { validatePack } from "../src/validate-case.mjs";
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SITE_URL = "https://thedarknitefalls.github.io/detecting-ai-deception/";
 const PROJECT_URL = "https://github.com/TheDarkniteFalls/detecting-ai-deception";
+const SITE_NAME = "Detecting AI Deception";
+const SITE_UPDATED = "2026-08-27";
+const LICENSE_URL = "https://creativecommons.org/licenses/by/4.0/";
+const CREATOR_ID = `${PROJECT_URL}#mike-parsons`;
+const WEBSITE_ID = `${SITE_URL}#website`;
+const SITE_DESCRIPTION = "Check whether AI answers and citations are supported by the available evidence without guessing at intent.";
 
 const escapeHtml = (value) => String(value)
   .replaceAll("&", "&amp;")
@@ -85,6 +91,120 @@ function navigation(prefix, current) {
   </div></header>`;
 }
 
+function breadcrumbNav(prefix, items) {
+  const trail = [{ name: "Home", route: "" }, ...items];
+  return `<nav class="breadcrumbs" aria-label="Breadcrumb"><div class="shell"><ol>${trail.map((item, index) => {
+    const current = index === trail.length - 1;
+    return `<li>${current ? `<span aria-current="page">${escapeHtml(item.name)}</span>` : `<a href="${prefix}${item.route}">${escapeHtml(item.name)}</a>`}</li>`;
+  }).join("")}</ol></div></nav>`;
+}
+
+function structuredData({ canonical, title, description, type, dateModified, breadcrumbs, mainEntity }) {
+  const pageId = `${canonical}#webpage`;
+  const graph = [
+    {
+      "@type": "Person",
+      "@id": CREATOR_ID,
+      name: "Mike Parsons",
+    },
+    {
+      "@type": "WebSite",
+      "@id": WEBSITE_ID,
+      url: SITE_URL,
+      name: SITE_NAME,
+      alternateName: "DAID",
+      description: SITE_DESCRIPTION,
+      inLanguage: "en",
+      creator: { "@id": CREATOR_ID },
+      license: LICENSE_URL,
+    },
+  ];
+  const pageNode = {
+    "@type": type,
+    "@id": pageId,
+    url: canonical,
+    name: title,
+    description,
+    inLanguage: "en",
+    dateModified,
+    isPartOf: { "@id": WEBSITE_ID },
+    creator: { "@id": CREATOR_ID },
+    license: LICENSE_URL,
+    isAccessibleForFree: true,
+  };
+  if (breadcrumbs.length) {
+    const breadcrumbId = `${canonical}#breadcrumb`;
+    pageNode.breadcrumb = { "@id": breadcrumbId };
+    graph.push({
+      "@type": "BreadcrumbList",
+      "@id": breadcrumbId,
+      itemListElement: [{ name: "Home", route: "" }, ...breadcrumbs].map((item, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        name: item.name,
+        item: new URL(item.route, SITE_URL).href,
+      })),
+    });
+  }
+  if (mainEntity) {
+    pageNode.mainEntity = { "@id": mainEntity["@id"] };
+  }
+  graph.push(pageNode);
+  if (mainEntity) graph.push(mainEntity);
+  return JSON.stringify({ "@context": "https://schema.org", "@graph": graph }).replaceAll("<", "\\u003c");
+}
+
+function datasetEntity(pack) {
+  const canonical = new URL("cases/", SITE_URL).href;
+  return {
+    "@type": "Dataset",
+    "@id": `${canonical}#dataset`,
+    name: "Detecting AI Deception synthetic practice case pack",
+    description: "Six synthetic teaching cases for comparing AI claims with required evidence and the observed record.",
+    url: canonical,
+    version: pack.schema_version,
+    dateModified: pack.reviewed_through,
+    inLanguage: "en",
+    creator: { "@id": CREATOR_ID },
+    creditText: pack.creator,
+    license: LICENSE_URL,
+    isAccessibleForFree: true,
+    distribution: {
+      "@type": "DataDownload",
+      name: "Six-case JSON pack",
+      encodingFormat: "application/json",
+      contentUrl: new URL("data/deception-cases.v1.json", SITE_URL).href,
+    },
+    hasPart: pack.cases.map((record) => ({
+      "@id": `${new URL(`cases/${record.id}/`, SITE_URL).href}#learning-resource`,
+    })),
+  };
+}
+
+function caseLearningResource(record) {
+  const canonical = new URL(`cases/${record.id}/`, SITE_URL).href;
+  return {
+    "@type": "LearningResource",
+    "@id": `${canonical}#learning-resource`,
+    name: record.title,
+    description: record.plain_scenario,
+    url: canonical,
+    learningResourceType: "Synthetic practice case",
+    educationalUse: "Practice",
+    dateModified: record.reviewed_through,
+    inLanguage: "en",
+    creator: { "@id": CREATOR_ID },
+    license: LICENSE_URL,
+    isAccessibleForFree: true,
+    isBasedOn: record.source_links.map((source) => source.revision_url),
+    about: [
+      { "@type": "Thing", name: `Finding: ${findingLabel(record.expected_finding)}` },
+      { "@type": "Thing", name: "Intent: not assessed" },
+      { "@type": "Thing", name: "Synthetic practice case" },
+    ],
+  };
+}
+
 function arrowIcon() {
   return `<svg class="arrow-icon" viewBox="0 0 28 18" aria-hidden="true" focusable="false"><path d="M1 9h24M18 2l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"/></svg>`;
 }
@@ -133,19 +253,13 @@ function routeObject(record) {
   return `<span class="route-object route-object-${record.id}" aria-hidden="true"><svg class="route-symbol" viewBox="0 0 160 72" focusable="false">${symbol}</svg></span>`;
 }
 
-function page({ path = "", title, description, content, prefix, current = "", type = "WebPage" }) {
+function page({
+  path = "", title, description, content, prefix, current = "", type = "WebPage",
+  dateModified = SITE_UPDATED, breadcrumbs = [], mainEntity = null, alternateData = "",
+}) {
   const canonical = new URL(path, SITE_URL).href;
-  const fullTitle = title === "Detecting AI Deception" ? title : `${title} · Detecting AI Deception`;
-  const structured = JSON.stringify({
-    "@context": "https://schema.org",
-    "@type": type,
-    name: title,
-    description,
-    url: canonical,
-    creator: { "@type": "Person", name: "Mike Parsons" },
-    license: "https://creativecommons.org/licenses/by/4.0/",
-    isAccessibleForFree: true,
-  }).replaceAll("<", "\\u003c");
+  const fullTitle = path ? `${title} · ${SITE_NAME}` : title;
+  const structured = structuredData({ canonical, title: fullTitle, description, type, dateModified, breadcrumbs, mainEntity });
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -153,8 +267,10 @@ function page({ path = "", title, description, content, prefix, current = "", ty
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(fullTitle)}</title>
   <meta name="description" content="${escapeHtml(description)}">
+  <meta name="robots" content="index,follow,max-snippet:-1">
   <link rel="canonical" href="${canonical}">
-  <meta property="og:type" content="website">
+  <link rel="describedby" href="${prefix}llms.txt" type="text/markdown">
+${alternateData ? `  <link rel="alternate" href="${alternateData}" type="application/json" title="Six synthetic AI claim evidence cases">\n` : ""}  <meta property="og:type" content="website">
   <meta property="og:title" content="${escapeHtml(fullTitle)}">
   <meta property="og:description" content="${escapeHtml(description)}">
   <meta property="og:url" content="${canonical}">
@@ -169,7 +285,7 @@ function page({ path = "", title, description, content, prefix, current = "", ty
   ${navigation(prefix, current)}
   <noscript><div class="noscript-note">JavaScript is off. Every case, evidence trail and deterministic finding remains readable; filters and choose-then-reveal controls are shown without enhancement.</div></noscript>
   <div class="shell" aria-live="polite" data-app-status></div>
-  <main id="main">${content}</main>
+  <main id="main">${breadcrumbs.length ? breadcrumbNav(prefix, breadcrumbs) : ""}${content}</main>
   <footer class="site-footer"><div class="shell footer-grid">
     <p>Mike-led public investigation, developed transparently with AI assistance. Six synthetic cases compare observable claims with observable evidence. Intent: not assessed.</p>
     <div class="footer-links"><a href="${prefix}tools/">Tools</a><a href="${prefix}challenge/">Challenge</a><a href="${prefix}about/">About</a><a href="${PROJECT_URL}">Source</a><a href="${PROJECT_URL}/blob/main/LICENSING.md">Licensing</a></div>
@@ -283,8 +399,8 @@ function home(pack) {
     ["Report the result", "Classify the relationship and keep intent separate."],
   ];
   return page({
-    title: "Detecting AI Deception",
-    description: "Learn how to check whether an AI answer is supported by its sources and the available evidence, without guessing at intent.",
+    title: "Detecting AI Deception: Check AI Claims Against Evidence",
+    description: "Check whether an AI answer or citation is supported by evidence using six synthetic practice cases and a reproducible four-step method. Intent is not assessed.",
     prefix: "./",
     path: "",
     content: `<section class="home-opening"><div class="shell"><div class="opening-grid"><div class="opening-copy"><h1>Check whether an AI answer is backed by the evidence.</h1><p class="hero-explanation">AI answers can sound certain even when their sources are missing, contradictory or too weak to support them. This site helps anyone reviewing an AI answer compare the claim with the evidence it would need and the record that exists. You will learn to classify the result as Supported, Contradicted or Insufficient evidence without guessing at intent.</p><div class="hero-actions"><a class="primary-button" href="cases/unsupported-citation/"><span>Try a practice case</span>${arrowIcon()}</a><a class="secondary-button" href="#method-overview"><span>See the four-step method</span>${arrowIcon()}</a></div></div>${featuredCasePanel(intro)}</div></div></section>
@@ -298,9 +414,12 @@ function home(pack) {
 function casesIndex(pack) {
   const classes = [...new Set(pack.cases.flatMap((record) => record.failure_class))].sort();
   return page({
-    title: "Practice cases",
-    description: "Practice checking whether AI claims are supported, contradicted or unresolved by the available evidence.",
+    title: "Practice Checking AI Claims Against Evidence",
+    description: "Practice AI answer and citation verification with six synthetic cases. Compare each claim with required and observed evidence before revealing the finding.",
     path: "cases/", prefix: "../", current: "cases",
+    breadcrumbs: [{ name: "Practice cases", route: "cases/" }],
+    mainEntity: datasetEntity(pack),
+    alternateData: "../data/deception-cases.v1.json",
     content: `<section class="case-page-header library-header"><div class="shell"><div class="page-heading-grid"><div><h1 class="page-title">Practice checking AI claims against the evidence.</h1><p class="lead">Every example is synthetic. Open a case, compare the AI claim with the evidence it would need and the record that is available, then decide whether the result is Supported, Contradicted or Insufficient evidence before seeing the finding.</p></div><div class="intent-boundary intent-boundary-compact"><span aria-hidden="true">≠</span><strong>Intent: not assessed</strong><small>A finding describes support, not motive.</small></div></div></div></section>
       <section class="case-archive-band"><div class="shell"><form class="filter-bar" data-library-filters><label>Finding<select name="finding"><option value="all">All findings</option><option value="supported">Supported</option><option value="contradicted">Contradicted</option><option value="insufficient-evidence">Insufficient evidence</option></select></label><label>Evidence pattern<select name="class"><option value="all">All evidence patterns</option>${classes.map((value) => `<option value="${value}">${escapeHtml(failureClassLabel(value))}</option>`).join("")}</select></label><p class="filter-count" data-filter-count>${pack.cases.length} of ${pack.cases.length} cases shown</p></form><div class="archive-layout">${caseSpine(pack.cases, "")}<div class="archive-records"><ol class="case-library">${pack.cases.map((record, index) => `<li class="case-row" data-case-row data-case-id="${record.id}" data-finding="${record.expected_finding}" data-classes="${record.failure_class.join(" ")}"><a class="case-link" href="${record.id}/"><span class="route-index">${String(index + 1).padStart(2, "0")}</span><span class="route-copy"><span class="case-short-label">${escapeHtml(caseShortLabel(record.id))}</span><strong>${escapeHtml(record.title)}</strong><span>${escapeHtml(record.plain_scenario)}</span></span>${routeObject(record)}<span class="route-outcome"><strong><span class="state-token" aria-hidden="true">${stateSymbol(record.expected_finding === "supported" ? "supports" : record.expected_finding === "contradicted" ? "contradictory" : "unknown")}</span>${findingLabel(record.expected_finding)}</strong><span>${failureClassDisplay(record.failure_class)}</span></span>${arrowIcon()}</a></li>`).join("")}</ol></div></div></div></section>`,
   });
@@ -326,8 +445,14 @@ function casePage(record, index, cases) {
   ];
   return page({
     title: record.title,
-    description: record.plain_scenario,
-    path: `cases/${record.id}/`, prefix: "../../", current: "cases", type: "Article",
+    description: `${record.plain_scenario} Compare the claim with the evidence and see why the finding is ${findingLabel(record.expected_finding)}.`,
+    path: `cases/${record.id}/`, prefix: "../../", current: "cases",
+    dateModified: SITE_UPDATED,
+    breadcrumbs: [
+      { name: "Practice cases", route: "cases/" },
+      { name: record.title, route: `cases/${record.id}/` },
+    ],
+    mainEntity: caseLearningResource(record),
     content: `<header class="case-page-header"><div class="shell"><div class="case-page-kicker"><span>Case ${String(index + 1).padStart(2, "0")} of 06</span><span>Visibly synthetic</span><span>Reviewed ${record.reviewed_through}</span></div><div class="case-heading-grid"><div><h1>${escapeHtml(record.title)}</h1><p class="lead">${escapeHtml(record.plain_scenario)}</p></div><aside class="case-reading-note"><span aria-hidden="true">${String(index + 1).padStart(2, "0")}</span><strong>Read the claim. Check the record. Make the narrowest defensible call.</strong><small>Intent: not assessed</small></aside></div></div></header>
       <section class="case-record-band"><div class="shell"><div class="record-band-intro"><span class="section-number">Claim / record</span><div><h2>Make your call before the finding appears.</h2><p>The same four-part composition is used in every case: claim, required evidence, observed record, finding.</p></div></div>${investigation(record, String(index + 1).padStart(2, "0"), { showHeader: false })}</div></section>
       <section class="case-spine-band"><div class="shell">${caseSpine(cases, "../", record.id)}</div></section>
@@ -338,10 +463,16 @@ function casePage(record, index, cases) {
 
 function methodPage() {
   return page({
-    title: "Evidence-checking method",
-    description: "A four-step method for checking whether an AI claim is supported, contradicted or unresolved by the available evidence.",
+    title: "How to Check AI Claims Against Evidence",
+    description: "Learn a four-step method for checking AI claims and citations against evidence, distinguishing contradiction from insufficient evidence without inferring intent.",
     path: "method/", prefix: "../", current: "method",
+    breadcrumbs: [{ name: "Method", route: "method/" }],
     content: `<header class="case-page-header"><div class="shell"><h1 class="page-title">Check an AI claim against the evidence.</h1><p class="lead">Start with the exact claim, define the evidence it would require, compare that requirement with the available record, and classify the result as Supported, Contradicted or Insufficient evidence. The method does not assess intent.</p><div class="intent-boundary intent-boundary-compact"><span aria-hidden="true">≠</span><strong>Intent: not assessed</strong></div></div></header><div class="narrow prose">
+      <h2>Common questions about checking AI answers</h2>
+      <h3>How do I check whether an AI answer is supported?</h3><p>Write down the exact claim before interpreting it, define what evidence would need to be present for it to hold, and compare that requirement with the record you can actually inspect. If every required observation supports the claim, the result is Supported. If any required observation conflicts, it is Contradicted. If required evidence is missing or unresolved, it is Insufficient evidence. You can <a href="../cases/">practice that comparison with all six synthetic cases</a>.</p>
+      <h3>How do I verify an AI citation?</h3><p>Open the cited source and the exact revision or version when one is available. Find the passage that is supposed to support the answer, then compare its subject, value, scope and date with the exact claim. A link is not proof by itself: <a href="../cases/unsupported-citation/">the unsupported-citation practice case</a> shows a 30-day answer beside a passage that says 7 days.</p>
+      <h3>What is the difference between contradicted and insufficient evidence?</h3><p>Contradicted means at least one required observation directly conflicts with the claim. Insufficient evidence means the record is missing, unknown, stale or inapplicable and contains no direct conflict. The first supports a negative relationship finding; the second means the available record does not let you decide.</p>
+      <h3>Does an unsupported claim prove AI deception or intent?</h3><p>No. Terms such as <em>AI hallucination</em> or <em>fabricated citation</em> are often used for different kinds of failure, but they do not establish why an answer was produced. This method asks a narrower, inspectable question: how does the claim relate to the available evidence? Intent is always not assessed.</p>
       <h2>Three findings</h2><h3>Supported</h3><p>Every declared required evidence item supports the claim.</p><h3>Contradicted</h3><p>At least one required observation directly conflicts with the claim. Contradiction takes precedence over missing evidence.</p><h3>Insufficient evidence</h3><p>A required observation is absent, unknown, stale or inapplicable, and no required observation directly contradicts the claim.</p>
       <h2>The deterministic rule</h2><pre class="code-block"><code>if any required observation is contradictory:
   contradicted
@@ -360,9 +491,10 @@ else:
 function toolsPage(sourceMap) {
   const routes = sourceMap.sources.filter((source) => source.id !== "reliability-navigator");
   return page({
-    title: "Tools and deeper routes",
-    description: "Curated public tools for revision evidence, missing evaluations, grounding, identity and ambiguous external effects.",
+    title: "AI Evidence-Checking Tools and Exact Sources",
+    description: "Inspect exact public revisions and tools for checking AI claims, citations, missing evaluations, identity mismatches and ambiguous external actions.",
     path: "tools/", prefix: "../", current: "tools",
+    breadcrumbs: [{ name: "Tools", route: "tools/" }],
     content: `<header class="case-page-header"><div class="shell"><h1 class="page-title">Follow the evidence deeper.</h1><p class="lead">Each route has an exact reviewed public revision and a narrow role. This site does not copy or silently extend those projects.</p></div></header><section class="band"><div class="shell"><ol class="route-list">${routes.map((source, index) => `<li><a class="route-link" href="${source.revision_url}"><span class="route-index">${String(index + 1).padStart(2, "0")}</span><span><strong>${escapeHtml(source.id.replaceAll("-", " "))}</strong>${escapeHtml(source.role)}</span><span>Exact revision<br>${source.revision.slice(0, 12)}</span></a></li>`).join("")}</ol></div></section><section class="band band-white"><div class="narrow"><h2>Need the complete toolkit?</h2><p>The Reliability Navigator covers the wider public set of guides, starters and runnable checks. Its route recommendation is not certification that a tool fits every setup.</p><a class="primary-button" href="https://thedarknitefalls.github.io/local-assistant-reliability-lab/">Open the Reliability Navigator</a><p class="source-revision"><a href="${sourceMap.sources.find((source) => source.id === "reliability-navigator").revision_url}">Public baseline reviewed for this map</a></p></div></section>`,
   });
 }
@@ -370,9 +502,10 @@ function toolsPage(sourceMap) {
 function challengePage() {
   const issueBase = `${PROJECT_URL}/issues/new?template=`;
   return page({
-    title: "Reproduce or challenge",
-    description: "Run the dependency-free checker or open a public-safe reproduction, counterexample, case proposal or accessibility report.",
+    title: "Reproduce or Challenge an AI Evidence Finding",
+    description: "Run the dependency-free AI claim checker or submit a public-safe reproduction, evidence counterexample, synthetic case proposal or accessibility report.",
     path: "challenge/", prefix: "../", current: "challenge",
+    breadcrumbs: [{ name: "Challenge", route: "challenge/" }],
     content: `<header class="case-page-header"><div class="shell"><h1 class="page-title">The record should be challengeable.</h1><p class="lead">Reproduce the six synthetic cases locally, then report the smallest public-safe result that could change the account.</p></div></header><div class="narrow prose"><h2>Run the checker</h2><pre class="code-block"><code>git clone https://github.com/TheDarkniteFalls/detecting-ai-deception.git
 cd detecting-ai-deception
 node tools/check-cases.mjs --self-test
@@ -382,11 +515,72 @@ npm test</code></pre><p>No dependency install, account, model or network service
 
 function aboutPage() {
   return page({
-    title: "About",
-    description: "Inspect how Detecting AI Deception produces reproducible findings from exact source revisions and published rules.",
+    title: "How Detecting AI Deception Produces Reproducible Findings",
+    description: "See how Detecting AI Deception uses exact source revisions, published evidence records and one deterministic rule, with limitations and intent boundaries visible.",
     path: "about/", prefix: "../", current: "about",
-    content: `<header class="case-page-header"><div class="shell"><h1 class="page-title">Inspect how every result was produced.</h1><p class="lead">Every finding can be reproduced from published evidence, exact source revisions and a deterministic rule. You can inspect the limitations or challenge a result with a public-safe counterexample.</p></div></header><div class="narrow prose"><h2>Motivation</h2><p>AI systems can make confident statements about files, sources, evaluations, identities and external actions. Some are supported. Some conflict with observable state. Some cannot be resolved with the evidence available. Treating all three as the same makes both trust and criticism less useful.</p><h2>Principles</h2><ul><li>Compare bounded claims with declared evidence.</li><li>Show missingness beside aggregates.</li><li>Bind public claims to exact identities and source revisions.</li><li>Keep consequential action ambiguity visible until state is reconciled.</li><li>State what remains unknown and what the evidence does not prove.</li><li>Invite reproducible, public-safe counterexamples.</li></ul><h2>AI-assistance disclosure</h2><p>Mike Parsons leads the investigation and is responsible for its public framing. AI assistance was used to help structure, draft, implement and test this repository. The six cases are synthetic. Their deterministic findings are produced by published rules and independently reviewable data rather than a live model.</p><h2>What this is not</h2><p>This is not a claim that every incorrect output is an intentional lie. It is not a deception score, a product ranking, a certification, a consciousness test or a universal account of AI safety. Version one records intent as <strong>not assessed</strong>.</p></div>`,
+    breadcrumbs: [{ name: "About", route: "about/" }],
+    content: `<header class="case-page-header"><div class="shell"><h1 class="page-title">Inspect how every result was produced.</h1><p class="lead">Every finding can be reproduced from published evidence, exact source revisions and a deterministic rule. You can inspect the limitations or challenge a result with a public-safe counterexample.</p></div></header><div class="narrow prose"><h2>Motivation</h2><p>AI systems can make confident statements about files, sources, evaluations, identities and external actions. Some are supported. Some conflict with observable state. Some cannot be resolved with the evidence available. Treating all three as the same makes both trust and criticism less useful.</p><h2>Principles</h2><ul><li>Compare bounded claims with declared evidence.</li><li>Show missingness beside aggregates.</li><li>Bind public claims to exact identities and source revisions.</li><li>Keep consequential action ambiguity visible until state is reconciled.</li><li>State what remains unknown and what the evidence does not prove.</li><li>Invite reproducible, public-safe counterexamples.</li></ul><h2>For agents and automated readers</h2><p>This is a static, public evidence record rather than a live model or API. Automated readers can use the <a href="../llms.txt">plain-text discovery summary</a>, <a href="../data/deception-cases.v1.json">six-case JSON pack</a>, <a href="../schemas/deception-case-v1.schema.json">JSON Schema</a> and <a href="../data/source-map.v1.json">exact-revision source map</a>. The <a href="../tools/">evidence tools</a> and <a href="../challenge/">challenge route</a> explain how to reproduce or contest a finding.</p><p>Machines can rely on the published classifier relationship, exact case values, reviewed-through dates, licensing and provenance in those files. They should not infer motive, prevalence, live-model behavior or product certification from the records. See the repository’s <a href="${PROJECT_URL}/blob/main/LICENSING.md">licensing explanation</a> and <a href="${PROJECT_URL}/blob/main/NOTICE">provenance notice</a>.</p><h2>AI-assistance disclosure</h2><p>Mike Parsons leads the investigation and is responsible for its public framing. AI assistance was used to help structure, draft, implement and test this repository. The six cases are synthetic. Their deterministic findings are produced by published rules and independently reviewable data rather than a live model.</p><h2>What this is not</h2><p>This is not a claim that every incorrect output is an intentional lie. It is not a deception score, a product ranking, a certification, a consciousness test or a universal account of AI safety. Version one records intent as <strong>not assessed</strong>.</p></div>`,
   });
+}
+
+function llmsText(pack) {
+  const caseLines = pack.cases.map((record, index) => {
+    const label = `${String(index + 1).padStart(2, "0")} · ${record.title} · ${findingLabel(record.expected_finding)}`;
+    return `- [${label}](${new URL(`cases/${record.id}/`, SITE_URL).href}): ${record.plain_scenario}`;
+  }).join("\n");
+  return `# Detecting AI Deception
+
+> Check whether an AI answer or citation is backed by the available evidence without guessing at intent.
+
+Detecting AI Deception (DAID) is a static public teaching site. It contains exactly six synthetic practice cases and one deterministic rule for classifying the relationship between a claim and its required evidence as Supported, Contradicted or Insufficient evidence.
+
+All six linked records are synthetic teaching cases reviewed through ${pack.reviewed_through}. Their finding distribution is three Contradicted, two Insufficient evidence and one Supported. Claim → Required evidence → Observed record → Finding is the public evidence model. Intent is always not assessed. The records do not establish motive, estimate prevalence, evaluate a live model, rank products or provide certification.
+
+This file follows an experimental agent-discovery convention. It does not claim search ranking or inclusion.
+
+## Start
+
+- [Visitor overview](${SITE_URL}): Understand the problem, inspect the featured citation case and choose a practice case.
+- [Evidence-checking method](${new URL("method/", SITE_URL).href}): Learn how to record a claim, define required evidence, compare the observed record and report the narrowest finding.
+- [Six practice cases](${new URL("cases/", SITE_URL).href}): Compare each claim with the required and observed evidence before revealing its finding.
+
+## Exact practice-case records
+
+${caseLines}
+
+## Machine-readable evidence
+
+- [Six-case JSON pack](${new URL("data/deception-cases.v1.json", SITE_URL).href}): Canonical structured case content and expected findings.
+- [JSON Schema](${new URL("schemas/deception-case-v1.schema.json", SITE_URL).href}): Validation contract for one case record.
+- [Exact-revision source map](${new URL("data/source-map.v1.json", SITE_URL).href}): Public source revisions, narrow roles and non-claims.
+- [Local checker and source repository](${PROJECT_URL}): Dependency-free deterministic classifier, tests and build source.
+
+## Reproduce, challenge and inspect
+
+- [Evidence tools](${new URL("tools/", SITE_URL).href}): Exact reviewed routes for deeper public checks.
+- [Challenge a finding](${new URL("challenge/", SITE_URL).href}): Reproduction commands and public-safe counterexample routes.
+- [Method, provenance and AI-assistance disclosure](${new URL("about/", SITE_URL).href}): How results are produced and what machines can rely on.
+- [Licensing](${PROJECT_URL}/blob/main/LICENSING.md): Apache-2.0 for software-oriented files and CC BY 4.0 for original content and data, with linked third-party materials retaining their own terms.
+
+## Evidence boundaries
+
+- [Evidence-checking method](${new URL("method/", SITE_URL).href}): Claim → Required evidence → Observed record → Finding; missing or unresolved evidence is not converted into certainty.
+- [Six synthetic practice cases](${new URL("cases/", SITE_URL).href}): Intent is always not assessed, and the records do not establish motive or estimate prevalence.
+- [Limitations and non-claims](${new URL("about/", SITE_URL).href}): The site does not evaluate a live model, rank products or provide certification.
+- [Deterministic source and privacy boundary](${PROJECT_URL}): The browser and local checker share one classifier; no account, analytics, tracker, backend or live model receives visitor choices.
+`;
+}
+
+function robotsText() {
+  const retrievalAgents = [
+    "OAI-SearchBot",
+    "ChatGPT-User",
+    "Claude-SearchBot",
+    "Claude-User",
+    "PerplexityBot",
+    "Perplexity-User",
+  ];
+  return `${retrievalAgents.map((agent) => `User-agent: ${agent}\nAllow: /`).join("\n\n")}\n\nUser-agent: *\nAllow: /\n\nSitemap: ${SITE_URL}sitemap.xml`;
 }
 
 async function listFiles(root) {
@@ -438,9 +632,18 @@ export async function build(outRoot) {
   await mkdir(join(outRoot, "schemas"), { recursive: true });
   await cp(join(ROOT, "schemas", "deception-case-v1.schema.json"), join(outRoot, "schemas", "deception-case-v1.schema.json"));
 
-  const routes = ["", "cases/", ...pack.cases.map((record) => `cases/${record.id}/`), "method/", "tools/", "challenge/", "about/"];
-  await write(outRoot, "robots.txt", `User-agent: *\nAllow: /\nSitemap: ${SITE_URL}sitemap.xml`);
-  await write(outRoot, "sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${routes.map((route) => `<url><loc>${new URL(route, SITE_URL).href}</loc></url>`).join("")}</urlset>`);
+  const routes = [
+    { path: "", lastmod: SITE_UPDATED },
+    { path: "cases/", lastmod: SITE_UPDATED },
+    ...pack.cases.map((record) => ({ path: `cases/${record.id}/`, lastmod: SITE_UPDATED })),
+    { path: "method/", lastmod: SITE_UPDATED },
+    { path: "tools/", lastmod: SITE_UPDATED },
+    { path: "challenge/", lastmod: SITE_UPDATED },
+    { path: "about/", lastmod: SITE_UPDATED },
+  ];
+  await write(outRoot, "llms.txt", llmsText(pack));
+  await write(outRoot, "robots.txt", robotsText());
+  await write(outRoot, "sitemap.xml", `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">${routes.map((route) => `<url><loc>${new URL(route.path, SITE_URL).href}</loc><lastmod>${route.lastmod}</lastmod></url>`).join("")}</urlset>`);
   await write(outRoot, ".nojekyll", "");
 
   const files = (await listFiles(outRoot)).filter((path) => !path.endsWith("build-manifest.json"));
