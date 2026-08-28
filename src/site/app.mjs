@@ -36,6 +36,15 @@ export function caseMatchesFilters(caseFinding, caseClasses, findingFilter, clas
   return findingMatch && classMatch;
 }
 
+export function normalizeFilterValue(requested, allowedValues) {
+  if (!(allowedValues instanceof Set) || !allowedValues.has("all")) throw new TypeError("allowed filter values must include all");
+  return typeof requested === "string" && allowedValues.has(requested) ? requested : "all";
+}
+
+export function revealsLibraryOutcomes(findingFilter) {
+  return FINDINGS.includes(findingFilter);
+}
+
 export function isSameDocumentFragmentHref(href, currentHref) {
   if (!href) return false;
   const target = new URL(href, currentHref);
@@ -68,35 +77,49 @@ function setupLibraryFilters() {
   const form = document.querySelector("[data-library-filters]");
   const rows = [...document.querySelectorAll("[data-case-row]")];
   const count = document.querySelector("[data-filter-count]");
+  const disclosure = document.querySelector("[data-finding-disclosure]");
+  const empty = document.querySelector("[data-filter-empty]");
+  const outcomes = [...document.querySelectorAll("[data-library-outcome]")];
   if (!form || rows.length === 0) return;
 
   const finding = form.elements.namedItem("finding");
   const failureClass = form.elements.namedItem("class");
   const allowedFindings = new Set(["all", ...FINDINGS]);
   const allowedClasses = new Set(["all", ...new Set(rows.flatMap((row) => row.dataset.classes.split(" ")))]);
-  const params = new URLSearchParams(location.search);
-  const requestedFinding = params.get("finding") ?? "all";
-  const requestedClass = params.get("class") ?? "all";
-  finding.value = allowedFindings.has(requestedFinding) ? requestedFinding : "all";
-  failureClass.value = allowedClasses.has(requestedClass) ? requestedClass : "all";
+  const readUrlState = () => {
+    const params = new URLSearchParams(location.search);
+    finding.value = normalizeFilterValue(params.get("finding") ?? "all", allowedFindings);
+    failureClass.value = normalizeFilterValue(params.get("class") ?? "all", allowedClasses);
+  };
+  readUrlState();
 
-  const apply = () => {
+  const apply = ({ updateUrl = true } = {}) => {
     let visible = 0;
     for (const row of rows) {
       row.hidden = !caseMatchesFilters(row.dataset.finding, row.dataset.classes.split(" "), finding.value, failureClass.value);
       if (!row.hidden) visible += 1;
     }
     count.textContent = `${visible} of ${rows.length} cases shown`;
-    const next = new URL(location.href);
-    for (const [key, value] of [["finding", finding.value], ["class", failureClass.value]]) {
-      if (value === "all") next.searchParams.delete(key);
-      else next.searchParams.set(key, value);
+    const revealOutcomes = revealsLibraryOutcomes(finding.value);
+    for (const outcome of outcomes) outcome.hidden = !revealOutcomes;
+    if (disclosure) disclosure.hidden = !revealOutcomes;
+    if (empty) empty.hidden = visible !== 0;
+    if (updateUrl) {
+      const next = new URL(location.href);
+      for (const [key, value] of [["finding", finding.value], ["class", failureClass.value]]) {
+        if (value === "all") next.searchParams.delete(key);
+        else next.searchParams.set(key, value);
+      }
+      history.replaceState(null, "", `${next.pathname}${next.search}${next.hash}`);
     }
-    history.replaceState(null, "", `${next.pathname}${next.search}${next.hash}`);
   };
 
   form.addEventListener("change", apply);
   form.addEventListener("reset", () => requestAnimationFrame(apply));
+  addEventListener("popstate", () => {
+    readUrlState();
+    apply({ updateUrl: false });
+  });
   apply();
 }
 

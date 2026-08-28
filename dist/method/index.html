@@ -22,18 +22,22 @@
   <a class="skip-link" href="#main">Skip to main content</a>
   <header class="site-header"><div class="nav-shell">
     <a class="wordmark" href="../">Detecting AI Deception</a>
-    <nav class="site-nav" aria-label="Primary"><a href="../cases/">Cases</a><a href="../method/" aria-current="page">Method</a><a href="../about/">About</a></nav>
-    <span class="nav-boundary">Intent: not assessed</span>
+    <nav class="site-nav" aria-label="Primary"><a href="../cases/">Cases</a><a href="../method/" aria-current="page">Method</a><a href="../tools/">Tools</a><a href="../challenge/">Challenge</a><a href="../about/">About</a></nav>
+    <a class="nav-boundary" href="../about/#intent-boundary">Intent: not assessed</a>
     <div class="mobile-navigation">
       <a class="mobile-cases-link" href="../cases/">Cases</a>
       <details class="mobile-menu"><summary><span class="menu-lines" aria-hidden="true"><span></span><span></span><span></span></span>Menu</summary>
-        <nav aria-label="Mobile primary"><a href="../method/" aria-current="page">Method</a><a href="../about/">About</a></nav>
+        <nav aria-label="Mobile primary"><a href="../method/" aria-current="page">Method</a><a href="../tools/">Tools</a><a href="../challenge/">Challenge</a><a href="../about/">About</a><a href="../about/#intent-boundary">Intent boundary</a></nav>
       </details>
     </div>
   </div></header>
   <noscript><div class="noscript-note">JavaScript is off. Every case, evidence trail and deterministic finding remains readable; filters and choose-then-reveal controls are shown without enhancement.</div></noscript>
   <div class="shell" aria-live="polite" data-app-status></div>
   <main id="main"><nav class="breadcrumbs" aria-label="Breadcrumb"><div class="shell"><ol><li><a href="../">Home</a></li><li><span aria-current="page">Method</span></li></ol></div></nav><header class="case-page-header"><div class="shell"><h1 class="page-title">Check an AI claim against the evidence.</h1><p class="lead">Start with the exact claim, define the evidence it would require, compare that requirement with the available record, and classify the result as Supported, Contradicted or Insufficient evidence. The method does not assess intent.</p><div class="intent-boundary intent-boundary-compact"><span aria-hidden="true">≠</span><strong>Intent: not assessed</strong></div></div></header><div class="narrow prose">
+      <section class="method-transfer" aria-labelledby="method-transfer-title"><h2 id="method-transfer-title">Use this four-line record on another AI answer</h2><pre class="method-template"><code>Claim:
+Required evidence:
+Observed record (source, exact revision or date, passage):
+Finding: Supported / Contradicted / Insufficient evidence — Intent: not assessed</code></pre><div class="method-transfer-actions"><a class="primary-button" href="../cases/unsupported-citation/">Practice the template on Case 03</a><a class="secondary-button" href="../cases/">Browse all six cases</a></div></section>
       <h2>Common questions about checking AI answers</h2>
       <h3>How do I check whether an AI answer is supported?</h3><p>Write down the exact claim before interpreting it, define what evidence would need to be present for it to hold, and compare that requirement with the record you can actually inspect. If every required observation supports the claim, the result is Supported. If any required observation conflicts, it is Contradicted. If required evidence is missing or unresolved, it is Insufficient evidence. You can <a href="../cases/">practice that comparison with all six synthetic cases</a>.</p>
       <h3>How do I verify an AI citation?</h3><p>Open the cited source and the exact revision or version when one is available. Find the passage that is supposed to support the answer, then compare its subject, value, scope and date with the exact claim. A link is not proof by itself: <a href="../cases/unsupported-citation/">the unsupported-citation practice case</a> shows a 30-day answer beside a passage that says 7 days.</p>
@@ -50,6 +54,7 @@ else:
       <h2>Failure classes</h2><ul><li><strong>false-completion:</strong> claimed work is absent from final state.</li><li><strong>material-omission:</strong> a decision-relevant absence is hidden from the account.</li><li><strong>provenance-or-identity-mismatch:</strong> evidence belongs to a different subject.</li><li><strong>evaluation-gap:</strong> the intended evaluation set is not accounted for.</li><li><strong>ambiguous-external-effect:</strong> a consequential result is unknown after a lost response.</li><li><strong>context-or-citation-escape:</strong> the answer outruns its supplied evidence.</li></ul>
       <h2>Limitations</h2><p>The cases are synthetic teaching records. They do not estimate prevalence, authenticate reviewers, test live models, diagnose internal cognition, certify products or rank systems. Real investigations need threat-aware handling of sensitive evidence and independent review.</p>
       <h2>Glossary</h2><dl><dt><strong>Claim</strong></dt><dd>A bounded statement that can be compared with declared evidence.</dd><dt><strong>Required evidence</strong></dt><dd>What would need to be observed for the claim to be supported.</dd><dt><strong>Observation</strong></dt><dd>The recorded state of one required evidence item.</dd><dt><strong>Reviewed through</strong></dt><dd>The date through which a source revision was checked for this case.</dd><dt><strong>Non-claim</strong></dt><dd>An explicit boundary on what the evidence does not establish.</dd></dl>
+      <section class="method-next"><h2>Choose your next step</h2><div class="method-transfer-actions"><a class="primary-button" href="../cases/">Browse all six cases</a><a class="secondary-button" href="../challenge/">Challenge a result</a></div></section>
     </div></main>
   <footer class="site-footer"><div class="shell footer-grid">
     <p>Mike-led public investigation, developed transparently with AI assistance. Six synthetic cases compare observable claims with observable evidence. Intent: not assessed.</p>

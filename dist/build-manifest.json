@@ -14,13 +14,13 @@
     },
     {
       "path": "about/index.html",
-      "sha256": "e16f78cbe314598c13a455f1d520313769e88f86ab180f2eef5921b91ae298c2",
-      "bytes": 8168
+      "sha256": "07350b64fa0e3da27f45477fd660b6ddd508592ed4342aacaf5e4e6a579cdcb4",
+      "bytes": 8403
     },
     {
       "path": "assets/app.mjs",
-      "sha256": "537a7df7fa18656b01e4e5baefcb5a030a35980acdb70dc9366c1867d420bb09",
-      "bytes": 5867
+      "sha256": "eb485422a23f3b11d6ab2c5c13518653f59bb8d67f779c4b46462ac41f4e712a",
+      "bytes": 6832
     },
     {
       "path": "assets/claim-record-evidence-sculpture.png",
@@ -39,48 +39,48 @@
     },
     {
       "path": "assets/styles.css",
-      "sha256": "159809bad765bb13b7e23f3f040af006614fbce55a7c46c6ba3000fe8c112f07",
-      "bytes": 57664
+      "sha256": "0a5263f24e616ee052eb2339d9c27ca74eca9e3b5a63fb88a07387d0ea450a07",
+      "bytes": 59595
     },
     {
       "path": "cases/index.html",
-      "sha256": "0c35fbc758c1ce0410c9f4454db0a239624418d148597b05d7ffd54fda95ff9b",
-      "bytes": 17010
+      "sha256": "e0dcfc86b463fb2e2dd8b649c871869dd6e4b17f309a78d28d7ed4dee42de668",
+      "bytes": 17650
     },
     {
       "path": "cases/lost-response/index.html",
-      "sha256": "b6d0a7f702dc37d464991404fb520a37211a1fd4c10da33db5948926585530d8",
-      "bytes": 17612
+      "sha256": "f54e3c260edbacc2a7e3c5dc806be6f870fa50e72fce18f63a7428b1c2e1fb66",
+      "bytes": 18127
     },
     {
       "path": "cases/missing-file/index.html",
-      "sha256": "f04b8634c13813d4ca356123e2a86986bead789fe4cccf585b270d01e459736f",
-      "bytes": 17104
+      "sha256": "658a674ed465d7859fed814daa2a108619e8c799690808e77e9683f212ced32c",
+      "bytes": 17619
     },
     {
       "path": "cases/reassuring-average/index.html",
-      "sha256": "760a17c1d656b889c6c9cc0c1a04ddfd35c327fef79edc38c857b59439ee960a",
-      "bytes": 18645
+      "sha256": "a67afa46d7f6515bdb8af6f89fd0d66cc6ae23fb9b499cd0473a97843abf0215",
+      "bytes": 19160
     },
     {
       "path": "cases/revision-bound-claim/index.html",
-      "sha256": "294e5b46d86c9a2df35daac7a769e82ae374c263f76e74aab08a4d1f1c8d1fe8",
-      "bytes": 17817
+      "sha256": "c8e48be3ab087608f65c691a8cbf8516a231c14c4267f24f30380604146e8a06",
+      "bytes": 18332
     },
     {
       "path": "cases/unsupported-citation/index.html",
-      "sha256": "a8b2e49c5db17fdfa586c67c3173a6e0079e76867a15baf3167e07e8cbaf8cfa",
-      "bytes": 18046
+      "sha256": "e62df48671df1a263dd2e07ffd54a49a274ea53efedfc1377e272f6728d67a97",
+      "bytes": 18561
     },
     {
       "path": "cases/wrong-product-identity/index.html",
-      "sha256": "0ef105b88f6ba5708e91b4e5d4a5b4447fbdc52dd584ebde111a71631ed548b8",
-      "bytes": 17525
+      "sha256": "da107237f171a218d4780564c5af2ab74111ceea98888b0acb71db345ccc5380",
+      "bytes": 18040
     },
     {
       "path": "challenge/index.html",
-      "sha256": "085e8d34119b11148e24dba01848870c909512f93ed58bb3521c468e3518eace",
-      "bytes": 7481
+      "sha256": "b3143f943ed486022f67154c717c362e4b4d76e7d560fe04bc7981f92a8e1322",
+      "bytes": 7804
     },
     {
       "path": "data/deception-cases.v1.json",
@@ -94,8 +94,8 @@
     },
     {
       "path": "index.html",
-      "sha256": "a9c4ce785ab56b9cb8e0eee18fa86efc13b2d9a65620f7f0f33ae47f9a635e2d",
-      "bytes": 16250
+      "sha256": "890b96e938e7a29e5909d9311fb7a1773d84364e27246fa3f71273d77da9d401",
+      "bytes": 16483
     },
     {
       "path": "llms.txt",
@@ -104,8 +104,8 @@
     },
     {
       "path": "method/index.html",
-      "sha256": "74576673649fa8404038577ddf906308cca4c4ea8d9466991d10d84bf824cb3d",
-      "bytes": 10396
+      "sha256": "c9d0170bb1f3887d7fcbc2bf2510e1d30ef059cce8b4d817f70ba0d4b3d508b5",
+      "bytes": 11466
     },
     {
       "path": "robots.txt",
@@ -124,8 +124,8 @@
     },
     {
       "path": "tools/index.html",
-      "sha256": "5c02475fb14a645d250d51387ffdff4f08880dd1d300681d889854efb66c609b",
-      "bytes": 7843
+      "sha256": "9e542e6e5bb8730b703ee6d2fe731cea9f44321553c59809558629713298ef09",
+      "bytes": 8097
     }
   ]
 }

@@ -98,6 +98,20 @@ export async function checkSite(root = join(ROOT, "dist")) {
       '<meta name="robots" content="index,follow,max-snippet:-1">',
       '<link rel="describedby"', '<noscript>', 'data-cases-url=', 'Intent: not assessed',
     ]) if (!html.includes(marker)) errors.push(`${pagePath}: missing ${marker}`);
+    const globalHeader = html.match(/<header class="site-header">[\s\S]*?<\/header>/)?.[0] ?? "";
+    const navPositions = ["Cases", "Method", "Tools", "Challenge", "About"]
+      .map((label) => globalHeader.indexOf(`>${label}</a>`));
+    if (!navPositions.every((position, index) => position >= 0 && (index === 0 || position > navPositions[index - 1]))) {
+      errors.push(`${pagePath}: expanded primary navigation is missing or out of order`);
+    }
+    for (const marker of ['class="mobile-cases-link"', 'aria-label="Mobile primary"', '>Intent boundary</a>', 'about/#intent-boundary']) {
+      if (!globalHeader.includes(marker)) errors.push(`${pagePath}: navigation is missing ${marker}`);
+    }
+    const current = html.match(/<body data-page="([^"]+)"/)?.[1] ?? "home";
+    const expectedCurrentCount = current === "home" ? 0 : 2;
+    if ((globalHeader.match(/aria-current="page"/g) ?? []).length !== expectedCurrentCount) {
+      errors.push(`${pagePath}: navigation current-page semantics are incorrect`);
+    }
     if (/<meta\s+name=["']keywords["']/i.test(html)) errors.push(`${pagePath}: meta keywords are prohibited`);
     if (html.includes('"@type":"FAQPage"')) errors.push(`${pagePath}: FAQPage structured data is prohibited`);
     const structuredText = html.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)?.[1];
@@ -144,6 +158,10 @@ export async function checkSite(root = join(ROOT, "dist")) {
     }
     if (!html.includes("exact source revision")) errors.push(`${relative(root, path)}: missing exact source revision link`);
     if (!html.includes("Limitations and non-claims")) errors.push(`${relative(root, path)}: missing non-claims`);
+    for (const marker of [
+      'aria-label="On this case"', 'href="#make-your-call"', 'href="#read-plainly"',
+      'href="#technical-record"', 'id="make-your-call"', 'id="read-plainly"', 'id="technical-record"',
+    ]) if (!html.includes(marker)) errors.push(`${relative(root, path)}: missing case navigation contract ${marker}`);
   }
 
   const app = await readFile(join(root, "assets", "app.mjs"), "utf8");
@@ -169,6 +187,7 @@ export async function checkSite(root = join(ROOT, "dist")) {
   if (!/body\s*\{[^}]*overflow-wrap:\s*normal;[^}]*word-break:\s*normal;/s.test(styles)) errors.push("body text can break inside ordinary words");
   if (!/@media \(max-width: 52rem\)[\s\S]*?\.home-case-grid\s*\{[^}]*grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\);/s.test(styles)) errors.push("styles lack the two-column mobile practice-case selector");
   if (!/@media \(max-width: 22\.5rem\)[\s\S]*?\.home-case-grid\s*\{\s*grid-template-columns:\s*1fr;/s.test(styles)) errors.push("styles lack the one-column 320px practice-case selector");
+  if (!/@media \(max-width: 40rem\)[\s\S]*?\.code-block\s*\{[^}]*overflow-x:\s*visible;[^}]*overflow-wrap:\s*anywhere;[^}]*white-space:\s*pre-wrap;/s.test(styles)) errors.push("mobile code blocks do not wrap without horizontal scrolling");
   if (/\.case-short-label\s*\{[^}]*color:\s*var\(--cobalt\)/s.test(styles)) errors.push("dark cobalt text is used on the black case-list surface");
   if (/(?:linear|radial|conic)-gradient\s*\(/i.test(styles)) errors.push("styles include a prohibited gradient");
   if (/@import|url\(\s*["']?https?:/i.test(styles)) errors.push("styles include an external font or network asset");
@@ -199,10 +218,14 @@ export async function checkSite(root = join(ROOT, "dist")) {
     'id="method-overview"',
     'id="practice-cases"',
   ]) if (!home.includes(required)) errors.push(`home is missing visitor-first contract: ${required}`);
-  for (const [label, value] of [["Claim", "30 days"], ["Required evidence", "30 days"], ["Observed record", "7 days"], ["Finding", "Contradicted"]]) {
+  for (const [label, value] of [["Claim", "30 days"], ["Required evidence", "30 days"], ["Observed record", "7 days"], ["Finding", "Choose, then reveal"]]) {
     if (!home.includes(`<dt>${label}</dt><dd>${value}</dd>`)) errors.push(`home featured case has incorrect ${label}`);
   }
-  if (!home.includes("The cited passage does not support the answer.")) errors.push("home featured case lacks its plain-language conclusion");
+  const featuredStart = home.indexOf('class="featured-case-panel"');
+  const featuredEnd = home.indexOf("</a>", featuredStart);
+  const featured = featuredStart >= 0 && featuredEnd > featuredStart ? home.slice(featuredStart, featuredEnd) : "";
+  if (!featured.includes("Open the case and make the narrowest call the evidence supports.")) errors.push("home featured case lacks its blind-practice invitation");
+  if (featured.includes("Contradicted") || featured.includes("The cited passage does not support the answer.")) errors.push("home featured case reveals its answer");
   if (home.includes("hero-evidence-object")) errors.push("home still renders the evidence sculpture");
   if (home.includes("case-index-band")) errors.push("home still renders the duplicate detailed case inventory");
   if ((home.match(/class="home-case-index"/g) ?? []).length !== 1) errors.push("home must contain exactly one compact practice-case inventory");
@@ -236,6 +259,11 @@ export async function checkSite(root = join(ROOT, "dist")) {
     if (!method.includes(term)) errors.push(`method page is missing bounded ordinary-language term: ${term}`);
   }
   if (!method.includes('href="../cases/unsupported-citation/"')) errors.push("method citation guidance lacks a crawlable practice-case link");
+  for (const marker of [
+    "Use this four-line record on another AI answer",
+    "Claim:\nRequired evidence:\nObserved record (source, exact revision or date, passage):\nFinding: Supported / Contradicted / Insufficient evidence — Intent: not assessed",
+    "Practice the template on Case 03", "Browse all six cases", "Choose your next step", 'href="../challenge/"',
+  ]) if (!method.includes(marker)) errors.push(`method page is missing transfer contract: ${marker}`);
 
   const about = await readFile(join(root, "about", "index.html"), "utf8");
   for (const target of [
@@ -247,8 +275,16 @@ export async function checkSite(root = join(ROOT, "dist")) {
     'href="../challenge/"',
   ]) if (!about.includes(target)) errors.push(`about page is missing automated-reader route ${target}`);
   if (!about.includes("Machines can rely on the published classifier relationship")) errors.push("about page lacks a bounded automated-reader reliability statement");
+  if (!about.includes('<h2 id="intent-boundary">What this is not</h2>')) errors.push("about page lacks the stable intent-boundary anchor");
 
   const casesLanding = await readFile(join(root, "cases", "index.html"), "utf8");
+  if (casesLanding.indexOf('class="archive-records"') > casesLanding.indexOf("Browse all six cases")) errors.push("archive records do not precede the global spine");
+  if ((casesLanding.match(/data-library-outcome hidden/g) ?? []).length !== 6) errors.push("archive outcomes are not blind by default");
+  for (const marker of [
+    "Filtering by finding reveals the case outcomes before you open them.",
+    "No cases match both filters. Change a filter or browse all six below.",
+    'data-finding-disclosure hidden', 'data-filter-empty hidden',
+  ]) if (!casesLanding.includes(marker)) errors.push(`cases landing page is missing filter contract: ${marker}`);
   if (!casesLanding.includes('<link rel="alternate" href="../data/deception-cases.v1.json" type="application/json"')) errors.push("cases landing page lacks its collection-level JSON alternate");
   const casesStructured = JSON.parse(casesLanding.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1]);
   const dataset = casesStructured["@graph"].find((item) => item["@type"] === "Dataset");
@@ -326,6 +362,13 @@ export async function checkSite(root = join(ROOT, "dist")) {
   }
   if (/<(?:priority|changefreq)>/.test(sitemap)) errors.push("sitemap includes ignored priority or changefreq fields");
 
+  const challenge = await readFile(join(root, "challenge", "index.html"), "utf8");
+  if (!challenge.includes("Have public-safe evidence that could change a finding? Choose a route below. Local reproduction is optional and can help others verify the result.")) errors.push("challenge page is missing its evidence-first lead");
+  const challengeOrder = ["Counterexample", "Reproduction result", "New synthetic case", "Accessibility or site defect", "Optional local checker", "Public-safety boundary"]
+    .map((label) => challenge.indexOf(label));
+  if (!challengeOrder.every((position, index) => position >= 0 && (index === 0 || position > challengeOrder[index - 1]))) errors.push("challenge route order is incorrect");
+  if (!challenge.includes("Local reproduction is optional.")) errors.push("challenge page does not describe local reproduction as optional");
+
   const supportingRoutes = [
     ["cases/index.html", "Practice checking AI claims against the evidence."],
     ["method/index.html", "Check an AI claim against the evidence."],
@@ -352,6 +395,9 @@ export async function checkSite(root = join(ROOT, "dist")) {
     if (app.includes(forbidden)) errors.push(`app includes forbidden persistence/network primitive ${forbidden}`);
   }
   if (/fetch\s*\(\s*["']https?:/i.test(app)) errors.push("app includes external fetch");
+  for (const marker of ["normalizeFilterValue", "revealsLibraryOutcomes", "data-library-outcome", "data-finding-disclosure", "data-filter-empty", "history.replaceState", 'addEventListener("popstate"']) {
+    if (!app.includes(marker)) errors.push(`app is missing archive runtime contract ${marker}`);
+  }
   if (!/target instanceof HTMLAnchorElement && isSameDocumentFragmentHref\(target\.href, location\.href\)\) return;/.test(app)) {
     errors.push("same-document fragment links do not bypass focus recentering");
   }

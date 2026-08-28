@@ -5,7 +5,12 @@ import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
-import { isSameDocumentFragmentHref } from "../src/site/app.mjs";
+import {
+  caseMatchesFilters,
+  isSameDocumentFragmentHref,
+  normalizeFilterValue,
+  revealsLibraryOutcomes,
+} from "../src/site/app.mjs";
 import { build, INDEXNOW_KEY } from "../tools/build.mjs";
 import { checkHttp } from "../tools/check-http.mjs";
 import { checkSite } from "../tools/check-site.mjs";
@@ -30,6 +35,20 @@ test("same-document fragment links preserve native anchor scrolling", () => {
   assert.equal(isSameDocumentFragmentHref("?view=full#method-overview", current), false);
   assert.equal(isSameDocumentFragmentHref("/detecting-ai-deception/method/#overview", current), false);
   assert.equal(isSameDocumentFragmentHref("https://other.test/detecting-ai-deception/?view=compact#method-overview", current), false);
+});
+
+test("practice filters normalize fail-closed and reveal outcomes only for explicit findings", () => {
+  const findings = new Set(["all", "supported", "contradicted", "insufficient-evidence"]);
+  const classes = new Set(["all", "false-completion", "context-or-citation-escape"]);
+  assert.equal(normalizeFilterValue("contradicted", findings), "contradicted");
+  assert.equal(normalizeFilterValue("invalid", findings), "all");
+  assert.equal(normalizeFilterValue(null, findings), "all");
+  assert.equal(normalizeFilterValue("false-completion", classes), "false-completion");
+  assert.equal(revealsLibraryOutcomes("all"), false);
+  assert.equal(revealsLibraryOutcomes("contradicted"), true);
+  assert.equal(revealsLibraryOutcomes("invalid"), false);
+  assert.equal(caseMatchesFilters("supported", ["control-case"], "supported", "control-case"), true);
+  assert.equal(caseMatchesFilters("supported", ["control-case"], "supported", "false-completion"), false);
 });
 
 test("the complete static site builds and passes its semantic contract", async () => {
@@ -135,8 +154,10 @@ test("the visitor-first design stays bounded, useful and code-native", async () 
     assert.match(home, /<dt>Claim<\/dt><dd>30 days<\/dd>/);
     assert.match(home, /<dt>Required evidence<\/dt><dd>30 days<\/dd>/);
     assert.match(home, /<dt>Observed record<\/dt><dd>7 days<\/dd>/);
-    assert.match(home, /<dt>Finding<\/dt><dd>Contradicted<\/dd>/);
-    assert.match(home, /The cited passage does not support the answer\./);
+    assert.match(home, /<dt>Finding<\/dt><dd>Choose, then reveal<\/dd>/);
+    const featured = home.slice(home.indexOf('class="featured-case-panel"'), home.indexOf("</a>", home.indexOf('class="featured-case-panel"')));
+    assert.match(featured, /Open the case and make the narrowest call the evidence supports\./);
+    assert.doesNotMatch(featured, /Contradicted|The cited passage does not support the answer\./);
     assert.match(home, /href="#method-overview"/);
     assert.match(home, /id="method-overview"/);
     assert.match(home, /id="practice-cases"/);
@@ -254,6 +275,98 @@ test("people and automated readers receive one truthful discovery contract", asy
     }
   } finally {
     await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("persona-flow repairs preserve blind practice, progressive disclosure and exact evidence", async () => {
+  const root = await mkdtemp(join(tmpdir(), "detecting-ai-deception-site-test-"));
+  try {
+    await build(root);
+    const relativePages = [
+      "index.html", "cases/index.html", "method/index.html", "tools/index.html", "challenge/index.html", "about/index.html",
+      "cases/missing-file/index.html", "cases/reassuring-average/index.html", "cases/unsupported-citation/index.html",
+      "cases/wrong-product-identity/index.html", "cases/lost-response/index.html", "cases/revision-bound-claim/index.html",
+    ];
+    for (const path of relativePages) {
+      const html = await readFile(join(root, path), "utf8");
+      const header = html.match(/<header class="site-header">[\s\S]*?<\/header>/)[0];
+      const order = ["Cases", "Method", "Tools", "Challenge", "About"].map((label) => header.indexOf(`>${label}</a>`));
+      assert.ok(order.every((position, index) => position >= 0 && (index === 0 || position > order[index - 1])), `${path} nav order`);
+      assert.match(header, /class="mobile-cases-link"/);
+      assert.match(header, /aria-label="Mobile primary"/);
+      assert.match(header, />Intent boundary<\/a>/);
+      assert.match(header, /about\/#intent-boundary/);
+    }
+
+    const home = await readFile(join(root, "index.html"), "utf8");
+    const featuredStart = home.indexOf('class="featured-case-panel"');
+    const featured = home.slice(featuredStart, home.indexOf("</a>", featuredStart));
+    for (const pair of [["Claim", "30 days"], ["Required evidence", "30 days"], ["Observed record", "7 days"], ["Finding", "Choose, then reveal"]]) {
+      assert.ok(featured.includes(`<dt>${pair[0]}</dt><dd>${pair[1]}</dd>`));
+    }
+    assert.doesNotMatch(featured, /Contradicted|The cited passage does not support the answer\./);
+
+    const cases = await readFile(join(root, "cases", "index.html"), "utf8");
+    assert.ok(cases.indexOf('class="archive-records"') < cases.indexOf("Browse all six cases"));
+    assert.equal((cases.match(/data-library-outcome hidden/g) ?? []).length, 6);
+    assert.match(cases, /Filtering by finding reveals the case outcomes before you open them\./);
+    assert.match(cases, /No cases match both filters\. Change a filter or browse all six below\./);
+
+    const method = await readFile(join(root, "method", "index.html"), "utf8");
+    assert.match(method, /Use this four-line record on another AI answer/);
+    assert.ok(method.includes("Claim:\nRequired evidence:\nObserved record (source, exact revision or date, passage):\nFinding: Supported / Contradicted / Insufficient evidence — Intent: not assessed"));
+    for (const marker of ["Practice the template on Case 03", "Browse all six cases", "Choose your next step", 'href="../challenge/"']) assert.ok(method.includes(marker));
+
+    const pack = JSON.parse(await readFile(join(ROOT, "data", "deception-cases.v1.json"), "utf8"));
+    for (const record of pack.cases) {
+      const html = await readFile(join(root, "cases", record.id, "index.html"), "utf8");
+      for (const marker of [
+        'aria-label="On this case"', 'href="#make-your-call"', 'href="#read-plainly"', 'href="#technical-record"',
+        'id="make-your-call"', 'id="read-plainly"', 'id="technical-record"', 'href="../../challenge/"',
+      ]) assert.ok(html.includes(marker), `${record.id} omits ${marker}`);
+      assert.ok(html.includes(`<code>${record.reproduction.command}</code>`), `${record.id} command bytes changed`);
+    }
+
+    const challenge = await readFile(join(root, "challenge", "index.html"), "utf8");
+    assert.match(challenge, /Have public-safe evidence that could change a finding\? Choose a route below\. Local reproduction is optional and can help others verify the result\./);
+    const challengeOrder = ["Counterexample", "Reproduction result", "New synthetic case", "Accessibility or site defect", "Optional local checker", "Public-safety boundary"]
+      .map((label) => challenge.indexOf(label));
+    assert.ok(challengeOrder.every((position, index) => position >= 0 && (index === 0 || position > challengeOrder[index - 1])));
+
+    const about = await readFile(join(root, "about", "index.html"), "utf8");
+    assert.match(about, /<h2 id="intent-boundary">What this is not<\/h2>/);
+    const styles = await readFile(join(root, "assets", "styles.css"), "utf8");
+    assert.match(styles, /@media \(max-width: 40rem\)[\s\S]*?\.code-block\s*\{[^}]*overflow-x:\s*visible;[^}]*overflow-wrap:\s*anywhere;[^}]*white-space:\s*pre-wrap;/s);
+    const mobileNavigationStyles = styles.match(/@media \(max-width: 64rem\) \{([\s\S]*?)\n\}/)?.[1] ?? "";
+    assert.match(mobileNavigationStyles, /\.mobile-cases-link\s*\{[^}]*display:\s*inline-flex;[^}]*min-width:\s*2\.75rem;[^}]*min-height:\s*2\.75rem;/s);
+    const mobileStyles = styles.match(/@media \(max-width: 40rem\) \{([\s\S]*?)\n\}/)?.[1] ?? "";
+    assert.match(mobileStyles, /\.wordmark\s*\{[^}]*font-size:\s*0\.75rem;[^}]*letter-spacing:\s*0\.1em;/s);
+    assert.match(mobileStyles, /\.opening-grid\s*\{[^}]*gap:\s*1\.25rem;[^}]*padding:\s*1\.5rem 0 1\.75rem;/s);
+    assert.match(mobileStyles, /\.opening-copy h1\s*\{[^}]*font-size:\s*clamp\(2\.5rem, 10\.75vw, 2\.625rem\);[^}]*line-height:\s*0\.92;/s);
+    assert.match(mobileStyles, /\.hero-explanation\s*\{[^}]*margin-bottom:\s*1\.1rem;[^}]*font-size:\s*1rem;[^}]*line-height:\s*1\.45;/s);
+    assert.match(mobileStyles, /\.hero-actions\s*\{[^}]*gap:\s*0\.5rem;[^}]*grid-template-columns:\s*1fr;/s);
+    assert.match(mobileStyles, /\.hero-actions \.primary-button,[\s\S]*?\.hero-actions \.secondary-button\s*\{[^}]*min-height:\s*3rem;[^}]*width:\s*100%;[^}]*min-width:\s*0;/s);
+    assert.match(mobileStyles, /\.featured-case-panel\s*\{[^}]*margin-top:\s*0;/s);
+
+    for (const path of ["data/deception-cases.v1.json", "data/source-map.v1.json", "schemas/deception-case-v1.schema.json"]) {
+      assert.deepEqual(await readFile(join(root, path)), await readFile(join(ROOT, path)), `${path} changed during generation`);
+    }
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("repeated persona-flow builds are byte-for-byte deterministic", async () => {
+  const first = await mkdtemp(join(tmpdir(), "detecting-ai-deception-site-test-"));
+  const second = await mkdtemp(join(tmpdir(), "detecting-ai-deception-site-test-"));
+  try {
+    const firstDigest = await build(first);
+    const secondDigest = await build(second);
+    assert.equal(firstDigest, secondDigest);
+    assert.deepEqual(await readFile(join(first, "build-manifest.json")), await readFile(join(second, "build-manifest.json")));
+  } finally {
+    await rm(first, { recursive: true, force: true });
+    await rm(second, { recursive: true, force: true });
   }
 });
 
