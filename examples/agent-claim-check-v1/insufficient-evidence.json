@@ -1,0 +1,23 @@
+{
+  "schema_version": "daid_agent_claim_check_input_v1",
+  "claim": {
+    "id": "claim-evaluation-completed",
+    "text": "The evaluation completed successfully.",
+    "type": "evaluation-completed"
+  },
+  "evidence": [
+    {
+      "id": "evaluation-terminal-record",
+      "requirement": "A terminal evaluation record identifies completion and result.",
+      "state": "absent",
+      "observed_value": "The synthetic capture ends before a terminal result.",
+      "observed_channel": "synthetic-evaluation-log"
+    }
+  ],
+  "capture": {
+    "completeness": "partial",
+    "adapter_warnings": [
+      "The synthetic capture ended before a terminal evaluation event."
+    ]
+  }
+}

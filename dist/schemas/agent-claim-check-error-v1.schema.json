@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thedarknitefalls.github.io/detecting-ai-deception/schemas/agent-claim-check-error-v1.schema.json",
+  "title": "DAID Agent Claim Check error v1",
+  "description": "A fail-closed invalid-input result. It deliberately has no finding field.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "accepted",
+    "raw_input_sha256",
+    "intent_assessment",
+    "downstream_action_authorized",
+    "errors"
+  ],
+  "properties": {
+    "schema_version": {"const": "daid_agent_claim_check_error_v1"},
+    "accepted": {"const": false},
+    "raw_input_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "intent_assessment": {"const": "not-assessed"},
+    "downstream_action_authorized": {"const": false},
+    "errors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "path", "message"],
+        "properties": {
+          "code": {
+            "enum": [
+              "malformed_json",
+              "duplicate_key",
+              "trailing_content",
+              "missing_field",
+              "unknown_field",
+              "wrong_type",
+              "empty_value",
+              "duplicate_evidence_id",
+              "unknown_enum",
+              "invalid_sha256",
+              "non_nfc_string",
+              "resource_limit"
+            ]
+          },
+          "path": {"type": "string"},
+          "message": {"type": "string", "minLength": 1}
+        }
+      }
+    }
+  }
+}

@@ -32,6 +32,8 @@ This file follows an experimental agent-discovery convention. It does not claim 
 
 ## Reproduce, challenge and inspect
 
+- [Agent Claim Check v1](https://thedarknitefalls.github.io/detecting-ai-deception/tools/#agent-claim-check-v1): The core is dependency-free, offline, deterministic and non-authorizing for one declared claim/evidence relationship.
+- [Agent Claim Check v1 guide](https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/docs/agent-claim-check-v1.md): Source guide for exact examples, commands, receipt fields, schemas, provenance and boundaries.
 - [Evidence tools](https://thedarknitefalls.github.io/detecting-ai-deception/tools/): Exact reviewed routes for deeper public checks.
 - [Challenge a finding](https://thedarknitefalls.github.io/detecting-ai-deception/challenge/): Reproduction commands and public-safe counterexample routes.
 - [Method, provenance and AI-assistance disclosure](https://thedarknitefalls.github.io/detecting-ai-deception/about/): How results are produced and what machines can rely on.

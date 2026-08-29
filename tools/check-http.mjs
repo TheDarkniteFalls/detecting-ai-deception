@@ -16,6 +16,9 @@ const ROUTES = [
   "/cases/lost-response/", "/cases/revision-bound-claim/", "/method/",
   "/tools/", "/challenge/", "/about/", "/assets/app.mjs",
   "/assets/classifier.mjs", "/data/deception-cases.v1.json",
+  "/schemas/agent-claim-check-input-v1.schema.json",
+  "/schemas/agent-claim-check-receipt-v1.schema.json",
+  "/schemas/agent-claim-check-error-v1.schema.json",
   `/${INDEXNOW_KEY}.txt`,
 ];
 
@@ -56,6 +59,13 @@ export async function checkHttp() {
       const text = await response.text();
       if (response.status !== 200) throw new Error(`${route} returned ${response.status}`);
       if (route.endsWith("/") && (!text.includes("<main id=\"main\">") || !text.includes("Intent: not assessed"))) throw new Error(`${route} lacks meaningful HTML`);
+      if (route.startsWith("/schemas/agent-claim-check-")) {
+        const schema = JSON.parse(text);
+        const expectedId = `https://thedarknitefalls.github.io/detecting-ai-deception${route}`;
+        if (schema.$id !== expectedId || schema.$schema !== "https://json-schema.org/draft/2020-12/schema") {
+          throw new Error(`${route} lacks its canonical JSON Schema identity`);
+        }
+      }
       if (route === `/${INDEXNOW_KEY}.txt` && text !== `${INDEXNOW_KEY}\n`) throw new Error("IndexNow ownership file has incorrect bytes");
       results.push({ route, status: response.status, bytes: Buffer.byteLength(text) });
     }

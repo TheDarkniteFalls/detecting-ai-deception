@@ -60,7 +60,7 @@ test("the complete static site builds and passes its semantic contract", async (
     assert.deepEqual(result.errors, []);
     assert.equal(result.html_count, 12);
     assert.equal(result.permanent_case_count, 6);
-    assert.equal(result.file_count, 26);
+    assert.equal(result.file_count, 29);
   } finally {
     await rm(root, { recursive: true, force: true });
   }
@@ -72,9 +72,12 @@ test("the HTTP publication check stays loopback-only and covers every public rou
   assert.doesNotMatch(source, /0\.0\.0\.0|127\.0\.0\.1/);
   const result = await checkHttp();
   assert.equal(result.result, "pass");
-  assert.equal(result.route_count, 16);
+  assert.equal(result.route_count, 19);
   assert.ok(result.routes.every(({ status, bytes }) => status === 200 && bytes > 0));
   assert.ok(result.routes.some(({ route }) => route === `/${INDEXNOW_KEY}.txt`));
+  for (const schema of ["input", "receipt", "error"]) {
+    assert.ok(result.routes.some(({ route }) => route === `/schemas/agent-claim-check-${schema}-v1.schema.json`));
+  }
 });
 
 test("the project-scoped IndexNow ownership file is deterministic and inert", async () => {
@@ -267,12 +270,76 @@ test("people and automated readers receive one truthful discovery contract", asy
 
     const sitemapEntries = [...sitemap.matchAll(/<url><loc>([^<]+)<\/loc><lastmod>([^<]+)<\/lastmod><\/url>/g)];
     assert.equal(sitemapEntries.length, 12);
-    for (const [, , date] of sitemapEntries) assert.equal(date, "2026-08-27");
+    for (const [, url, date] of sitemapEntries) {
+      assert.equal(date, url.endsWith("/tools/") ? "2026-08-30" : "2026-08-27");
+    }
     assert.doesNotMatch(sitemap, /<(?:priority|changefreq)>/);
 
     for (const route of ["llms.txt", "data/deception-cases.v1.json", "schemas/deception-case-v1.schema.json", "data/source-map.v1.json", "tools/", "challenge/"]) {
       assert.ok(about.includes(route), `automated-reader section omits ${route}`);
     }
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
+});
+
+test("Agent Claim Check is the first Tools route with canonical schemas and bounded discovery metadata", async () => {
+  const root = await mkdtemp(join(tmpdir(), "detecting-ai-deception-site-test-"));
+  try {
+    await build(root);
+    const tools = await readFile(join(root, "tools", "index.html"), "utf8");
+    const llms = await readFile(join(root, "llms.txt"), "utf8");
+    const sitemap = await readFile(join(root, "sitemap.xml"), "utf8");
+    const manifest = JSON.parse(await readFile(join(root, "build-manifest.json"), "utf8"));
+
+    assert.equal((tools.match(/id="agent-claim-check-v1"/g) ?? []).length, 1);
+    assert.ok(tools.indexOf('id="agent-claim-check-v1"') < tools.indexOf("Supporting evidence routes"));
+    for (const marker of [
+      "Run Agent Claim Check v1",
+      "node tools/check-agent-claim.mjs examples/agent-claim-check-v1/supported.json",
+      'intent_assessment: "not-assessed"',
+      "downstream_action_authorized: false",
+      'does_not_establish: ["correctness", "safety", "identity", "successful-execution", "authority", "permission"]',
+    ]) assert.ok(tools.includes(marker), marker);
+    for (const href of [
+      "https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/docs/agent-claim-check-v1.md",
+      "https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/examples/agent-claim-check-v1/supported.json",
+      "https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/examples/agent-claim-check-v1/contradicted.json",
+      "https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/examples/agent-claim-check-v1/insufficient-evidence.json",
+      "https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/examples/agent-claim-check-v1/invalid-input.json",
+      "https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/tools/check-agent-claim.mjs",
+      "https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/src/agent-claim-check.mjs",
+      "https://thedarknitefalls.github.io/detecting-ai-deception/schemas/agent-claim-check-input-v1.schema.json",
+      "https://thedarknitefalls.github.io/detecting-ai-deception/schemas/agent-claim-check-receipt-v1.schema.json",
+      "https://thedarknitefalls.github.io/detecting-ai-deception/schemas/agent-claim-check-error-v1.schema.json",
+      "https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/LICENSING.md",
+      "https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/SECURITY.md",
+      "https://thedarknitefalls.github.io/detecting-ai-deception/challenge/",
+    ]) assert.ok(tools.includes(`href="${href}"`), href);
+    assert.doesNotMatch(tools, /<(?:form|input|textarea|select)\b/i);
+
+    const toolsGraph = JSON.parse(tools.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1])["@graph"];
+    assert.equal(toolsGraph.find((item) => item["@type"] === "WebPage").dateModified, "2026-08-30");
+    assert.match(llms, /https:\/\/thedarknitefalls\.github\.io\/detecting-ai-deception\/tools\/#agent-claim-check-v1/);
+    assert.match(llms, /https:\/\/github\.com\/TheDarkniteFalls\/detecting-ai-deception\/blob\/main\/docs\/agent-claim-check-v1\.md/);
+    for (const boundary of ["dependency-free", "offline", "deterministic", "non-authorizing"]) assert.ok(llms.includes(boundary));
+
+    const sitemapEntries = [...sitemap.matchAll(/<url><loc>([^<]+)<\/loc><lastmod>([^<]+)<\/lastmod><\/url>/g)];
+    assert.equal(sitemapEntries.length, 12);
+    for (const [, url, date] of sitemapEntries) assert.equal(date, url.endsWith("/tools/") ? "2026-08-30" : "2026-08-27");
+
+    for (const schemaName of [
+      "agent-claim-check-input-v1.schema.json",
+      "agent-claim-check-receipt-v1.schema.json",
+      "agent-claim-check-error-v1.schema.json",
+    ]) {
+      const source = await readFile(join(ROOT, "schemas", schemaName));
+      const generated = await readFile(join(root, "schemas", schemaName));
+      assert.deepEqual(generated, source, schemaName);
+      assert.equal(JSON.parse(generated).$id, `https://thedarknitefalls.github.io/detecting-ai-deception/schemas/${schemaName}`);
+    }
+    assert.equal(manifest.file_count, 28);
+    assert.equal(manifest.files.length, 28);
   } finally {
     await rm(root, { recursive: true, force: true });
   }

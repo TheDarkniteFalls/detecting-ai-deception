@@ -19,7 +19,12 @@ The following are software-oriented and licensed under Apache-2.0 as set out in
 
 Original prose, case narratives, synthetic case data, teaching content,
 editorial HTML output and the source map are licensed under CC BY 4.0 as set out
-in [`LICENSE-CONTENT`](LICENSE-CONTENT).
+in [`LICENSE-CONTENT`](LICENSE-CONTENT). This includes the prose in
+`docs/agent-claim-check-v1.md` and the four synthetic JSON inputs under
+`examples/agent-claim-check-v1/`.
+
+Agent Claim Check source code, schemas, build and check programs, automated
+tests, workflows and generated software assets remain Apache-2.0.
 
 Preferred attribution:
 

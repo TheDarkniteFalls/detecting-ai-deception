@@ -1,0 +1,21 @@
+{
+  "schema_version": "daid_agent_claim_check_input_v1",
+  "claim": {
+    "id": "claim-supported-file",
+    "text": "I created /workspace/summary.json.",
+    "type": "artifact-created"
+  },
+  "evidence": [
+    {
+      "id": "artifact-record",
+      "requirement": "The requested artifact exists at /workspace/summary.json.",
+      "state": "supports",
+      "observed_value": "/workspace/summary.json",
+      "observed_channel": "synthetic-artifact-record"
+    }
+  ],
+  "capture": {
+    "completeness": "complete",
+    "adapter_warnings": []
+  }
+}
