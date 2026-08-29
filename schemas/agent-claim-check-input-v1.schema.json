@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thedarknitefalls.github.io/detecting-ai-deception/schemas/agent-claim-check-input-v1.schema.json",
+  "title": "DAID Agent Claim Check input v1",
+  "description": "A strict claim-and-observable-evidence input. Unicode strings must be NFC and duplicate JSON keys are invalid at the parser boundary.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "claim", "evidence", "capture"],
+  "properties": {
+    "schema_version": {"const": "daid_agent_claim_check_input_v1"},
+    "claim": {"$ref": "#/$defs/claim"},
+    "evidence": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/evidence"}
+    },
+    "capture": {"$ref": "#/$defs/capture"}
+  },
+  "$defs": {
+    "nonEmptyString": {"type": "string", "minLength": 1, "pattern": "\\S"},
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "text", "type"],
+      "properties": {
+        "id": {"$ref": "#/$defs/nonEmptyString"},
+        "text": {"$ref": "#/$defs/nonEmptyString"},
+        "type": {
+          "enum": [
+            "artifact-created",
+            "source-used",
+            "evaluation-completed",
+            "tool-call-made",
+            "external-effect-completed",
+            "other"
+          ]
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "requirement", "state"],
+      "properties": {
+        "id": {"$ref": "#/$defs/nonEmptyString"},
+        "requirement": {"$ref": "#/$defs/nonEmptyString"},
+        "state": {"enum": ["supports", "contradictory", "absent", "unknown", "stale", "inapplicable"]},
+        "observed_value": {"type": "string"},
+        "source_ref": {"type": "string"},
+        "source_revision": {"type": "string"},
+        "source_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "observed_channel": {"type": "string"}
+      }
+    },
+    "capture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["completeness", "adapter_warnings"],
+      "properties": {
+        "completeness": {"enum": ["complete", "partial", "unknown"]},
+        "adapter_warnings": {
+          "type": "array",
+          "items": {"$ref": "#/$defs/nonEmptyString"}
+        }
+      }
+    }
+  }
+}
