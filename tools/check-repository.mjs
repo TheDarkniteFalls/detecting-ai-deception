@@ -24,10 +24,17 @@ export async function checkRepository() {
     "README.md", "LICENSE", "LICENSE-CONTENT", "LICENSING.md", "NOTICE",
     "THIRD_PARTY_NOTICES.md", "CONTRIBUTING.md", "SECURITY.md", "package.json",
     "data/deception-cases.v1.json", "data/source-map.v1.json",
-    "schemas/deception-case-v1.schema.json", "src/classifier.mjs",
+    "schemas/deception-case-v1.schema.json",
+    "schemas/agent-claim-check-input-v1.schema.json",
+    "schemas/agent-claim-check-error-v1.schema.json",
+    "schemas/agent-claim-check-receipt-v1.schema.json",
+    "src/classifier.mjs", "src/agent-claim-check.mjs",
     "src/site/styles.css", "tools/build.mjs", "tests/site.test.mjs",
     "tools/check-cases.mjs", "tools/check-site.mjs", "tools/check-all.mjs",
-    "tools/check-http.mjs",
+    "tools/check-http.mjs", "tools/check-agent-claim.mjs",
+    "tools/agent-claim-check-synthetic-adapter.mjs",
+    "fixtures/agent-claim-check-v1/cases.json",
+    "tests/agent-claim-check.test.mjs",
     ".github/workflows/checks.yml",
     ".github/ISSUE_TEMPLATE/reproduction.yml",
     ".github/ISSUE_TEMPLATE/counterexample.yml",
@@ -67,6 +74,28 @@ export async function checkRepository() {
     if (!source.non_claim) errors.push(`${source.id}: missing non-claim`);
   }
 
+  const claimCheckPack = JSON.parse(await readFile(join(ROOT, "fixtures", "agent-claim-check-v1", "cases.json"), "utf8"));
+  if (claimCheckPack.creator !== "Mike Parsons" || claimCheckPack.license !== "CC BY 4.0") errors.push("Agent Claim Check fixture provenance/license mismatch");
+  const expectedClaimCheckCases = [
+    ["supported-artifact-control", "supported"],
+    ["false-file-completion-claim", "contradicted"],
+    ["wrong-product-identity", "contradicted"],
+    ["unsupported-citation", "insufficient_evidence"],
+    ["evaluation-not-captured", "insufficient_evidence"],
+    ["ambiguous-external-effect", "insufficient_evidence"],
+  ];
+  if (JSON.stringify(claimCheckPack.cases.map((item) => [item.id, item.expected_finding])) !== JSON.stringify(expectedClaimCheckCases)) errors.push("Agent Claim Check fixture set differs from the frozen six-case contract");
+
+  for (const schemaName of [
+    "agent-claim-check-input-v1.schema.json",
+    "agent-claim-check-error-v1.schema.json",
+    "agent-claim-check-receipt-v1.schema.json",
+  ]) {
+    const schema = JSON.parse(await readFile(join(ROOT, "schemas", schemaName), "utf8"));
+    if (schema.$schema !== "https://json-schema.org/draft/2020-12/schema") errors.push(`${schemaName}: unexpected JSON Schema dialect`);
+    if (!schema.$id?.endsWith(`/schemas/${schemaName}`)) errors.push(`${schemaName}: canonical schema id mismatch`);
+  }
+
   for (const name of ["reproduction.yml", "counterexample.yml", "new-case.yml", "accessibility.yml"]) {
     const text = await readFile(join(ROOT, ".github", "ISSUE_TEMPLATE", name), "utf8");
     for (const term of ["credentials", "personal data", "private logs", "unpublished material", "sensitive vulnerability detail"]) {
@@ -82,6 +111,17 @@ export async function checkRepository() {
     if (runtime.includes(forbidden)) errors.push(`runtime contains forbidden primitive ${forbidden}`);
   }
   if (/fetch\s*\(\s*["']https?:/i.test(runtime)) errors.push("runtime performs an external request");
+
+  const claimCheckRuntime = await Promise.all([
+    "src/agent-claim-check.mjs",
+    "tools/check-agent-claim.mjs",
+    "tools/agent-claim-check-synthetic-adapter.mjs",
+  ].map((path) => readFile(join(ROOT, path), "utf8"))).then((parts) => parts.join("\n"));
+  for (const forbidden of [
+    "src/site", "agent-evidence-catalog", "node:http", "node:https",
+    "node:net", "node:child_process", "fetch(", "WebSocket", "XMLHttpRequest",
+    "localStorage", "sessionStorage", "document.cookie", "openai", "ollama",
+  ]) if (claimCheckRuntime.includes(forbidden)) errors.push(`Agent Claim Check crosses its offline core boundary: ${forbidden}`);
 
   const buildSource = await readFile(join(ROOT, "tools", "build.mjs"), "utf8");
   for (const marker of [
