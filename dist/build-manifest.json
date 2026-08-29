@@ -1,6 +1,6 @@
 {
   "schema_version": "detecting_ai_deception_build_manifest_v1",
-  "file_count": 25,
+  "file_count": 28,
   "files": [
     {
       "path": ".nojekyll",
@@ -99,8 +99,8 @@
     },
     {
       "path": "llms.txt",
-      "sha256": "f8b63c284506c2f9a922e4efcef0db7b59063d7ceb1b4bd0c19bdb58e6c8e95e",
-      "bytes": 5427
+      "sha256": "a52e33129d8fd251a9a9aeeb2ac07c51754a3a37e8632e4435421b00b8b84bed",
+      "bytes": 5884
     },
     {
       "path": "method/index.html",
@@ -113,19 +113,34 @@
       "bytes": 321
     },
     {
+      "path": "schemas/agent-claim-check-error-v1.schema.json",
+      "sha256": "d05b7b90cf0790217c35cf3c66058b4db7d08616ec4e59a0e5a6dbf4dab42597",
+      "bytes": 1617
+    },
+    {
+      "path": "schemas/agent-claim-check-input-v1.schema.json",
+      "sha256": "8aaf661aa13984e753f116b93eb88d8872fe71050d89580c90cb1dc67a8ff39e",
+      "bytes": 2380
+    },
+    {
+      "path": "schemas/agent-claim-check-receipt-v1.schema.json",
+      "sha256": "46af9807718c078fa3db729c907c6f2019f38c03113fde92a80829e3cd25ae1d",
+      "bytes": 5310
+    },
+    {
       "path": "schemas/deception-case-v1.schema.json",
       "sha256": "f05be7913af6c9e457f0006ac5b18559282ace07e943cddba3a51e40cb96b482",
       "bytes": 4033
     },
     {
       "path": "sitemap.xml",
-      "sha256": "5d9e25b9de94bf9fdbcc6f273392ec56299907d98a2e387249c9e6cf10606f32",
+      "sha256": "b42187a3a7df98fcb99d1abb9a7566072b975aa8174b818985d800107ba7fda2",
       "bytes": 1599
     },
     {
       "path": "tools/index.html",
-      "sha256": "9e542e6e5bb8730b703ee6d2fe731cea9f44321553c59809558629713298ef09",
-      "bytes": 8097
+      "sha256": "c853dfd186f08c69e9f38c07583b68f6b090f18c85b4d8fe92af5f85cdcda440",
+      "bytes": 10982
     }
   ]
 }

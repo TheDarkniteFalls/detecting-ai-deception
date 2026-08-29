@@ -11,6 +11,7 @@ const SITE_URL = "https://thedarknitefalls.github.io/detecting-ai-deception/";
 const PROJECT_URL = "https://github.com/TheDarkniteFalls/detecting-ai-deception";
 const SITE_NAME = "Detecting AI Deception";
 const SITE_UPDATED = "2026-08-27";
+const USAGE_SURFACE_UPDATED = "2026-08-30";
 export const INDEXNOW_KEY = "9b73d8320f260bfd96685d71e08434bd";
 const LICENSE_URL = "https://creativecommons.org/licenses/by/4.0/";
 const CREATOR_ID = `${PROJECT_URL}#mike-parsons`;
@@ -502,8 +503,13 @@ function toolsPage(sourceMap) {
     title: "AI Evidence-Checking Tools and Exact Sources",
     description: "Inspect exact public revisions and tools for checking AI claims, citations, missing evaluations, identity mismatches and ambiguous external actions.",
     path: "tools/", prefix: "../", current: "tools",
+    dateModified: USAGE_SURFACE_UPDATED,
     breadcrumbs: [{ name: "Tools", route: "tools/" }],
-    content: `<header class="case-page-header"><div class="shell"><h1 class="page-title">Follow the evidence deeper.</h1><p class="lead">Each route has an exact reviewed public revision and a narrow role. This site does not copy or silently extend those projects.</p></div></header><section class="band"><div class="shell"><ol class="route-list">${routes.map((source, index) => `<li><a class="route-link" href="${source.revision_url}"><span class="route-index">${String(index + 1).padStart(2, "0")}</span><span><strong>${escapeHtml(source.id.replaceAll("-", " "))}</strong>${escapeHtml(source.role)}</span><span>Exact revision<br>${source.revision.slice(0, 12)}</span></a></li>`).join("")}</ol></div></section><section class="band band-white"><div class="narrow"><h2>Need the complete toolkit?</h2><p>The Reliability Navigator covers the wider public set of guides, starters and runnable checks. Its route recommendation is not certification that a tool fits every setup.</p><a class="primary-button" href="https://thedarknitefalls.github.io/local-assistant-reliability-lab/">Open the Reliability Navigator</a><p class="source-revision"><a href="${sourceMap.sources.find((source) => source.id === "reliability-navigator").revision_url}">Public baseline reviewed for this map</a></p></div></section>`,
+    content: `<header class="case-page-header"><div class="shell"><h1 class="page-title">Follow the evidence deeper.</h1><p class="lead">Run DAID's own harness check first, then inspect the exact reviewed revisions and narrow roles of supporting projects.</p></div></header>
+<section class="band band-white" id="agent-claim-check-v1"><div class="narrow prose"><h2>Run Agent Claim Check v1</h2><p>Agent Claim Check is DAID's dependency-free, offline and deterministic harness check for one bounded claim and its observable evidence.</p><pre class="code-block"><code>node tools/check-agent-claim.mjs examples/agent-claim-check-v1/supported.json</code></pre><p>The example returns <code>supported</code>. Read that result only with these machine boundaries:</p><pre class="code-block"><code>intent_assessment: "not-assessed"
+downstream_action_authorized: false
+does_not_establish: ["correctness", "safety", "identity", "successful-execution", "authority", "permission"]</code></pre><p>A supported finding describes only the declared claim/evidence relationship. It is not permission to act.</p><h3>Guide, examples, and contracts</h3><ul><li><a href="${PROJECT_URL}/blob/main/docs/agent-claim-check-v1.md">Read the canonical Agent Claim Check v1 guide</a>.</li><li>Run the source examples: <a href="${PROJECT_URL}/blob/main/examples/agent-claim-check-v1/supported.json">supported</a>, <a href="${PROJECT_URL}/blob/main/examples/agent-claim-check-v1/contradicted.json">contradicted</a>, <a href="${PROJECT_URL}/blob/main/examples/agent-claim-check-v1/insufficient-evidence.json">insufficient evidence</a>, and <a href="${PROJECT_URL}/blob/main/examples/agent-claim-check-v1/invalid-input.json">invalid input</a>.</li><li>Inspect the <a href="${PROJECT_URL}/blob/main/tools/check-agent-claim.mjs">CLI</a> and <a href="${PROJECT_URL}/blob/main/src/agent-claim-check.mjs">core</a>.</li><li>Use the canonical <a href="${SITE_URL}schemas/agent-claim-check-input-v1.schema.json">input</a>, <a href="${SITE_URL}schemas/agent-claim-check-receipt-v1.schema.json">receipt</a>, and <a href="${SITE_URL}schemas/agent-claim-check-error-v1.schema.json">error</a> schemas.</li><li>Review <a href="${PROJECT_URL}/blob/main/LICENSING.md">licensing</a>, <a href="${PROJECT_URL}/blob/main/SECURITY.md">security reporting</a>, or the existing <a href="${SITE_URL}challenge/">public-safe Challenge route</a>.</li></ul></div></section>
+<section class="band"><div class="shell"><h2>Supporting evidence routes</h2><p>Each route below has an exact reviewed public revision and a narrow role. This site does not copy or silently extend those projects.</p><ol class="route-list">${routes.map((source, index) => `<li><a class="route-link" href="${source.revision_url}"><span class="route-index">${String(index + 1).padStart(2, "0")}</span><span><strong>${escapeHtml(source.id.replaceAll("-", " "))}</strong>${escapeHtml(source.role)}</span><span>Exact revision<br>${source.revision.slice(0, 12)}</span></a></li>`).join("")}</ol></div></section><section class="band band-white"><div class="narrow"><h2>Need the complete toolkit?</h2><p>The Reliability Navigator covers the wider public set of guides, starters and runnable checks. Its route recommendation is not certification that a tool fits every setup.</p><a class="primary-button" href="https://thedarknitefalls.github.io/local-assistant-reliability-lab/">Open the Reliability Navigator</a><p class="source-revision"><a href="${sourceMap.sources.find((source) => source.id === "reliability-navigator").revision_url}">Public baseline reviewed for this map</a></p></div></section>`,
   });
 }
 
@@ -565,6 +571,8 @@ ${caseLines}
 
 ## Reproduce, challenge and inspect
 
+- [Agent Claim Check v1](${new URL("tools/#agent-claim-check-v1", SITE_URL).href}): The core is dependency-free, offline, deterministic and non-authorizing for one declared claim/evidence relationship.
+- [Agent Claim Check v1 guide](${PROJECT_URL}/blob/main/docs/agent-claim-check-v1.md): Source guide for exact examples, commands, receipt fields, schemas, provenance and boundaries.
 - [Evidence tools](${new URL("tools/", SITE_URL).href}): Exact reviewed routes for deeper public checks.
 - [Challenge a finding](${new URL("challenge/", SITE_URL).href}): Reproduction commands and public-safe counterexample routes.
 - [Method, provenance and AI-assistance disclosure](${new URL("about/", SITE_URL).href}): How results are produced and what machines can rely on.
@@ -639,13 +647,18 @@ export async function build(outRoot) {
   await cp(join(ROOT, "data", "source-map.v1.json"), join(outRoot, "data", "source-map.v1.json"));
   await mkdir(join(outRoot, "schemas"), { recursive: true });
   await cp(join(ROOT, "schemas", "deception-case-v1.schema.json"), join(outRoot, "schemas", "deception-case-v1.schema.json"));
+  for (const schema of [
+    "agent-claim-check-input-v1.schema.json",
+    "agent-claim-check-receipt-v1.schema.json",
+    "agent-claim-check-error-v1.schema.json",
+  ]) await cp(join(ROOT, "schemas", schema), join(outRoot, "schemas", schema));
 
   const routes = [
     { path: "", lastmod: SITE_UPDATED },
     { path: "cases/", lastmod: SITE_UPDATED },
     ...pack.cases.map((record) => ({ path: `cases/${record.id}/`, lastmod: SITE_UPDATED })),
     { path: "method/", lastmod: SITE_UPDATED },
-    { path: "tools/", lastmod: SITE_UPDATED },
+    { path: "tools/", lastmod: USAGE_SURFACE_UPDATED },
     { path: "challenge/", lastmod: SITE_UPDATED },
     { path: "about/", lastmod: SITE_UPDATED },
   ];

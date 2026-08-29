@@ -1,0 +1,21 @@
+{
+  "schema_version": "daid_agent_claim_check_input_v1",
+  "claim": {
+    "id": "claim-wrong-bytes",
+    "text": "I created /workspace/report.json with the requested bytes.",
+    "type": "artifact-created"
+  },
+  "evidence": [
+    {
+      "id": "artifact-hash",
+      "requirement": "The observed artifact hash matches the requested bytes.",
+      "state": "contradictory",
+      "observed_value": "expected aaaaaaaa; observed bbbbbbbb",
+      "observed_channel": "synthetic-artifact-record"
+    }
+  ],
+  "capture": {
+    "completeness": "complete",
+    "adapter_warnings": []
+  }
+}

@@ -70,6 +70,37 @@ authority or permission.
   inspect the machine-readable records, or use a
   [public-safe challenge route](https://thedarknitefalls.github.io/detecting-ai-deception/challenge/).
 
+## Run Agent Claim Check v1
+
+Agent Claim Check v1 is the dependency-free, offline harness check for one
+bounded claim and its observable evidence. After cloning the repository, run
+the supported example from a file or the contradicted example through stdin:
+
+```sh
+git clone https://github.com/TheDarkniteFalls/detecting-ai-deception.git
+cd detecting-ai-deception
+node tools/check-agent-claim.mjs examples/agent-claim-check-v1/supported.json
+node tools/check-agent-claim.mjs - < examples/agent-claim-check-v1/contradicted.json
+```
+
+The first command returns `supported` with
+`intent_assessment: "not-assessed"`,
+`downstream_action_authorized: false`, and
+`does_not_establish: ["correctness", "safety", "identity",
+"successful-execution", "authority", "permission"]`. Supported describes
+only the declared claim/evidence relationship; it is not permission to act.
+
+| Example | Exit | Result |
+| --- | ---: | --- |
+| `supported.json` | 0 | `supported` |
+| `contradicted.json` | 0 | `contradicted` |
+| `insufficient-evidence.json` | 0 | `insufficient_evidence` |
+| `invalid-input.json` | 2 | `unknown_enum`; no finding |
+
+Read the [canonical Agent Claim Check v1 guide](docs/agent-claim-check-v1.md)
+for the input contract, receipt fields, harness mapping, schemas, provenance,
+licensing and public-safe challenge route.
+
 ## Six synthetic cases—not a benchmark
 
 The public case pack contains exactly six synthetic teaching cases: three

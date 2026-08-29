@@ -1,0 +1,141 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thedarknitefalls.github.io/detecting-ai-deception/schemas/agent-claim-check-receipt-v1.schema.json",
+  "title": "DAID Agent Claim Check receipt v1",
+  "description": "A deterministic claim/evidence finding receipt. A supported finding is narrow and does not authorize downstream action.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "accepted",
+    "claim",
+    "finding",
+    "intent_assessment",
+    "raw_input_sha256",
+    "canonical_input_sha256",
+    "capture",
+    "evidence_results",
+    "evidence_state_counts",
+    "checks",
+    "downstream_action_authorized",
+    "does_not_establish"
+  ],
+  "properties": {
+    "schema_version": {"const": "daid_agent_claim_check_receipt_v1"},
+    "accepted": {"const": true},
+    "claim": {"$ref": "#/$defs/claim"},
+    "finding": {"enum": ["supported", "contradicted", "insufficient_evidence"]},
+    "intent_assessment": {"const": "not-assessed"},
+    "raw_input_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "canonical_input_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "capture": {"$ref": "#/$defs/capture"},
+    "evidence_results": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/evidence"}
+    },
+    "evidence_state_counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["supports", "contradictory", "absent", "unknown", "stale", "inapplicable"],
+      "properties": {
+        "supports": {"type": "integer", "minimum": 0},
+        "contradictory": {"type": "integer", "minimum": 0},
+        "absent": {"type": "integer", "minimum": 0},
+        "unknown": {"type": "integer", "minimum": 0},
+        "stale": {"type": "integer", "minimum": 0},
+        "inapplicable": {"type": "integer", "minimum": 0}
+      }
+    },
+    "checks": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "prefixItems": [
+        {"$ref": "#/$defs/inputCheck"},
+        {"$ref": "#/$defs/evidenceCheck"},
+        {"$ref": "#/$defs/executionCheck"},
+        {"$ref": "#/$defs/identityCheck"},
+        {"$ref": "#/$defs/permissionCheck"},
+        {"$ref": "#/$defs/intentCheck"}
+      ],
+      "items": false
+    },
+    "downstream_action_authorized": {"const": false},
+    "does_not_establish": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "prefixItems": [
+        {"const": "correctness"},
+        {"const": "safety"},
+        {"const": "identity"},
+        {"const": "successful-execution"},
+        {"const": "authority"},
+        {"const": "permission"}
+      ],
+      "items": false
+    }
+  },
+  "$defs": {
+    "nonEmptyString": {"type": "string", "minLength": 1, "pattern": "\\S"},
+    "claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "text", "type"],
+      "properties": {
+        "id": {"$ref": "#/$defs/nonEmptyString"},
+        "text": {"$ref": "#/$defs/nonEmptyString"},
+        "type": {
+          "enum": [
+            "artifact-created",
+            "source-used",
+            "evaluation-completed",
+            "tool-call-made",
+            "external-effect-completed",
+            "other"
+          ]
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "requirement", "state"],
+      "properties": {
+        "id": {"$ref": "#/$defs/nonEmptyString"},
+        "requirement": {"$ref": "#/$defs/nonEmptyString"},
+        "state": {"enum": ["supports", "contradictory", "absent", "unknown", "stale", "inapplicable"]},
+        "observed_value": {"type": "string"},
+        "source_ref": {"type": "string"},
+        "source_revision": {"type": "string"},
+        "source_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "observed_channel": {"type": "string"}
+      }
+    },
+    "capture": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["completeness", "adapter_warnings"],
+      "properties": {
+        "completeness": {"enum": ["complete", "partial", "unknown"]},
+        "adapter_warnings": {"type": "array", "items": {"$ref": "#/$defs/nonEmptyString"}}
+      }
+    },
+    "inputCheck": {"$ref": "#/$defs/check", "properties": {"id": {"const": "input-contract"}, "state": {"const": "passed"}}},
+    "evidenceCheck": {"$ref": "#/$defs/check", "properties": {"id": {"const": "evidence-classification"}, "state": {"const": "passed"}}},
+    "executionCheck": {"$ref": "#/$defs/check", "properties": {"id": {"const": "external-execution"}, "state": {"const": "not-run"}}},
+    "identityCheck": {"$ref": "#/$defs/check", "properties": {"id": {"const": "identity-authentication"}, "state": {"const": "not-run"}}},
+    "permissionCheck": {"$ref": "#/$defs/check", "properties": {"id": {"const": "permission-validation"}, "state": {"const": "not-run"}}},
+    "intentCheck": {"$ref": "#/$defs/check", "properties": {"id": {"const": "intent-assessment"}, "state": {"const": "not-run"}}},
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "state"],
+      "properties": {
+        "id": {"type": "string"},
+        "state": {"enum": ["passed", "not-run"]}
+      }
+    }
+  }
+}

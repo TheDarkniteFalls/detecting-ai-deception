@@ -8,6 +8,7 @@ import { INDEXNOW_KEY } from "./build.mjs";
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SITE_PREFIX = "/detecting-ai-deception/";
 const SITE_URL = `https://thedarknitefalls.github.io${SITE_PREFIX}`;
+const PROJECT_URL = "https://github.com/TheDarkniteFalls/detecting-ai-deception";
 const SCULPTURE_ASSET = "assets/claim-record-evidence-sculpture.png";
 const SCULPTURE_SHA256 = "8c9080e23d909c3d80835c7d5f1f8e52843ba32cc30883a91ec3e434a8b0a4a6";
 
@@ -65,13 +66,19 @@ export async function checkSite(root = join(ROOT, "dist")) {
     "assets/styles.css", "assets/app.mjs", "assets/classifier.mjs", "assets/favicon.svg",
     SCULPTURE_ASSET,
     "data/deception-cases.v1.json", "data/source-map.v1.json",
-    "schemas/deception-case-v1.schema.json", "llms.txt", "robots.txt", "sitemap.xml",
+    "schemas/deception-case-v1.schema.json",
+    "schemas/agent-claim-check-input-v1.schema.json",
+    "schemas/agent-claim-check-receipt-v1.schema.json",
+    "schemas/agent-claim-check-error-v1.schema.json",
+    "llms.txt", "robots.txt", "sitemap.xml",
     `${INDEXNOW_KEY}.txt`,
     ".nojekyll", "build-manifest.json",
   ];
   for (const required of requiredOutputs) if (!relativeFiles.has(required)) errors.push(`missing output ${required}`);
   const expectedOutput = new Set([...requiredRoutes, ...requiredOutputs]);
   for (const path of relativeFiles) if (!expectedOutput.has(path)) errors.push(`unexpected output ${path}`);
+  if (htmlFiles.length !== 12) errors.push(`expected 12 HTML routes, found ${htmlFiles.length}`);
+  if (files.length !== 29) errors.push(`expected 29 generated files, found ${files.length}`);
   if (!/^[0-9a-f]{32}$/.test(INDEXNOW_KEY)) errors.push("IndexNow key must be exactly 32 lowercase hexadecimal characters");
   const ownershipFiles = [...relativeFiles].filter((path) => /^[0-9a-f]{32}\.txt$/.test(path));
   if (ownershipFiles.length !== 1 || ownershipFiles[0] !== `${INDEXNOW_KEY}.txt`) errors.push("generated output must contain exactly one matching IndexNow ownership file");
@@ -344,6 +351,13 @@ export async function checkSite(root = join(ROOT, "dist")) {
   }
   if ((llms.match(/^# /gm) ?? []).length !== 1 || !/^# Detecting AI Deception\n\n> /m.test(llms)) errors.push("llms.txt must have one H1 followed by one blockquote summary");
   if (!llms.includes("It does not claim search ranking or inclusion.")) errors.push("llms.txt lacks its no-ranking boundary");
+  for (const target of [
+    "https://thedarknitefalls.github.io/detecting-ai-deception/tools/#agent-claim-check-v1",
+    "https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/docs/agent-claim-check-v1.md",
+  ]) if (!llms.includes(target)) errors.push(`llms.txt is missing Agent Claim Check route ${target}`);
+  for (const boundary of ["dependency-free", "offline", "deterministic", "non-authorizing"]) {
+    if (!llms.includes(boundary)) errors.push(`llms.txt is missing Agent Claim Check boundary ${boundary}`);
+  }
 
   const robots = await readFile(join(root, "robots.txt"), "utf8");
   if (robots.includes(INDEXNOW_KEY)) errors.push("robots.txt must not contain the IndexNow key");
@@ -358,9 +372,42 @@ export async function checkSite(root = join(ROOT, "dist")) {
     .map((match) => ({ url: match[1], lastmod: match[2] }));
   if (sitemapEntries.length !== 12) errors.push(`sitemap must contain 12 dated routes, found ${sitemapEntries.length}`);
   for (const entry of sitemapEntries) {
-    if (entry.lastmod !== "2026-08-27") errors.push(`sitemap lastmod mismatch for ${entry.url}: ${entry.lastmod}`);
+    const expectedDate = entry.url === `${SITE_URL}tools/` ? "2026-08-30" : "2026-08-27";
+    if (entry.lastmod !== expectedDate) errors.push(`sitemap lastmod mismatch for ${entry.url}: ${entry.lastmod}`);
   }
   if (/<(?:priority|changefreq)>/.test(sitemap)) errors.push("sitemap includes ignored priority or changefreq fields");
+
+  const tools = await readFile(join(root, "tools", "index.html"), "utf8");
+  if ((tools.match(/id="agent-claim-check-v1"/g) ?? []).length !== 1) errors.push("Tools must contain exactly one Agent Claim Check fragment");
+  if (tools.indexOf('id="agent-claim-check-v1"') >= tools.indexOf("Supporting evidence routes")) errors.push("Agent Claim Check must precede supporting evidence routes");
+  for (const marker of [
+    "Run Agent Claim Check v1",
+    "node tools/check-agent-claim.mjs examples/agent-claim-check-v1/supported.json",
+    'intent_assessment: "not-assessed"',
+    "downstream_action_authorized: false",
+    'does_not_establish: ["correctness", "safety", "identity", "successful-execution", "authority", "permission"]',
+    "A supported finding describes only the declared claim/evidence relationship. It is not permission to act.",
+  ]) if (!tools.includes(marker)) errors.push(`Tools is missing Agent Claim Check contract: ${marker}`);
+  for (const href of [
+    `${SITE_URL}tools/#agent-claim-check-v1`,
+    `${PROJECT_URL}/blob/main/docs/agent-claim-check-v1.md`,
+    `${PROJECT_URL}/blob/main/examples/agent-claim-check-v1/supported.json`,
+    `${PROJECT_URL}/blob/main/examples/agent-claim-check-v1/contradicted.json`,
+    `${PROJECT_URL}/blob/main/examples/agent-claim-check-v1/insufficient-evidence.json`,
+    `${PROJECT_URL}/blob/main/examples/agent-claim-check-v1/invalid-input.json`,
+    `${PROJECT_URL}/blob/main/tools/check-agent-claim.mjs`,
+    `${PROJECT_URL}/blob/main/src/agent-claim-check.mjs`,
+    `${SITE_URL}schemas/agent-claim-check-input-v1.schema.json`,
+    `${SITE_URL}schemas/agent-claim-check-receipt-v1.schema.json`,
+    `${SITE_URL}schemas/agent-claim-check-error-v1.schema.json`,
+    `${PROJECT_URL}/blob/main/LICENSING.md`,
+    `${PROJECT_URL}/blob/main/SECURITY.md`,
+    `${SITE_URL}challenge/`,
+  ]) {
+    if (href.endsWith("tools/#agent-claim-check-v1")) continue;
+    if (!tools.includes(`href="${href}"`)) errors.push(`Tools is missing exact Agent Claim Check href ${href}`);
+  }
+  if (/<(?:form|input|textarea|select)\b/i.test(tools)) errors.push("Tools introduces an input or upload surface");
 
   const challenge = await readFile(join(root, "challenge", "index.html"), "utf8");
   if (!challenge.includes("Have public-safe evidence that could change a finding? Choose a route below. Local reproduction is optional and can help others verify the result.")) errors.push("challenge page is missing its evidence-first lead");
@@ -404,11 +451,23 @@ export async function checkSite(root = join(ROOT, "dist")) {
   const sourceClassifier = await readFile(join(ROOT, "src", "classifier.mjs"));
   const builtClassifier = await readFile(join(root, "assets", "classifier.mjs"));
   if (!sourceClassifier.equals(builtClassifier)) errors.push("browser classifier differs from Node source classifier");
+  for (const schemaName of [
+    "agent-claim-check-input-v1.schema.json",
+    "agent-claim-check-receipt-v1.schema.json",
+    "agent-claim-check-error-v1.schema.json",
+  ]) {
+    const sourceSchema = await readFile(join(ROOT, "schemas", schemaName));
+    const builtSchema = await readFile(join(root, "schemas", schemaName));
+    if (!sourceSchema.equals(builtSchema)) errors.push(`${schemaName}: generated schema is not byte-identical to source`);
+    const schema = JSON.parse(builtSchema);
+    if (schema.$id !== `${SITE_URL}schemas/${schemaName}`) errors.push(`${schemaName}: canonical $id mismatch`);
+  }
 
   const manifestText = await readFile(join(root, "build-manifest.json"), "utf8");
   const manifest = JSON.parse(manifestText);
   if (manifest.schema_version !== "detecting_ai_deception_build_manifest_v1") errors.push("build manifest schema is invalid");
   if (manifest.file_count !== manifest.files.length) errors.push("build manifest count mismatch");
+  if (manifest.file_count !== 28) errors.push(`build manifest must contain 28 entries, found ${manifest.file_count}`);
   if (manifest.file_count !== relativeFiles.size - 1) errors.push("build manifest does not cover the exact generated output scope");
   const manifestedPaths = new Set(manifest.files.map((item) => item.path));
   for (const path of relativeFiles) if (path !== "build-manifest.json" && !manifestedPaths.has(path)) errors.push(`manifest omits generated output ${path}`);
