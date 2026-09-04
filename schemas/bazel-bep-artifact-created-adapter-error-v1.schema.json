@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://thedarknitefalls.github.io/detecting-ai-deception/schemas/bazel-bep-artifact-created-adapter-error-v1.schema.json",
+  "title": "DAID Bazel BEP artifact-created adapter error v1",
+  "description": "Deterministic fail-closed adapter error. It has no claim finding or downstream authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "accepted", "stage", "errors", "downstream_action_authorized"],
+  "properties": {
+    "schema_version": {"const": "daid_bazel_bep_artifact_adapter_error_v1"},
+    "accepted": {"const": false},
+    "stage": {"enum": ["request", "source-read", "source-integrity", "source-json", "source-profile", "event-graph", "mapping", "core", "internal"]},
+    "source_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "errors": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["code", "path", "message"],
+        "properties": {
+          "code": {
+            "enum": [
+              "request_unreadable", "request_too_large", "request_invalid_utf8", "request_depth_exceeded", "request_malformed_json", "request_duplicate_key", "request_explicit_null", "request_unknown_field", "request_missing_field", "request_wrong_type", "request_non_nfc", "request_invalid_value",
+              "source_unreadable", "source_too_large", "source_sha256_mismatch", "source_invalid_utf8", "source_empty", "source_too_many_events",
+              "event_malformed_json", "event_duplicate_key", "event_explicit_null", "event_top_level_wrong_type", "event_depth_exceeded", "unknown_event_field", "event_non_nfc", "event_missing_id", "event_id_invalid", "event_children_wrong_type", "event_child_id_invalid", "last_message_wrong_type", "payload_oneof_multiple", "payload_wrong_type", "file_oneof_invalid", "contents_invalid_base64", "digest_invalid", "int64_invalid", "aborted_reason_invalid", "timestamp_invalid",
+              "unsupported_bazel_version", "started_payload_missing", "payload_id_mismatch",
+              "missing_root", "root_not_first", "multiple_root_events", "duplicate_event_id", "duplicate_child_id", "event_not_preannounced", "orphan_event", "event_graph_cycle", "last_message_not_final", "multiple_last_message", "last_message_with_missing_announced",
+              "mapping_invariant_failed", "core_rejected_generated_input", "internal_adapter_failure"
+            ]
+          },
+          "path": {"type": "string"},
+          "message": {"type": "string", "minLength": 1}
+        }
+      }
+    },
+    "downstream_action_authorized": {"const": false}
+  }
+}
