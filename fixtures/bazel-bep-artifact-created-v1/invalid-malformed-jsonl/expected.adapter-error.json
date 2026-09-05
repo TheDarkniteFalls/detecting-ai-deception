@@ -1,0 +1,1 @@
+{"accepted":false,"downstream_action_authorized":false,"errors":[{"code":"event_malformed_json","message":"Event is not one complete JSON object.","path":"/events/1"}],"schema_version":"daid_bazel_bep_artifact_adapter_error_v1","source_sha256":"18a501d0446b03751702dd46a0079bf9dfa24683388a2872977b4549fc4e2171","stage":"source-json"}

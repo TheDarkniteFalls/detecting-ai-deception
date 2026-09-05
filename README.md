@@ -101,6 +101,9 @@ Read the [canonical Agent Claim Check v1 guide](docs/agent-claim-check-v1.md)
 for the input contract, receipt fields, harness mapping, schemas, provenance,
 licensing and public-safe challenge route.
 
+See the [Bazel BEP artifact-created proving ground](docs/bazel-bep-artifact-created-adapter-v1.md)
+for one version-pinned real-format adapter and its synthetic offline fixtures.
+
 ## Six synthetic cases—not a benchmark
 
 The public case pack contains exactly six synthetic teaching cases: three

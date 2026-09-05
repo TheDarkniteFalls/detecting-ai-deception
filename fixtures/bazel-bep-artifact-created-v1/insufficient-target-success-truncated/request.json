@@ -1,0 +1,22 @@
+{
+  "schema_version": "daid_bazel_bep_artifact_created_request_v1",
+  "claim_id": "claim-bep-summary-truncated",
+  "source": {
+    "format": "bazel-build-event-protocol-json",
+    "version": "8.7.0",
+    "sha256": "6269e5373f6d659b90049486193fc1cfaf5dc7f6cc8a576e6c959118eb716eed"
+  },
+  "selection": {
+    "build_uuid": "11111111-2222-3333-4444-555555555555",
+    "target_label": "//reports:summary",
+    "configuration_id": "cfg-k8-fastbuild",
+    "output_group": "default",
+    "artifact": {
+      "label": "summary-output",
+      "path_prefix": ["bazel-out", "k8-fastbuild", "bin", "reports"],
+      "name": "summary.json",
+      "digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "length": "184"
+    }
+  }
+}
