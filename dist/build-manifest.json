@@ -14,8 +14,8 @@
     },
     {
       "path": "about/index.html",
-      "sha256": "07350b64fa0e3da27f45477fd660b6ddd508592ed4342aacaf5e4e6a579cdcb4",
-      "bytes": 8403
+      "sha256": "d6fe358445654dc1c33efd081a81a7bf68b1f8f23bac50914bfca78a0ca81c91",
+      "bytes": 9227
     },
     {
       "path": "assets/app.mjs",
@@ -39,48 +39,48 @@
     },
     {
       "path": "assets/styles.css",
-      "sha256": "0a5263f24e616ee052eb2339d9c27ca74eca9e3b5a63fb88a07387d0ea450a07",
-      "bytes": 59595
+      "sha256": "3f9dc954ade47669e1721b12f06498dcad3c6ca456ac0ea25ad331d6636ac1a0",
+      "bytes": 64722
     },
     {
       "path": "cases/index.html",
-      "sha256": "e0dcfc86b463fb2e2dd8b649c871869dd6e4b17f309a78d28d7ed4dee42de668",
-      "bytes": 17650
+      "sha256": "099703fcc70f9588798c6f6fab6216a41836223d59fad7e06b32dc20d3a325f4",
+      "bytes": 18398
     },
     {
       "path": "cases/lost-response/index.html",
-      "sha256": "f54e3c260edbacc2a7e3c5dc806be6f870fa50e72fce18f63a7428b1c2e1fb66",
-      "bytes": 18127
+      "sha256": "cda37df99966ddcff8e39cebb42dd2a3e204d6c4de320623319be55a4c01b3e8",
+      "bytes": 18342
     },
     {
       "path": "cases/missing-file/index.html",
-      "sha256": "658a674ed465d7859fed814daa2a108619e8c799690808e77e9683f212ced32c",
-      "bytes": 17619
+      "sha256": "5e7913f35199ed9d67d6d0264edbdbe2f2d0ac3e2d43be3d86bdcc6146583a07",
+      "bytes": 17834
     },
     {
       "path": "cases/reassuring-average/index.html",
-      "sha256": "a67afa46d7f6515bdb8af6f89fd0d66cc6ae23fb9b499cd0473a97843abf0215",
-      "bytes": 19160
+      "sha256": "fb7bac24c7ff6e28d78d9734849bad693d350c247488d26c9735f0916cec09fc",
+      "bytes": 19375
     },
     {
       "path": "cases/revision-bound-claim/index.html",
-      "sha256": "c8e48be3ab087608f65c691a8cbf8516a231c14c4267f24f30380604146e8a06",
-      "bytes": 18332
+      "sha256": "89e745d2432e90dfca0554fa69939d5784c282281aeb9284b10ccc422843538c",
+      "bytes": 18547
     },
     {
       "path": "cases/unsupported-citation/index.html",
-      "sha256": "e62df48671df1a263dd2e07ffd54a49a274ea53efedfc1377e272f6728d67a97",
-      "bytes": 18561
+      "sha256": "c1e4aa585332c73facdd8892bb588f2d835760237029834217b1bad00ffd5de0",
+      "bytes": 18776
     },
     {
       "path": "cases/wrong-product-identity/index.html",
-      "sha256": "da107237f171a218d4780564c5af2ab74111ceea98888b0acb71db345ccc5380",
-      "bytes": 18040
+      "sha256": "d7933fc5ad219139583230cea5578fad548ac9464d62bf677afd187d61576b03",
+      "bytes": 18255
     },
     {
       "path": "challenge/index.html",
-      "sha256": "b3143f943ed486022f67154c717c362e4b4d76e7d560fe04bc7981f92a8e1322",
-      "bytes": 7804
+      "sha256": "f6ac1df48d1b8f71ecfdf9e37b80f62b55063fc3d86edcf26e5e53427464e672",
+      "bytes": 8950
     },
     {
       "path": "data/deception-cases.v1.json",
@@ -94,8 +94,8 @@
     },
     {
       "path": "index.html",
-      "sha256": "890b96e938e7a29e5909d9311fb7a1773d84364e27246fa3f71273d77da9d401",
-      "bytes": 16483
+      "sha256": "1186f17597d34c72405d9608a96e1ef3ad03df769301c6f1b2719fea960a7542",
+      "bytes": 16679
     },
     {
       "path": "llms.txt",
@@ -104,8 +104,8 @@
     },
     {
       "path": "method/index.html",
-      "sha256": "c9d0170bb1f3887d7fcbc2bf2510e1d30ef059cce8b4d817f70ba0d4b3d508b5",
-      "bytes": 11466
+      "sha256": "9949e65b79a8dd00bdb28ff0b9aaf208f3b6b2b9eff2d2231e905bdc4dbd72bb",
+      "bytes": 12527
     },
     {
       "path": "robots.txt",
@@ -139,8 +139,8 @@
     },
     {
       "path": "tools/index.html",
-      "sha256": "c853dfd186f08c69e9f38c07583b68f6b090f18c85b4d8fe92af5f85cdcda440",
-      "bytes": 10982
+      "sha256": "637f5eb99edf35028a3d9e72427d373ef6ca79dca03dec72bc0f39b7b038a84f",
+      "bytes": 12201
     }
   ]
 }

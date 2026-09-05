@@ -106,7 +106,7 @@ export async function checkSite(root = join(ROOT, "dist")) {
       '<link rel="describedby"', '<noscript>', 'data-cases-url=', 'Intent: not assessed',
     ]) if (!html.includes(marker)) errors.push(`${pagePath}: missing ${marker}`);
     const globalHeader = html.match(/<header class="site-header">[\s\S]*?<\/header>/)?.[0] ?? "";
-    const navPositions = ["Cases", "Method", "Tools", "Challenge", "About"]
+    const navPositions = ["Practice", "How to check", "Use the checker", "Submit evidence", "About"]
       .map((label) => globalHeader.indexOf(`>${label}</a>`));
     if (!navPositions.every((position, index) => position >= 0 && (index === 0 || position > navPositions[index - 1]))) {
       errors.push(`${pagePath}: expanded primary navigation is missing or out of order`);
@@ -187,8 +187,16 @@ export async function checkSite(root = join(ROOT, "dist")) {
   const violet = cssColor(styles, "violet");
   const black = cssColor(styles, "black");
   const violetBright = cssColor(styles, "violet-bright");
+  const textOnLight = cssColor(styles, "text-on-light");
+  const mutedOnLight = cssColor(styles, "muted-on-light");
+  const accentOnLight = cssColor(styles, "accent-on-light");
   if (!bone || !violet || contrastRatio(bone, violet) < 4.5) errors.push("bone text on violet does not meet WCAG AA contrast");
   if (!black || !violetBright || contrastRatio(black, violetBright) < 4.5) errors.push("bright violet text on black does not meet WCAG AA contrast");
+  if (!textOnLight || !bone || contrastRatio(textOnLight, bone) < 7) errors.push("primary text on the light surface does not meet WCAG AAA contrast");
+  if (!mutedOnLight || !bone || contrastRatio(mutedOnLight, bone) < 7) errors.push("muted text on the light surface does not meet WCAG AAA contrast");
+  if (!accentOnLight || !bone || contrastRatio(accentOnLight, bone) < 4.5) errors.push("accent text on the light surface does not meet WCAG AA contrast");
+  if (!/\.band-white \.prose p,[\s\S]*?color:\s*var\(--muted-on-light\);/s.test(styles)) errors.push("light-surface prose does not use the semantic muted text role");
+  if (!/\.band-white \.code-block code\s*\{[^}]*color:\s*var\(--mint\);/s.test(styles)) errors.push("light-surface code blocks do not preserve dark-surface code contrast");
   if (!/\.home-row-title\s*\{[^}]*overflow-wrap:\s*normal;[^}]*word-break:\s*normal;/s.test(styles)) errors.push("home case titles can break inside ordinary words");
   if (!/\.finding-summary h3\s*\{[^}]*overflow-wrap:\s*normal;[^}]*word-break:\s*normal;/s.test(styles)) errors.push("finding headings can break inside ordinary words");
   if (!/body\s*\{[^}]*overflow-wrap:\s*normal;[^}]*word-break:\s*normal;/s.test(styles)) errors.push("body text can break inside ordinary words");
@@ -285,7 +293,7 @@ export async function checkSite(root = join(ROOT, "dist")) {
   if (!about.includes('<h2 id="intent-boundary">What this is not</h2>')) errors.push("about page lacks the stable intent-boundary anchor");
 
   const casesLanding = await readFile(join(root, "cases", "index.html"), "utf8");
-  if (casesLanding.indexOf('class="archive-records"') > casesLanding.indexOf("Browse all six cases")) errors.push("archive records do not precede the global spine");
+  if (casesLanding.indexOf('class="archive-records"') > casesLanding.lastIndexOf("Browse all six cases")) errors.push("archive records do not precede the global spine");
   if ((casesLanding.match(/data-library-outcome hidden/g) ?? []).length !== 6) errors.push("archive outcomes are not blind by default");
   for (const marker of [
     "Filtering by finding reveals the case outcomes before you open them.",
@@ -410,7 +418,7 @@ export async function checkSite(root = join(ROOT, "dist")) {
   if (/<(?:form|input|textarea|select)\b/i.test(tools)) errors.push("Tools introduces an input or upload surface");
 
   const challenge = await readFile(join(root, "challenge", "index.html"), "utf8");
-  if (!challenge.includes("Have public-safe evidence that could change a finding? Choose a route below. Local reproduction is optional and can help others verify the result.")) errors.push("challenge page is missing its evidence-first lead");
+  if (!challenge.includes("Choose the route that matches what you found. Keep submissions public-safe; local reproduction is optional.")) errors.push("challenge page is missing its evidence-first lead");
   const challengeOrder = ["Counterexample", "Reproduction result", "New synthetic case", "Accessibility or site defect", "Optional local checker", "Public-safety boundary"]
     .map((label) => challenge.indexOf(label));
   if (!challengeOrder.every((position, index) => position >= 0 && (index === 0 || position > challengeOrder[index - 1]))) errors.push("challenge route order is incorrect");

@@ -21,30 +21,30 @@
 <body data-page="method" data-cases-url="../data/deception-cases.v1.json">
   <a class="skip-link" href="#main">Skip to main content</a>
   <header class="site-header"><div class="nav-shell">
-    <a class="wordmark" href="../">Detecting AI Deception</a>
-    <nav class="site-nav" aria-label="Primary"><a href="../cases/">Cases</a><a href="../method/" aria-current="page">Method</a><a href="../tools/">Tools</a><a href="../challenge/">Challenge</a><a href="../about/">About</a></nav>
+    <a class="wordmark" href="../" aria-label="Detecting AI Deception"><span class="wordmark-full">Detecting AI Deception</span><span class="wordmark-short" aria-hidden="true">DAID</span></a>
+    <nav class="site-nav" aria-label="Primary"><a href="../cases/">Practice</a><a href="../method/" aria-current="page">How to check</a><a href="../tools/">Use the checker</a><a href="../challenge/">Submit evidence</a><a href="../about/">About</a></nav>
     <a class="nav-boundary" href="../about/#intent-boundary">Intent: not assessed</a>
     <div class="mobile-navigation">
-      <a class="mobile-cases-link" href="../cases/">Cases</a>
+      <a class="mobile-cases-link" href="../cases/">Practice</a>
       <details class="mobile-menu"><summary><span class="menu-lines" aria-hidden="true"><span></span><span></span><span></span></span>Menu</summary>
-        <nav aria-label="Mobile primary"><a href="../method/" aria-current="page">Method</a><a href="../tools/">Tools</a><a href="../challenge/">Challenge</a><a href="../about/">About</a><a href="../about/#intent-boundary">Intent boundary</a></nav>
+        <nav aria-label="Mobile primary"><a href="../method/" aria-current="page">How to check</a><a href="../tools/">Use the checker</a><a href="../challenge/">Submit evidence</a><a href="../about/">About</a><a href="../about/#intent-boundary">Intent boundary</a></nav>
       </details>
     </div>
   </div></header>
   <noscript><div class="noscript-note">JavaScript is off. Every case, evidence trail and deterministic finding remains readable; filters and choose-then-reveal controls are shown without enhancement.</div></noscript>
   <div class="shell" aria-live="polite" data-app-status></div>
-  <main id="main"><nav class="breadcrumbs" aria-label="Breadcrumb"><div class="shell"><ol><li><a href="../">Home</a></li><li><span aria-current="page">Method</span></li></ol></div></nav><header class="case-page-header"><div class="shell"><h1 class="page-title">Check an AI claim against the evidence.</h1><p class="lead">Start with the exact claim, define the evidence it would require, compare that requirement with the available record, and classify the result as Supported, Contradicted or Insufficient evidence. The method does not assess intent.</p><div class="intent-boundary intent-boundary-compact"><span aria-hidden="true">≠</span><strong>Intent: not assessed</strong></div></div></header><div class="narrow prose">
-      <section class="method-transfer" aria-labelledby="method-transfer-title"><h2 id="method-transfer-title">Use this four-line record on another AI answer</h2><pre class="method-template"><code>Claim:
+  <main id="main"><nav class="breadcrumbs" aria-label="Breadcrumb"><div class="shell"><ol><li><a href="../">Home</a></li><li><span aria-current="page">Method</span></li></ol></div></nav><header class="utility-page-header"><div class="shell utility-heading-grid"><div><h1 class="page-title">Check an AI claim against the evidence.</h1><p class="lead">Use four lines to compare a claim with the record, then choose Supported, Contradicted or Insufficient evidence.</p></div><div class="utility-header-side"><div class="utility-actions"><a class="primary-button" href="#quick-check"><span>Use the four-line check</span><svg class="arrow-icon" viewBox="0 0 28 18" aria-hidden="true" focusable="false"><path d="M1 9h24M18 2l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"/></svg></a><a class="secondary-button" href="#questions"><span>Answer common questions</span><svg class="arrow-icon" viewBox="0 0 28 18" aria-hidden="true" focusable="false"><path d="M1 9h24M18 2l7 7-7 7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="square" stroke-linejoin="miter"/></svg></a></div><div class="intent-boundary intent-boundary-compact"><span aria-hidden="true">≠</span><strong>Intent: not assessed</strong></div></div></div></header><nav class="page-jump-nav narrow" aria-label="On this page"><a href="#quick-check">Quick check</a><a href="#questions">Questions</a><a href="#findings">Findings</a><a href="#reference">Reference</a></nav><div class="narrow prose">
+      <section class="method-transfer" id="quick-check" aria-labelledby="method-transfer-title"><h2 id="method-transfer-title">Use this four-line record on another AI answer</h2><pre class="method-template"><code>Claim:
 Required evidence:
 Observed record (source, exact revision or date, passage):
 Finding: Supported / Contradicted / Insufficient evidence — Intent: not assessed</code></pre><div class="method-transfer-actions"><a class="primary-button" href="../cases/unsupported-citation/">Practice the template on Case 03</a><a class="secondary-button" href="../cases/">Browse all six cases</a></div></section>
-      <h2>Common questions about checking AI answers</h2>
+      <h2 id="questions">Common questions about checking AI answers</h2>
       <h3>How do I check whether an AI answer is supported?</h3><p>Write down the exact claim before interpreting it, define what evidence would need to be present for it to hold, and compare that requirement with the record you can actually inspect. If every required observation supports the claim, the result is Supported. If any required observation conflicts, it is Contradicted. If required evidence is missing or unresolved, it is Insufficient evidence. You can <a href="../cases/">practice that comparison with all six synthetic cases</a>.</p>
       <h3>How do I verify an AI citation?</h3><p>Open the cited source and the exact revision or version when one is available. Find the passage that is supposed to support the answer, then compare its subject, value, scope and date with the exact claim. A link is not proof by itself: <a href="../cases/unsupported-citation/">the unsupported-citation practice case</a> shows a 30-day answer beside a passage that says 7 days.</p>
       <h3>What is the difference between contradicted and insufficient evidence?</h3><p>Contradicted means at least one required observation directly conflicts with the claim. Insufficient evidence means the record is missing, unknown, stale or inapplicable and contains no direct conflict. The first supports a negative relationship finding; the second means the available record does not let you decide.</p>
       <h3>Does an unsupported claim prove AI deception or intent?</h3><p>No. Terms such as <em>AI hallucination</em> or <em>fabricated citation</em> are often used for different kinds of failure, but they do not establish why an answer was produced. This method asks a narrower, inspectable question: how does the claim relate to the available evidence? Intent is always not assessed.</p>
-      <h2>Three findings</h2><h3>Supported</h3><p>Every declared required evidence item supports the claim.</p><h3>Contradicted</h3><p>At least one required observation directly conflicts with the claim. Contradiction takes precedence over missing evidence.</p><h3>Insufficient evidence</h3><p>A required observation is absent, unknown, stale or inapplicable, and no required observation directly contradicts the claim.</p>
-      <h2>The deterministic rule</h2><pre class="code-block"><code>if any required observation is contradictory:
+      <h2 id="findings">Three findings</h2><h3>Supported</h3><p>Every declared required evidence item supports the claim.</p><h3>Contradicted</h3><p>At least one required observation directly conflicts with the claim. Contradiction takes precedence over missing evidence.</p><h3>Insufficient evidence</h3><p>A required observation is absent, unknown, stale or inapplicable, and no required observation directly contradicts the claim.</p>
+      <h2 id="reference">The deterministic rule</h2><pre class="code-block"><code>if any required observation is contradictory:
   contradicted
 else if any required observation is absent, unknown, stale or inapplicable:
   insufficient-evidence
@@ -58,7 +58,7 @@ else:
     </div></main>
   <footer class="site-footer"><div class="shell footer-grid">
     <p>Mike-led public investigation, developed transparently with AI assistance. Six synthetic cases compare observable claims with observable evidence. Intent: not assessed.</p>
-    <div class="footer-links"><a href="../tools/">Tools</a><a href="../challenge/">Challenge</a><a href="../about/">About</a><a href="https://github.com/TheDarkniteFalls/detecting-ai-deception">Source</a><a href="https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/LICENSING.md">Licensing</a></div>
+    <div class="footer-links"><a href="../tools/">Use the checker</a><a href="../challenge/">Submit evidence</a><a href="../about/">About</a><a href="https://github.com/TheDarkniteFalls/detecting-ai-deception">Source</a><a href="https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/LICENSING.md">Licensing</a></div>
   </div></footer>
   <script type="module" src="../assets/app.mjs"></script>
 </body>

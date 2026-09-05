@@ -357,9 +357,10 @@ test("persona-flow repairs preserve blind practice, progressive disclosure and e
     for (const path of relativePages) {
       const html = await readFile(join(root, path), "utf8");
       const header = html.match(/<header class="site-header">[\s\S]*?<\/header>/)[0];
-      const order = ["Cases", "Method", "Tools", "Challenge", "About"].map((label) => header.indexOf(`>${label}</a>`));
+      const order = ["Practice", "How to check", "Use the checker", "Submit evidence", "About"].map((label) => header.indexOf(`>${label}</a>`));
       assert.ok(order.every((position, index) => position >= 0 && (index === 0 || position > order[index - 1])), `${path} nav order`);
       assert.match(header, /class="mobile-cases-link"/);
+      assert.match(header, /class="wordmark-short" aria-hidden="true">DAID<\/span>/);
       assert.match(header, /aria-label="Mobile primary"/);
       assert.match(header, />Intent boundary<\/a>/);
       assert.match(header, /about\/#intent-boundary/);
@@ -374,12 +375,17 @@ test("persona-flow repairs preserve blind practice, progressive disclosure and e
     assert.doesNotMatch(featured, /Contradicted|The cited passage does not support the answer\./);
 
     const cases = await readFile(join(root, "cases", "index.html"), "utf8");
-    assert.ok(cases.indexOf('class="archive-records"') < cases.indexOf("Browse all six cases"));
+    assert.ok(cases.indexOf("Start with the citation case") < cases.indexOf('id="case-library"'));
+    assert.ok(cases.indexOf('class="archive-records"') < cases.lastIndexOf("Browse all six cases"));
+    assert.match(cases, /href="unsupported-citation\/"/);
     assert.equal((cases.match(/data-library-outcome hidden/g) ?? []).length, 6);
     assert.match(cases, /Filtering by finding reveals the case outcomes before you open them\./);
     assert.match(cases, /No cases match both filters\. Change a filter or browse all six below\./);
 
     const method = await readFile(join(root, "method", "index.html"), "utf8");
+    assert.match(method, /class="utility-page-header"/);
+    assert.match(method, /class="page-jump-nav narrow"/);
+    for (const marker of ['id="quick-check"', 'id="questions"', 'id="findings"', 'id="reference"']) assert.ok(method.includes(marker));
     assert.match(method, /Use this four-line record on another AI answer/);
     assert.ok(method.includes("Claim:\nRequired evidence:\nObserved record (source, exact revision or date, passage):\nFinding: Supported / Contradicted / Insufficient evidence — Intent: not assessed"));
     for (const marker of ["Practice the template on Case 03", "Browse all six cases", "Choose your next step", 'href="../challenge/"']) assert.ok(method.includes(marker));
@@ -388,19 +394,22 @@ test("persona-flow repairs preserve blind practice, progressive disclosure and e
     for (const record of pack.cases) {
       const html = await readFile(join(root, "cases", record.id, "index.html"), "utf8");
       for (const marker of [
-        'aria-label="On this case"', 'href="#make-your-call"', 'href="#read-plainly"', 'href="#technical-record"',
+        'class="case-page-header case-detail-header"', 'aria-label="On this case"', 'href="#make-your-call"', 'href="#read-plainly"', 'href="#technical-record"',
         'id="make-your-call"', 'id="read-plainly"', 'id="technical-record"', 'href="../../challenge/"',
       ]) assert.ok(html.includes(marker), `${record.id} omits ${marker}`);
       assert.ok(html.includes(`<code>${record.reproduction.command}</code>`), `${record.id} command bytes changed`);
     }
 
     const challenge = await readFile(join(root, "challenge", "index.html"), "utf8");
-    assert.match(challenge, /Have public-safe evidence that could change a finding\? Choose a route below\. Local reproduction is optional and can help others verify the result\./);
+    assert.match(challenge, /Choose the route that matches what you found\. Keep submissions public-safe; local reproduction is optional\./);
+    for (const marker of ["I found evidence that changes a result", "I reproduced a result", "I want to propose a synthetic case", "I found an accessibility or site problem"]) assert.ok(challenge.includes(marker));
     const challengeOrder = ["Counterexample", "Reproduction result", "New synthetic case", "Accessibility or site defect", "Optional local checker", "Public-safety boundary"]
       .map((label) => challenge.indexOf(label));
     assert.ok(challengeOrder.every((position, index) => position >= 0 && (index === 0 || position > challengeOrder[index - 1])));
 
     const about = await readFile(join(root, "about", "index.html"), "utf8");
+    assert.match(about, /<h2 id="for-people">Why this exists<\/h2>/);
+    assert.match(about, /<h2 id="for-machines">For agents and automated readers<\/h2>/);
     assert.match(about, /<h2 id="intent-boundary">What this is not<\/h2>/);
     const styles = await readFile(join(root, "assets", "styles.css"), "utf8");
     assert.match(styles, /@media \(max-width: 40rem\)[\s\S]*?\.code-block\s*\{[^}]*overflow-x:\s*visible;[^}]*overflow-wrap:\s*anywhere;[^}]*white-space:\s*pre-wrap;/s);
@@ -447,6 +456,11 @@ test("contrast, responsive case selectors and the preserved sculpture asset rema
 
     assert.ok(contrastRatio("#f3f0e8", "#704ce9") >= 4.5);
     assert.ok(contrastRatio("#020303", "#7958ff") >= 4.5);
+    assert.ok(contrastRatio("#020303", "#f3f0e8") >= 7);
+    assert.ok(contrastRatio("#4e504c", "#f3f0e8") >= 7);
+    assert.ok(contrastRatio("#3657ff", "#f3f0e8") >= 4.5);
+    assert.match(styles, /\.band-white \.prose p,[\s\S]*?color:\s*var\(--muted-on-light\);/s);
+    assert.match(styles, /\.band-white \.code-block code\s*\{[^}]*color:\s*var\(--mint\);/s);
     assert.doesNotMatch(styles, /data:image\/png;base64/);
     assert.match(styles, /--evidence-sculpture: url\("\.\/claim-record-evidence-sculpture\.png"\)/);
     assert.match(styles, /\.home-row-title\s*\{[^}]*overflow-wrap:\s*normal;[^}]*word-break:\s*normal;/s);
