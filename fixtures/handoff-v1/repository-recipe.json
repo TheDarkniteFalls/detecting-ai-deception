@@ -1,0 +1,14 @@
+{
+  "schema_version": "daid_handoff_repository_recipe_v1",
+  "label": "Synthetic repository and producer observations; no recorded checks are executed.",
+  "identity": {"name":"Synthetic Fixture","email":"fixture.invalid"},
+  "commits": [
+    {"id":"B0","parents":[],"timestamp":"2020-01-01T00:00:00Z","message":"Synthetic seed","files":[{"path":"report.csv","mode":"100644","text":"item,value\nseed,0\n"}]},
+    {"id":"R0","parents":["B0"],"timestamp":"2020-01-01T00:00:01Z","message":"Synthetic first revision","files":[{"path":"report.csv","mode":"100644","text":"item,value\nfirst,1\n"}]},
+    {"id":"R1","parents":["R0"],"timestamp":"2020-01-01T00:00:02Z","message":"Synthetic second revision","files":[{"path":"report.csv","mode":"100644","text":"item,value\nsecond,2\n"}]}
+  ],
+  "subject_id":"synthetic-handoff",
+  "attempt_id":"synthetic-attempt-1",
+  "captured_at":"2020-01-01T00:01:00Z",
+  "observer_id":"synthetic-observer"
+}

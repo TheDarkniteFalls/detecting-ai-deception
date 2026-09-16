@@ -1,0 +1,1 @@
+{"case": "missing-check", "findings": ["supported", "insufficient_evidence", "supported", "supported"], "limitations": ["Synthetic provenance; no execution/authenticity certification."], "missing_check_ids": ["c19", "c20"], "required_native_verify_exit": 0}

@@ -1,0 +1,1 @@
+{"case": "invalid-source", "findings": ["error-no-finding", "supported", "supported", "supported"], "limitations": ["Synthetic provenance; no execution/authenticity certification."], "missing_check_ids": [], "required_native_verify_exit": 2}

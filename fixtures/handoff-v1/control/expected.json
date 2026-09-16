@@ -1,0 +1,1 @@
+{"case": "control", "findings": ["supported", "supported", "supported", "supported"], "limitations": ["Synthetic provenance; no execution/authenticity certification."], "missing_check_ids": [], "required_native_verify_exit": 0}

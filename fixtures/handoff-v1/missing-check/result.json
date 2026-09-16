@@ -1,0 +1,10 @@
+{
+  "boundary": "This receipt records supplied evidence. It does not prove that commands ran, that evidence or reviewer identities are authentic, or that the work is correct, secure, accepted, or authorized for publication.",
+  "contract_version": "evidencegate_cli_result_v1",
+  "findings": [],
+  "ok": true,
+  "operation": "verify",
+  "receipt_version": "v1",
+  "repository_checked": true,
+  "summary": "Receipt matches the supplied local Git repository and is review-ready."
+}

@@ -1,0 +1,1731 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:daid:handoff:v1",
+  "title": "DAID handoff v1 contracts",
+  "$defs": {
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "revision": {
+          "type": "string",
+          "pattern": "^[a-fA-F0-9]{40}$"
+        },
+        "attempt_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        }
+      },
+      "required": [
+        "id",
+        "revision",
+        "attempt_id"
+      ]
+    },
+    "span": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "start": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "end": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "required": [
+        "start",
+        "end"
+      ]
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "role": {
+          "enum": [
+            "expectations",
+            "receipt",
+            "result",
+            "observations",
+            "artifact"
+          ]
+        },
+        "path": {
+          "type": "string",
+          "safePath": true
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          ]
+        },
+        "origin": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "kind": {
+              "enum": [
+                "synthetic",
+                "producer-reported",
+                "locally-observed",
+                "unknown"
+              ]
+            },
+            "attributed_to": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "pattern": "\\S",
+                  "nfc": true
+                }
+              ]
+            }
+          },
+          "required": [
+            "kind",
+            "attributed_to"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "role",
+        "path",
+        "sha256",
+        "origin"
+      ]
+    },
+    "requirement": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "kind": {
+          "enum": [
+            "check",
+            "artifact"
+          ]
+        },
+        "text": {
+          "type": "string",
+          "pattern": "\\S",
+          "nfc": true
+        },
+        "span": {
+          "$ref": "#/$defs/span"
+        },
+        "check_id": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          ]
+        },
+        "artifact_path": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "safePath": true
+            }
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "text",
+        "span",
+        "check_id",
+        "artifact_path"
+      ]
+    },
+    "assertion": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "text": {
+          "type": "string",
+          "pattern": "\\S",
+          "nfc": true
+        },
+        "span": {
+          "$ref": "#/$defs/span"
+        },
+        "predicate": {
+          "enum": [
+            "receipt_revision",
+            "all_checks_ran",
+            "artifact_created",
+            "unassessed"
+          ]
+        },
+        "requirement_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+          },
+          "minItems": 0,
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "id",
+        "text",
+        "span",
+        "predicate",
+        "requirement_ids"
+      ]
+    },
+    "narrower": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            "text": {
+              "type": "string",
+              "pattern": "\\S",
+              "nfc": true
+            },
+            "artifact_path": {
+              "type": "string",
+              "safePath": true
+            },
+            "sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          },
+          "required": [
+            "id",
+            "text",
+            "artifact_path",
+            "sha256"
+          ]
+        }
+      ]
+    },
+    "packet": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "daid_handoff_packet_v1"
+        },
+        "statement": {
+          "type": "string",
+          "pattern": "\\S",
+          "nfc": true
+        },
+        "operator": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            "confirmed": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "confirmed"
+          ]
+        },
+        "subject": {
+          "$ref": "#/$defs/subject"
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source"
+          },
+          "minItems": 0,
+          "maxItems": 64
+        },
+        "expectations_complete": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/requirement"
+          },
+          "minItems": 1,
+          "maxItems": 128
+        },
+        "assertions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/assertion"
+          },
+          "minItems": 1,
+          "maxItems": 128
+        },
+        "narrower_observation": {
+          "$ref": "#/$defs/narrower"
+        },
+        "capture_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "\\S",
+            "nfc": true
+          },
+          "minItems": 0
+        },
+        "contract_id": {
+          "const": "daid_handoff_mapping_v1"
+        }
+      },
+      "required": [
+        "schema_version",
+        "statement",
+        "operator",
+        "subject",
+        "sources",
+        "expectations_complete",
+        "requirements",
+        "assertions",
+        "narrower_observation",
+        "capture_gaps",
+        "contract_id"
+      ]
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "daid_handoff_selection_v1"
+        },
+        "repository_root": {
+          "type": "string",
+          "absolutePath": true
+        },
+        "evidence_root": {
+          "type": "string",
+          "absolutePath": true
+        },
+        "artifact_path": {
+          "type": "string",
+          "safePath": true
+        },
+        "output_path": {
+          "type": "string",
+          "absolutePath": true
+        },
+        "subject": {
+          "$ref": "#/$defs/subject"
+        },
+        "observer_id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        }
+      },
+      "required": [
+        "schema_version",
+        "repository_root",
+        "evidence_root",
+        "artifact_path",
+        "output_path",
+        "subject",
+        "observer_id"
+      ]
+    },
+    "state": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "revision": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{40}$"
+            },
+            "dirty": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "revision",
+            "dirty"
+          ]
+        }
+      ]
+    },
+    "component": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "completeness": {
+          "enum": [
+            "complete",
+            "partial",
+            "unknown"
+          ]
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "\\S",
+            "nfc": true
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "completeness",
+        "warnings"
+      ]
+    },
+    "invocation": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "observer_id": {
+              "type": "string",
+              "pattern": "\\S",
+              "nfc": true
+            },
+            "origin": {
+              "enum": [
+                "synthetic",
+                "runner-reported",
+                "locally-observed"
+              ]
+            },
+            "captured_at": {
+              "type": "string",
+              "utcTime": true
+            },
+            "tool_version": {
+              "type": "string",
+              "pattern": "\\S",
+              "nfc": true
+            },
+            "tool_commit": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{40}$"
+            },
+            "operation": {
+              "enum": [
+                "validate",
+                "verify"
+              ]
+            },
+            "exit_status": {
+              "enum": [
+                0,
+                1,
+                2
+              ]
+            },
+            "receipt_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "result_sha256": {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            "repository_before": {
+              "$ref": "#/$defs/state"
+            },
+            "repository_after": {
+              "$ref": "#/$defs/state"
+            }
+          },
+          "required": [
+            "observer_id",
+            "origin",
+            "captured_at",
+            "tool_version",
+            "tool_commit",
+            "operation",
+            "exit_status",
+            "receipt_sha256",
+            "result_sha256",
+            "repository_before",
+            "repository_after"
+          ]
+        }
+      ]
+    },
+    "observations": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "daid_handoff_observations_v1"
+        },
+        "observer": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "\\S",
+              "nfc": true
+            },
+            "version": {
+              "type": "string",
+              "pattern": "\\S",
+              "nfc": true
+            },
+            "origin": {
+              "enum": [
+                "synthetic",
+                "runner-reported",
+                "locally-observed"
+              ]
+            }
+          },
+          "required": [
+            "id",
+            "version",
+            "origin"
+          ]
+        },
+        "subject": {
+          "$ref": "#/$defs/subject"
+        },
+        "captured_at": {
+          "type": "string",
+          "utcTime": true
+        },
+        "capture": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "shared": {
+              "$ref": "#/$defs/component"
+            },
+            "repository": {
+              "$ref": "#/$defs/component"
+            },
+            "checks": {
+              "$ref": "#/$defs/component"
+            },
+            "artifact": {
+              "$ref": "#/$defs/component"
+            }
+          },
+          "required": [
+            "shared",
+            "repository",
+            "checks",
+            "artifact"
+          ]
+        },
+        "repository": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "before": {
+              "$ref": "#/$defs/state"
+            },
+            "after": {
+              "$ref": "#/$defs/state"
+            }
+          },
+          "required": [
+            "before",
+            "after"
+          ]
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              "attempt_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              "revision": {
+                "type": "string",
+                "pattern": "^[a-fA-F0-9]{40}$"
+              },
+              "outcome": {
+                "enum": [
+                  "executed-passed",
+                  "executed-failed",
+                  "skipped",
+                  "not-observed"
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "attempt_id",
+              "revision",
+              "outcome"
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 256
+        },
+        "artifact": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "path": {
+              "type": "string",
+              "safePath": true
+            },
+            "state": {
+              "enum": [
+                "present",
+                "absent",
+                "unavailable"
+              ]
+            },
+            "sha256": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              ]
+            },
+            "before_sha256": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "pattern": "^[a-f0-9]{64}$"
+                }
+              ]
+            },
+            "stable": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "boolean"
+                }
+              ]
+            }
+          },
+          "required": [
+            "path",
+            "state",
+            "sha256",
+            "before_sha256",
+            "stable"
+          ]
+        },
+        "writes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              "path": {
+                "type": "string",
+                "safePath": true
+              },
+              "attempt_id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              "revision": {
+                "type": "string",
+                "pattern": "^[a-fA-F0-9]{40}$"
+              },
+              "outcome": {
+                "enum": [
+                  "created",
+                  "not-created",
+                  "unknown"
+                ]
+              },
+              "sha256": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  }
+                ]
+              }
+            },
+            "required": [
+              "id",
+              "path",
+              "attempt_id",
+              "revision",
+              "outcome",
+              "sha256"
+            ]
+          },
+          "minItems": 0,
+          "maxItems": 256
+        },
+        "verifier_invocation": {
+          "$ref": "#/$defs/invocation"
+        }
+      },
+      "required": [
+        "schema_version",
+        "observer",
+        "subject",
+        "captured_at",
+        "capture",
+        "repository",
+        "checks",
+        "artifact",
+        "writes",
+        "verifier_invocation"
+      ]
+    },
+    "issue": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "enum": [
+            "malformed_json",
+            "duplicate_key",
+            "trailing_content",
+            "unsupported_version",
+            "invalid_shape",
+            "invalid_mapping",
+            "source_unavailable",
+            "source_digest_mismatch",
+            "selection_rejected",
+            "input_limit",
+            "binding_mismatch",
+            "execution_lock_missing"
+          ]
+        },
+        "source_id": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            }
+          ]
+        },
+        "path": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string",
+          "pattern": "\\S",
+          "nfc": true
+        }
+      },
+      "required": [
+        "code",
+        "source_id",
+        "path",
+        "message"
+      ]
+    },
+    "error": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "daid_handoff_error_v1"
+        },
+        "packet_sha256": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            }
+          ]
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/issue"
+          },
+          "minItems": 0
+        },
+        "downstream_action_authorized": {
+          "const": false
+        }
+      },
+      "required": [
+        "schema_version",
+        "packet_sha256",
+        "errors",
+        "downstream_action_authorized"
+      ]
+    },
+    "executionLock": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": "daid_handoff_execution_lock_v1"
+        },
+        "semantic_sha256": {
+          "const": "612f39689c90a2f6b4b47df30ecaf7e3c21a0058241c0e898d293f9f4c908bd1"
+        },
+        "public_baseline": {
+          "const": "69a7eefe10de26893ca5f58b6625c54edc36758a"
+        },
+        "evidencegate": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "commit": {
+              "const": "473f9cac98f6ed83446e46b692db77c76b9be524"
+            },
+            "version": {
+              "type": "string",
+              "pattern": "\\S",
+              "nfc": true
+            },
+            "source_sha256": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "docs/integration-contract.md": {
+                  "const": "fa16c825f8ad244beb21b470c56876a20ac267520e67bb2a1766447724ab764a"
+                },
+                "schemas/agent-run-receipt-v1.schema.json": {
+                  "const": "0535d3d2b748c1b2ef88a09164cd99570726d1b20dc8ad204e5bf02410148f8e"
+                },
+                "schemas/cli-result-v1.schema.json": {
+                  "const": "d7d2cf25f6464bc4862a4e542c5b9736734973c6d23116284d7941b05644f73b"
+                }
+              },
+              "required": [
+                "docs/integration-contract.md",
+                "schemas/agent-run-receipt-v1.schema.json",
+                "schemas/cli-result-v1.schema.json"
+              ]
+            }
+          },
+          "required": [
+            "commit",
+            "version",
+            "source_sha256"
+          ]
+        },
+        "runtimes": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "node": {
+              "type": "string",
+              "pattern": "^20\\.\\d+\\.\\d+$"
+            },
+            "python": {
+              "type": "string",
+              "pattern": "\\S",
+              "nfc": true
+            }
+          },
+          "required": [
+            "node",
+            "python"
+          ]
+        },
+        "repository_revisions": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "B0": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{40}$"
+            },
+            "R0": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{40}$"
+            },
+            "R1": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{40}$"
+            }
+          },
+          "required": [
+            "B0",
+            "R0",
+            "R1"
+          ]
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string",
+                "safePath": true
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            },
+            "required": [
+              "path",
+              "sha256"
+            ]
+          },
+          "minItems": 43,
+          "maxItems": 43
+        }
+      },
+      "required": [
+        "schema_version",
+        "semantic_sha256",
+        "public_baseline",
+        "evidencegate",
+        "runtimes",
+        "repository_revisions",
+        "inputs"
+      ]
+    },
+    "nativeReceipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "schema_version": {
+          "const": 1
+        },
+        "summary": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "subject": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "type": {
+              "const": "git_change"
+            },
+            "base_sha": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{40}$"
+            },
+            "head_sha": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{40}$"
+            }
+          },
+          "required": [
+            "type",
+            "base_sha",
+            "head_sha"
+          ]
+        },
+        "scope": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "allowed_paths": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(?!/)(?!\\s)(?!.*\\s$)(?!.*\\\\)(?!.*//)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*[\\u0000-\\u001f]).+$"
+              },
+              "minItems": 1,
+              "uniqueItems": true
+            },
+            "protected_prefixes": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "^(?!/)(?!\\s)(?!.*\\s$)(?!.*\\\\)(?!.*//)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*[\\u0000-\\u001f]).+$"
+              },
+              "minItems": 0,
+              "uniqueItems": true
+            }
+          },
+          "required": [
+            "allowed_paths",
+            "protected_prefixes"
+          ]
+        },
+        "files_touched": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^(?!/)(?!\\s)(?!.*\\s$)(?!.*\\\\)(?!.*//)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*[\\u0000-\\u001f]).+$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "checks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              "name": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "command": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "status": {
+                "enum": [
+                  "failed",
+                  "passed",
+                  "skipped",
+                  "unknown"
+                ]
+              },
+              "summary": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "scope": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "revision": {
+                "type": "string",
+                "pattern": "^[a-fA-F0-9]{40}$"
+              },
+              "required": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "name",
+              "command",
+              "status",
+              "summary",
+              "scope",
+              "revision",
+              "required"
+            ]
+          },
+          "minItems": 1
+        },
+        "claims": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string",
+                "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+              },
+              "text": {
+                "type": "string",
+                "pattern": "\\S"
+              },
+              "evidence_refs": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                },
+                "minItems": 1,
+                "uniqueItems": true
+              }
+            },
+            "required": [
+              "id",
+              "text",
+              "evidence_refs"
+            ]
+          },
+          "minItems": 1
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "\\S"
+          },
+          "minItems": 1
+        },
+        "human_review": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "enum": [
+                "approved",
+                "changes_requested",
+                "pending"
+              ]
+            },
+            "reviewer": {
+              "type": "string",
+              "pattern": "\\S"
+            },
+            "reviewed_head_sha": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{40}$"
+            },
+            "summary": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "status",
+            "reviewer",
+            "reviewed_head_sha",
+            "summary"
+          ]
+        },
+        "public_safety": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "status": {
+              "enum": [
+                "not_applicable",
+                "pending",
+                "reviewed"
+              ]
+            },
+            "reviewed_head_sha": {
+              "type": "string",
+              "pattern": "^[a-fA-F0-9]{40}$"
+            },
+            "summary": {
+              "type": "string",
+              "pattern": "\\S"
+            }
+          },
+          "required": [
+            "status",
+            "reviewed_head_sha",
+            "summary"
+          ]
+        },
+        "extensions": {
+          "type": "object"
+        }
+      },
+      "required": [
+        "schema_version",
+        "summary",
+        "subject",
+        "scope",
+        "files_touched",
+        "checks",
+        "claims",
+        "risks",
+        "human_review",
+        "public_safety"
+      ]
+    },
+    "nativeResult": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "const": "evidencegate_cli_result_v1"
+        },
+        "operation": {
+          "enum": [
+            "validate",
+            "verify"
+          ]
+        },
+        "ok": {
+          "type": "boolean"
+        },
+        "receipt_version": {
+          "enum": [
+            "legacy",
+            "v1",
+            "unsupported",
+            null
+          ]
+        },
+        "repository_checked": {
+          "type": "boolean"
+        },
+        "summary": {
+          "type": "string",
+          "pattern": "\\S"
+        },
+        "findings": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "enum": [
+                  "packet_load_error",
+                  "receipt_evidence_invalid",
+                  "receipt_not_verifiable",
+                  "receipt_review_not_ready",
+                  "receipt_revision_invalid",
+                  "receipt_scope_invalid",
+                  "receipt_structure_invalid",
+                  "receipt_version_invalid",
+                  "repository_diff_mismatch",
+                  "repository_dirty",
+                  "repository_inspection_failed",
+                  "repository_revision_mismatch",
+                  "repository_scope_violation",
+                  "repository_unavailable"
+                ]
+              },
+              "message": {
+                "type": "string",
+                "pattern": "\\S"
+              }
+            },
+            "required": [
+              "code",
+              "message"
+            ]
+          },
+          "minItems": 0
+        },
+        "boundary": {
+          "type": "string",
+          "pattern": "\\S"
+        }
+      },
+      "required": [
+        "contract_version",
+        "operation",
+        "ok",
+        "receipt_version",
+        "repository_checked",
+        "summary",
+        "findings",
+        "boundary"
+      ]
+    },
+    "assessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+        },
+        "status": {
+          "enum": [
+            "assessed",
+            "error",
+            "unassessed"
+          ]
+        },
+        "predicate": {
+          "type": "string",
+          "pattern": "\\S",
+          "nfc": true
+        },
+        "acc_input": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object"
+            }
+          ]
+        },
+        "acc_receipt": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object"
+            }
+          ]
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/issue"
+          },
+          "minItems": 0
+        },
+        "missing_evidence": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "\\S",
+            "nfc": true
+          },
+          "minItems": 0
+        }
+      },
+      "required": [
+        "id",
+        "status",
+        "predicate",
+        "acc_input",
+        "acc_receipt",
+        "errors",
+        "missing_evidence"
+      ]
+    },
+    "report": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "statement": {
+          "type": "string",
+          "pattern": "\\S",
+          "nfc": true
+        },
+        "operator": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+            },
+            "confirmed": {
+              "const": true
+            }
+          },
+          "required": [
+            "id",
+            "confirmed"
+          ]
+        },
+        "subject": {
+          "$ref": "#/$defs/subject"
+        },
+        "expectations_complete": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "boolean"
+            }
+          ]
+        },
+        "requirements": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/requirement"
+          },
+          "minItems": 1,
+          "maxItems": 128
+        },
+        "assertions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/assertion"
+          },
+          "minItems": 1,
+          "maxItems": 128
+        },
+        "narrower_observation": {
+          "$ref": "#/$defs/narrower"
+        },
+        "capture_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "\\S",
+            "nfc": true
+          },
+          "minItems": 0
+        },
+        "contract_id": {
+          "const": "daid_handoff_mapping_v1"
+        },
+        "schema_version": {
+          "const": "daid_handoff_report_v1"
+        },
+        "packet_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "execution_lock_id": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "descriptor": {
+                "$ref": "#/$defs/source"
+              },
+              "admission": {
+                "enum": [
+                  "accepted",
+                  "error",
+                  "not-read"
+                ]
+              },
+              "observed_sha256": {
+                "anyOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^[a-f0-9]{64}$"
+                  }
+                ]
+              },
+              "errors": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/issue"
+                },
+                "minItems": 0
+              }
+            },
+            "required": [
+              "descriptor",
+              "admission",
+              "observed_sha256",
+              "errors"
+            ]
+          },
+          "minItems": 0
+        },
+        "native_context": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "receipt": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/nativeReceipt"
+                }
+              ]
+            },
+            "result": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "$ref": "#/$defs/nativeResult"
+                }
+              ]
+            },
+            "invocation": {
+              "$ref": "#/$defs/invocation"
+            },
+            "linkage": {
+              "enum": [
+                "unbound",
+                "producer-reported",
+                "locally-captured",
+                "invalid"
+              ]
+            },
+            "repository_binding": {
+              "enum": [
+                "not-checked",
+                "unbound",
+                "stable",
+                "limited",
+                "invalid"
+              ]
+            },
+            "limitations": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "pattern": "\\S",
+                "nfc": true
+              },
+              "minItems": 0
+            },
+            "errors": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/issue"
+              },
+              "minItems": 0
+            }
+          },
+          "required": [
+            "receipt",
+            "result",
+            "invocation",
+            "linkage",
+            "repository_binding",
+            "limitations",
+            "errors"
+          ]
+        },
+        "assessments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/assessment"
+          },
+          "minItems": 0
+        },
+        "coverage": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "expected_check_ids": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  },
+                  "minItems": 0,
+                  "uniqueItems": true
+                }
+              ]
+            },
+            "observed_check_ids": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  },
+                  "minItems": 0,
+                  "uniqueItems": true
+                }
+              ]
+            },
+            "missing_check_ids": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  },
+                  "minItems": 0,
+                  "uniqueItems": true
+                }
+              ]
+            },
+            "skipped_check_ids": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  },
+                  "minItems": 0,
+                  "uniqueItems": true
+                }
+              ]
+            },
+            "extra_check_ids": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  },
+                  "minItems": 0,
+                  "uniqueItems": true
+                }
+              ]
+            },
+            "unmapped_requirement_ids": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  },
+                  "minItems": 0,
+                  "uniqueItems": true
+                }
+              ]
+            },
+            "unassessed_assertion_ids": {
+              "anyOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]{0,127}$"
+                  },
+                  "minItems": 0,
+                  "uniqueItems": true
+                }
+              ]
+            }
+          },
+          "required": [
+            "expected_check_ids",
+            "observed_check_ids",
+            "missing_check_ids",
+            "skipped_check_ids",
+            "extra_check_ids",
+            "unmapped_requirement_ids",
+            "unassessed_assertion_ids"
+          ]
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/issue"
+          },
+          "minItems": 0
+        },
+        "incomplete": {
+          "type": "boolean"
+        },
+        "intent_assessment": {
+          "const": "not-assessed"
+        },
+        "downstream_action_authorized": {
+          "const": false
+        }
+      },
+      "required": [
+        "statement",
+        "operator",
+        "subject",
+        "expectations_complete",
+        "requirements",
+        "assertions",
+        "narrower_observation",
+        "capture_gaps",
+        "contract_id",
+        "schema_version",
+        "packet_sha256",
+        "execution_lock_id",
+        "sources",
+        "native_context",
+        "assessments",
+        "coverage",
+        "errors",
+        "incomplete",
+        "intent_assessment",
+        "downstream_action_authorized"
+      ]
+    }
+  }
+}

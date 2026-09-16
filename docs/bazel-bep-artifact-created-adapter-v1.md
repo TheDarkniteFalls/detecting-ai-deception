@@ -13,7 +13,7 @@ is `insufficient_evidence`, not `supported`.
 
 ## Run it offline
 
-Requirements: Node.js 20 or newer. No dependency installation, Bazel workspace,
+Requirements: Node.js `>=24.19.0 <25`. No dependency installation, Bazel workspace,
 Bazel binary, model, network, or claimed artifact is required.
 
 ```sh
