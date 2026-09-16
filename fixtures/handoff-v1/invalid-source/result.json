@@ -1,0 +1,15 @@
+{
+  "boundary": "This receipt records supplied evidence. It does not prove that commands ran, that evidence or reviewer identities are authentic, or that the work is correct, secure, accepted, or authorized for publication.",
+  "contract_version": "evidencegate_cli_result_v1",
+  "findings": [
+    {
+      "code": "packet_load_error",
+      "message": "Could not load packet: Expecting value: line 1 column 19 (char 18)"
+    }
+  ],
+  "ok": false,
+  "operation": "verify",
+  "receipt_version": null,
+  "repository_checked": false,
+  "summary": "Receipt could not be loaded."
+}

@@ -6,13 +6,18 @@
   "description": "Synthetic claim-and-evidence cases for inspecting AI overstatement, omission and misrepresentation without inferring intent.",
   "scripts": {
     "build": "node tools/build.mjs",
-    "test": "node --test tests/*.test.mjs",
+    "test": "npm run test:core && npm run test:handoff:offline",
     "check:cases": "node tools/check-cases.mjs --self-test",
     "check:site": "node tools/check-site.mjs dist",
     "check:repository": "node tools/check-repository.mjs",
     "check:http": "node tools/check-http.mjs",
-    "check": "node tools/check-all.mjs"
+    "check": "node tools/check-all.mjs",
+    "test:core": "node --test tests/agent-claim-check-usage.test.mjs tests/agent-claim-check.test.mjs tests/bazel-bep-artifact-created-adapter.test.mjs tests/browser-model.test.mjs tests/cases.test.mjs tests/classifier.test.mjs tests/repository.test.mjs tests/site.test.mjs",
+    "test:handoff:offline": "DAID_NODE24_PROFILE=offline node --test tests/handoff-node24-compatibility.test.mjs",
+    "test:handoff:native": "DAID_NODE24_PROFILE=native-replay node --test tests/handoff-node24-compatibility.test.mjs"
   },
-  "engines": {"node": ">=20"},
+  "engines": {
+    "node": ">=24.19.0 <25"
+  },
   "license": "Apache-2.0"
 }

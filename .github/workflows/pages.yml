@@ -14,15 +14,23 @@ concurrency:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+    env:
+      DAID_LOCK_SHA256: "375cc01bd2355fd13edf150a4eda5ab64ed0fab7a1af9aae31c2c09177cd4cbc"
+      DAID_NODE24_LOCK_SHA256: "c77d3942d80544cf3c20c0529124bbf3f87d42ecd727dda68a9dd1211ccd6aa5"
+      DAID_NODE24_LOCK_PATH: "fixtures/handoff-v1/node24-compatibility-lock.json"
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
         with:
-          node-version: "20"
+          node-version: "24.21.0"
+      - name: Bind selected Node executable
+        run: |
+          echo "DAID_NODE_EXECUTABLE=$(command -v node)" >> "$GITHUB_ENV"
+          node -p 'JSON.stringify({executable:process.execPath,version:process.versions.node,platform:process.platform,arch:process.arch,sha256:require("node:crypto").createHash("sha256").update(require("node:fs").readFileSync(process.execPath)).digest("hex")})'
       - run: npm test
       - run: npm run check
       - run: npm run check:http

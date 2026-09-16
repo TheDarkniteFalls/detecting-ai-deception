@@ -1,7 +1,7 @@
 # Detecting AI Deception
 
 <!-- toolkit-trust-card:start -->
-> **Public contract:** Experimental Pattern · about 5 min · Node.js 20+ · no model · no network
+> **Public contract:** Experimental Pattern · about 5 min · Node.js >=24.19.0 <25 · no model · no network
 >
 > **Operation:** Read-only check; examples may use temporary files
 >
@@ -135,7 +135,12 @@ analytics, cookies or submitted-data flow.
 
 ## Reproduce the findings
 
-Requirements: Node.js 20 or newer. No dependency installation is required.
+Requirements: Node.js `>=24.19.0 <25`. No dependency installation is required.
+
+`npm test` runs core and offline handoff compatibility checks with explicit
+reviewed lock/runtime inputs. Native handoff replay is a separate opt-in profile;
+see the [Node 24 handoff recipe](docs/handoff-node24.md). The v1 handoff files and
+Node 20 producer evidence remain historical and unchanged.
 
 ```sh
 git clone https://github.com/TheDarkniteFalls/detecting-ai-deception.git

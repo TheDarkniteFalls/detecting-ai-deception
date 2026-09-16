@@ -1,0 +1,15 @@
+{
+  "boundary": "This receipt records supplied evidence. It does not prove that commands ran, that evidence or reviewer identities are authentic, or that the work is correct, secure, accepted, or authorized for publication.",
+  "contract_version": "evidencegate_cli_result_v1",
+  "findings": [
+    {
+      "code": "repository_revision_mismatch",
+      "message": "repository HEAD does not match subject.head_sha (current 2acd370b674a16ceebf33b61041d1c7104000225)"
+    }
+  ],
+  "ok": false,
+  "operation": "verify",
+  "receipt_version": "v1",
+  "repository_checked": true,
+  "summary": "Repository verification failed."
+}
