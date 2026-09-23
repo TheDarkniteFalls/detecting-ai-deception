@@ -218,6 +218,9 @@ test("people and automated readers receive one truthful discovery contract", asy
       assert.match(html, /<link rel="describedby" href="[^"]*llms\.txt" type="text\/markdown">/);
     }
 
+    const homeGraph = JSON.parse(home.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1])["@graph"];
+    assert.equal(homeGraph.find((item) => item["@type"] === "WebPage").dateModified, "2026-09-23");
+
     const casesGraph = JSON.parse(cases.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1])["@graph"];
     const dataset = casesGraph.find((item) => item["@type"] === "Dataset");
     assert.equal(dataset.version, "deception_case_pack_v1");
@@ -234,7 +237,7 @@ test("people and automated readers receive one truthful discovery contract", asy
     const caseGraph = JSON.parse(citation.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1])["@graph"];
     const caseWebPage = caseGraph.find((item) => item["@type"] === "WebPage");
     const learningResource = caseGraph.find((item) => item["@type"] === "LearningResource");
-    assert.equal(caseWebPage.dateModified, "2026-09-23");
+    assert.equal(caseWebPage.dateModified, "2026-08-27");
     assert.equal(learningResource.learningResourceType, "Synthetic practice case");
     assert.equal(learningResource.educationalUse, "Practice");
     assert.equal(learningResource.dateModified, "2026-08-23");
@@ -272,7 +275,7 @@ test("people and automated readers receive one truthful discovery contract", asy
     const sitemapEntries = [...sitemap.matchAll(/<url><loc>([^<]+)<\/loc><lastmod>([^<]+)<\/lastmod><\/url>/g)];
     assert.equal(sitemapEntries.length, 12);
     for (const [, url, date] of sitemapEntries) {
-      assert.equal(date, url.endsWith("/tools/") ? "2026-09-23" : "2026-09-23");
+      assert.equal(date, ["https://thedarknitefalls.github.io/detecting-ai-deception/", "https://thedarknitefalls.github.io/detecting-ai-deception/tools/"].includes(url) ? "2026-09-23" : "2026-08-27");
     }
     assert.doesNotMatch(sitemap, /<(?:priority|changefreq)>/);
 
@@ -345,7 +348,7 @@ test("Agent Claim Check is the first Tools route with canonical schemas and boun
 
     const sitemapEntries = [...sitemap.matchAll(/<url><loc>([^<]+)<\/loc><lastmod>([^<]+)<\/lastmod><\/url>/g)];
     assert.equal(sitemapEntries.length, 12);
-    for (const [, url, date] of sitemapEntries) assert.equal(date, url.endsWith("/tools/") ? "2026-09-23" : "2026-09-23");
+    for (const [, url, date] of sitemapEntries) assert.equal(date, ["https://thedarknitefalls.github.io/detecting-ai-deception/", "https://thedarknitefalls.github.io/detecting-ai-deception/tools/"].includes(url) ? "2026-09-23" : "2026-08-27");
 
     for (const schemaName of [
       "agent-claim-check-input-v1.schema.json",

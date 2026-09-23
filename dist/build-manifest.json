@@ -14,7 +14,7 @@
     },
     {
       "path": "about/index.html",
-      "sha256": "868ed30d63a8cd118cf0a463867e20ec3940191012a3122d68c01d0a51897aab",
+      "sha256": "8518fcb1c1ceba9a0b2492bdac47251322b368732e4ae7cc3389676b372b33ec",
       "bytes": 9358
     },
     {
@@ -44,42 +44,42 @@
     },
     {
       "path": "cases/index.html",
-      "sha256": "17c76826e62b0d5819dfce144c06729460b538e4fe41ee08cafa7c46bc8a38f1",
+      "sha256": "ffdda8534ac886a5174d67be427f8a41882cd1e44854bbf172c7dc55605349e3",
       "bytes": 18529
     },
     {
       "path": "cases/lost-response/index.html",
-      "sha256": "7b362bd7e13cf68a7ad337c41f7ca0ebf0159f9d7c3bf0955093492dc98f6442",
+      "sha256": "f6e4255d6003195f45b9aca682755e3a8cb7e10f58fe3f8246ed769e50a71843",
       "bytes": 18464
     },
     {
       "path": "cases/missing-file/index.html",
-      "sha256": "f869c1e702c98bb4e06a036b5d98197f6b161e7a2d55414af4948fcf78a8bddc",
+      "sha256": "aabdea1a20f3ae32eeb085e95ffd4592b6169402be6d856cdbba784b477d0c61",
       "bytes": 17956
     },
     {
       "path": "cases/reassuring-average/index.html",
-      "sha256": "74bb7b636953631b4fd835e2d8ea522d475ed2354c8d3fe558be6c6fda0939bd",
+      "sha256": "be1fd5a32ca1de1e54f401ef83fdfeddeac03c067f6980201a35c4cf5dfa21f1",
       "bytes": 19497
     },
     {
       "path": "cases/revision-bound-claim/index.html",
-      "sha256": "afa0cf7504fafd4461ae8c53c4a7ebee9dd8becc6325fedf2888af1ab4ac2ed9",
+      "sha256": "e6ac026180422ab94e682704c44f374d5fe8b0641afde363b3b25981ce7b70eb",
       "bytes": 18669
     },
     {
       "path": "cases/unsupported-citation/index.html",
-      "sha256": "8f8b7fb78b8f2a73e3151e388ff08163324fdcbd862b4f79089399109e8f62b8",
+      "sha256": "bf2f62c504db28bde4ef101a48a33c6f1ef5070f55e6fb4e5ae84d2ebd42d74a",
       "bytes": 18898
     },
     {
       "path": "cases/wrong-product-identity/index.html",
-      "sha256": "815e5c7a9ded44adbe66098dac32e236cfc014674c736613957f388a5089e95f",
+      "sha256": "de995637ffcc46284c1156d853e26fbe45ce5b818e34b635f08dc899b3e32cb9",
       "bytes": 18377
     },
     {
       "path": "challenge/index.html",
-      "sha256": "4ec898e3df2fc31e2de8ebf24974931dedbf341fb2936d3654f50094ea0edbd6",
+      "sha256": "0f0f783b9ede2fcd24aa26291c265c2dcfaca879cd7a4c083852f74ba65e9d07",
       "bytes": 9081
     },
     {
@@ -104,7 +104,7 @@
     },
     {
       "path": "method/index.html",
-      "sha256": "88d538237a83ea2103120ebbf2b8e82beb046b917e30be65fc3e4eac2960c59f",
+      "sha256": "c71bc17034ce411e6d14e2a8a27450d276c53fe6c0e56889b2996f69f2fc12bf",
       "bytes": 12698
     },
     {
@@ -134,7 +134,7 @@
     },
     {
       "path": "sitemap.xml",
-      "sha256": "b375dda069659bde436a852c22cfb21c7d22103af800b47d324807c06bfc2f46",
+      "sha256": "7972e224c8718e52131052b8fef450ba3eb899b8f7ddca02bba0797335b44274",
       "bytes": 1599
     },
     {

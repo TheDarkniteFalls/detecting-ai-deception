@@ -325,7 +325,7 @@ export async function checkSite(root = join(ROOT, "dist")) {
     const structured = JSON.parse(html.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1]);
     const webPage = structured["@graph"].find((item) => item["@type"] === "WebPage");
     const resource = structured["@graph"].find((item) => item["@type"] === "LearningResource");
-    if (webPage?.dateModified !== "2026-09-23") errors.push(`${relative(root, path)}: WebPage dateModified must reflect the discovery-page change`);
+    if (webPage?.dateModified !== "2026-08-27") errors.push(`${relative(root, path)}: WebPage dateModified must reflect the discovery-page change`);
     if (html.includes('<link rel="alternate"') && html.includes('type="application/json"')) errors.push(`${relative(root, path)}: case page incorrectly treats the six-case pack as its alternate representation`);
     if (!resource) errors.push(`${relative(root, path)}: missing LearningResource structured data`);
     else {
@@ -390,7 +390,7 @@ export async function checkSite(root = join(ROOT, "dist")) {
     .map((match) => ({ url: match[1], lastmod: match[2] }));
   if (sitemapEntries.length !== 12) errors.push(`sitemap must contain 12 dated routes, found ${sitemapEntries.length}`);
   for (const entry of sitemapEntries) {
-    const expectedDate = entry.url === `${SITE_URL}tools/` ? "2026-09-23" : "2026-09-23";
+    const expectedDate = [SITE_URL, `${SITE_URL}tools/`].includes(entry.url) ? "2026-09-23" : "2026-08-27";
     if (entry.lastmod !== expectedDate) errors.push(`sitemap lastmod mismatch for ${entry.url}: ${entry.lastmod}`);
   }
   if (/<(?:priority|changefreq)>/.test(sitemap)) errors.push("sitemap includes ignored priority or changefreq fields");

@@ -10,7 +10,8 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SITE_URL = "https://thedarknitefalls.github.io/detecting-ai-deception/";
 const PROJECT_URL = "https://github.com/TheDarkniteFalls/detecting-ai-deception";
 const SITE_NAME = "Detecting AI Deception";
-const SITE_UPDATED = "2026-09-23";
+// Dates track substantive route content; shared navigation is not a content or evidence review.
+const SITE_UPDATED = "2026-08-27";
 const USAGE_SURFACE_UPDATED = "2026-09-23";
 export const INDEXNOW_KEY = "9b73d8320f260bfd96685d71e08434bd";
 const LICENSE_URL = "https://creativecommons.org/licenses/by/4.0/";
@@ -415,6 +416,7 @@ function home(pack, checkerExamples) {
     description: "Run Agent Claim Check locally on a structured claim and supplied evidence. Get a deterministic supported, contradicted or insufficient_evidence receipt without inferring intent.",
     prefix: "./",
     path: "",
+    dateModified: USAGE_SURFACE_UPDATED,
     content: `<section class="home-opening"><div class="shell"><div class="opening-grid"><div class="opening-copy"><span class="checker-kicker">Offline · deterministic · structured evidence</span><h1>Check an agent’s claim against the evidence.</h1><p class="hero-explanation">Run Agent Claim Check locally. Supply one structured claim and the evidence you captured; get a receipt that classifies their relationship as supported, contradicted or insufficient evidence.</p><p class="checker-boundary">You supply the record. The checker does not discover evidence, analyze arbitrary answers, detect intent or prove that an action ran.</p><div class="hero-actions"><a class="primary-button" href="tools/#agent-claim-check-v1"><span>Run Agent Claim Check locally</span>${arrowIcon()}</a><a class="secondary-button" href="tools/#example-supported"><span>See an example</span>${arrowIcon()}</a></div></div>${checkerPreview(checkerExamples[0])}</div></div></section>
       <section class="checker-start band band-white" id="checker-quickstart"><div class="shell"><div class="section-intro"><span class="section-number">Start locally</span><div><h2>A small command. An inspectable receipt.</h2><p>Node.js &gt;=24.19.0 &lt;25 and Git to clone. No dependency installation. After cloning, checks run offline with no model, API key or account.</p></div></div><pre class="code-block" tabindex="0" aria-label="Clone and run the supported example"><code>git clone https://github.com/TheDarkniteFalls/detecting-ai-deception.git
 cd detecting-ai-deception
@@ -680,7 +682,7 @@ export async function build(outRoot) {
   ]) await cp(join(ROOT, "schemas", schema), join(outRoot, "schemas", schema));
 
   const routes = [
-    { path: "", lastmod: SITE_UPDATED },
+    { path: "", lastmod: USAGE_SURFACE_UPDATED },
     { path: "cases/", lastmod: SITE_UPDATED },
     ...pack.cases.map((record) => ({ path: `cases/${record.id}/`, lastmod: SITE_UPDATED })),
     { path: "method/", lastmod: SITE_UPDATED },
