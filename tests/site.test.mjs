@@ -14,6 +14,7 @@ import {
 import { build, INDEXNOW_KEY } from "../tools/build.mjs";
 import { checkHttp } from "../tools/check-http.mjs";
 import { checkSite } from "../tools/check-site.mjs";
+import { runAgentClaimCheckCli } from "../tools/check-agent-claim.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -151,8 +152,8 @@ test("the visitor-first design stays bounded, useful and code-native", async () 
     assert.equal((home.match(/data-home-preview="unsupported-citation"/g) ?? []).length, 1);
     assert.equal((home.match(/data-synthetic-case/g) ?? []).length, 1);
     assert.equal((home.match(/data-spine-case=/g) ?? []).length, 6);
-    assert.match(home, /Check whether an AI answer is backed by the evidence\./);
-    assert.match(home, /This site helps anyone reviewing an AI answer compare the claim with the evidence it would need and the record that exists\./);
+    assert.match(home, /Check an agent’s claim against the evidence\./);
+    assert.match(home, /Run Agent Claim Check locally\./);
     assert.match(home, /Featured synthetic case 03/);
     assert.match(home, /<dt>Claim<\/dt><dd>30 days<\/dd>/);
     assert.match(home, /<dt>Required evidence<\/dt><dd>30 days<\/dd>/);
@@ -161,11 +162,11 @@ test("the visitor-first design stays bounded, useful and code-native", async () 
     const featured = home.slice(home.indexOf('class="featured-case-panel"'), home.indexOf("</a>", home.indexOf('class="featured-case-panel"')));
     assert.match(featured, /Open the case and make the narrowest call the evidence supports\./);
     assert.doesNotMatch(featured, /Contradicted|The cited passage does not support the answer\./);
-    assert.match(home, /href="#method-overview"/);
+    assert.ok(home.includes('href="tools/#agent-claim-check-v1"'));
     assert.match(home, /id="method-overview"/);
     assert.match(home, /id="practice-cases"/);
     assert.doesNotMatch(home, /hero-evidence-object|case-index-band/);
-    const homeOrder = ["home-opening", "method-band", "home-case-index", "trust-band", "challenge-band"]
+    const homeOrder = ["home-opening", "checker-start", "checker-examples", "method-band", "home-case-index", "teaching-preview", "trust-band", "challenge-band"]
       .map((className) => home.indexOf(`class="${className}`));
     assert.ok(homeOrder.every((position, index) => position >= 0 && (index === 0 || position > homeOrder[index - 1])));
     assert.ok(citation.indexOf("case-record-band") < citation.indexOf("case-spine-band"));
@@ -197,7 +198,7 @@ test("people and automated readers receive one truthful discovery contract", asy
     const robots = await readFile(join(root, "robots.txt"), "utf8");
     const sitemap = await readFile(join(root, "sitemap.xml"), "utf8");
 
-    assert.match(home, /<title>Detecting AI Deception: Check AI Claims Against Evidence<\/title>/);
+    assert.match(home, /<title>Agent Claim Check: Check an Agent’s Claim Against Evidence<\/title>/);
     assert.match(method, /<title>How to Check AI Claims Against Evidence · Detecting AI Deception<\/title>/);
     assert.match(method, /How do I check whether an AI answer is supported\?/);
     assert.match(method, /How do I verify an AI citation\?/);
@@ -216,6 +217,9 @@ test("people and automated readers receive one truthful discovery contract", asy
       assert.match(html, /"alternateName":"DAID"/);
       assert.match(html, /<link rel="describedby" href="[^"]*llms\.txt" type="text\/markdown">/);
     }
+
+    const homeGraph = JSON.parse(home.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1])["@graph"];
+    assert.equal(homeGraph.find((item) => item["@type"] === "WebPage").dateModified, "2026-09-23");
 
     const casesGraph = JSON.parse(cases.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1])["@graph"];
     const dataset = casesGraph.find((item) => item["@type"] === "Dataset");
@@ -271,7 +275,7 @@ test("people and automated readers receive one truthful discovery contract", asy
     const sitemapEntries = [...sitemap.matchAll(/<url><loc>([^<]+)<\/loc><lastmod>([^<]+)<\/lastmod><\/url>/g)];
     assert.equal(sitemapEntries.length, 12);
     for (const [, url, date] of sitemapEntries) {
-      assert.equal(date, url.endsWith("/tools/") ? "2026-08-30" : "2026-08-27");
+      assert.equal(date, ["https://thedarknitefalls.github.io/detecting-ai-deception/", "https://thedarknitefalls.github.io/detecting-ai-deception/tools/"].includes(url) ? "2026-09-23" : "2026-08-27");
     }
     assert.doesNotMatch(sitemap, /<(?:priority|changefreq)>/);
 
@@ -317,16 +321,34 @@ test("Agent Claim Check is the first Tools route with canonical schemas and boun
       "https://thedarknitefalls.github.io/detecting-ai-deception/challenge/",
     ]) assert.ok(tools.includes(`href="${href}"`), href);
     assert.doesNotMatch(tools, /<(?:form|input|textarea|select)\b/i);
+    const decode = (text) => text.replaceAll("&quot;", '"').replaceAll("&#39;", "'").replaceAll("&lt;", "<").replaceAll("&gt;", ">").replaceAll("&amp;", "&");
+    for (const id of ["supported", "contradicted", "insufficient-evidence"]) {
+      const inputPath = join(ROOT, "examples", "agent-claim-check-v1", `${id}.json`);
+      const canonicalInput = JSON.parse(await readFile(inputPath, "utf8"));
+      const displayedInput = JSON.parse(decode(tools.match(new RegExp(`<code data-checker-input="${id}">([\\s\\S]*?)</code>`))[1]));
+      assert.deepEqual(displayedInput, canonicalInput, `${id}: complete input matches canonical CLI example`);
+      const result = await runAgentClaimCheckCli([inputPath]);
+      assert.equal(result.accepted, true);
+      const receipt = JSON.parse(result.output);
+      const displayedReceipt = JSON.parse(decode(tools.match(new RegExp(`<code data-checker-receipt="${id}">([\\s\\S]*?)</code>`))[1]));
+      assert.deepEqual(displayedReceipt, {
+        finding: receipt.finding,
+        intent_assessment: receipt.intent_assessment,
+        downstream_action_authorized: receipt.downstream_action_authorized,
+      }, `${id}: receipt excerpt matches actual CLI output`);
+    }
+    assert.match(tools, /The six teaching cases use a separate schema and cannot be passed directly to this CLI/);
+    assert.match(tools, /node tools\/check-agent-claim\.mjs my-claim\.json/);
 
     const toolsGraph = JSON.parse(tools.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1])["@graph"];
-    assert.equal(toolsGraph.find((item) => item["@type"] === "WebPage").dateModified, "2026-08-30");
+    assert.equal(toolsGraph.find((item) => item["@type"] === "WebPage").dateModified, "2026-09-23");
     assert.match(llms, /https:\/\/thedarknitefalls\.github\.io\/detecting-ai-deception\/tools\/#agent-claim-check-v1/);
     assert.match(llms, /https:\/\/github\.com\/TheDarkniteFalls\/detecting-ai-deception\/blob\/main\/docs\/agent-claim-check-v1\.md/);
     for (const boundary of ["dependency-free", "offline", "deterministic", "non-authorizing"]) assert.ok(llms.includes(boundary));
 
     const sitemapEntries = [...sitemap.matchAll(/<url><loc>([^<]+)<\/loc><lastmod>([^<]+)<\/lastmod><\/url>/g)];
     assert.equal(sitemapEntries.length, 12);
-    for (const [, url, date] of sitemapEntries) assert.equal(date, url.endsWith("/tools/") ? "2026-08-30" : "2026-08-27");
+    for (const [, url, date] of sitemapEntries) assert.equal(date, ["https://thedarknitefalls.github.io/detecting-ai-deception/", "https://thedarknitefalls.github.io/detecting-ai-deception/tools/"].includes(url) ? "2026-09-23" : "2026-08-27");
 
     for (const schemaName of [
       "agent-claim-check-input-v1.schema.json",
@@ -357,7 +379,7 @@ test("persona-flow repairs preserve blind practice, progressive disclosure and e
     for (const path of relativePages) {
       const html = await readFile(join(root, path), "utf8");
       const header = html.match(/<header class="site-header">[\s\S]*?<\/header>/)[0];
-      const order = ["Practice", "How to check", "Use the checker", "Submit evidence", "About"].map((label) => header.indexOf(`>${label}</a>`));
+      const order = ["Claim Check", "Examples", "Method", "Source"].map((label) => header.indexOf(`>${label}</a>`));
       assert.ok(order.every((position, index) => position >= 0 && (index === 0 || position > order[index - 1])), `${path} nav order`);
       assert.match(header, /class="mobile-cases-link"/);
       assert.match(header, /class="wordmark-short" aria-hidden="true">DAID<\/span>/);
