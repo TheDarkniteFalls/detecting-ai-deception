@@ -875,7 +875,7 @@ p { margin: 0 0 1rem; }
 .js .finding-panel:not(.is-revealed) { display: none; }
 .finding-summary,
 .unknown-block { padding: clamp(1.5rem, 4vw, 3rem); }
-.finding-summary { display: grid; grid-template-columns: 5.2rem 1fr; gap: 1.25rem; border-right: 1px solid var(--line-bright); }
+.finding-summary { display: grid; grid-template-columns: 5.2rem minmax(0, 1fr); gap: 1.25rem; border-right: 1px solid var(--line-bright); }
 .finding-symbol {
   display: grid;
   width: 4.7rem;
@@ -887,7 +887,7 @@ p { margin: 0 0 1rem; }
 .finding-summary .panel-label { background: transparent; padding: 0; color: var(--bone-dim); }
 .finding-summary h3 {
   margin-bottom: 0.8rem;
-  font: 900 clamp(2.5rem, 5vw, 5rem)/0.9 var(--display);
+  font: 900 clamp(1.25rem, 2.5vw, 2.5rem)/0.9 var(--display);
   overflow-wrap: normal;
   text-transform: uppercase;
   word-break: normal;
