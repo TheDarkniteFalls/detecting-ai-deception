@@ -10,13 +10,13 @@ const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const SITE_URL = "https://thedarknitefalls.github.io/detecting-ai-deception/";
 const PROJECT_URL = "https://github.com/TheDarkniteFalls/detecting-ai-deception";
 const SITE_NAME = "Detecting AI Deception";
-const SITE_UPDATED = "2026-08-27";
-const USAGE_SURFACE_UPDATED = "2026-08-30";
+const SITE_UPDATED = "2026-09-23";
+const USAGE_SURFACE_UPDATED = "2026-09-23";
 export const INDEXNOW_KEY = "9b73d8320f260bfd96685d71e08434bd";
 const LICENSE_URL = "https://creativecommons.org/licenses/by/4.0/";
 const CREATOR_ID = `${PROJECT_URL}#mike-parsons`;
 const WEBSITE_ID = `${SITE_URL}#website`;
-const SITE_DESCRIPTION = "Check whether AI answers and citations are supported by the available evidence without guessing at intent.";
+const SITE_DESCRIPTION = "Run Agent Claim Check locally to classify a supplied structured claim and evidence. Offline, deterministic, and non-authorizing; intent is not assessed.";
 
 const escapeHtml = (value) => String(value)
   .replaceAll("&", "&amp;")
@@ -76,18 +76,17 @@ function failureClassDisplay(values, { technical = false } = {}) {
 
 function navigation(prefix, current) {
   const items = [
-    ["cases", "Practice", `${prefix}cases/`],
-    ["method", "How to check", `${prefix}method/`],
-    ["tools", "Use the checker", `${prefix}tools/`],
-    ["challenge", "Submit evidence", `${prefix}challenge/`],
-    ["about", "About", `${prefix}about/`],
+    ["tools", "Claim Check", `${prefix}tools/#agent-claim-check-v1`],
+    ["examples", "Examples", `${prefix}tools/#checker-examples`],
+    ["method", "Method", `${prefix}method/`],
+    ["source", "Source", PROJECT_URL],
   ];
   return `<header class="site-header"><div class="nav-shell">
     <a class="wordmark" href="${prefix}" aria-label="Detecting AI Deception"><span class="wordmark-full">Detecting AI Deception</span><span class="wordmark-short" aria-hidden="true">DAID</span></a>
     <nav class="site-nav" aria-label="Primary">${items.map(([id, label, href]) => `<a href="${href}"${current === id ? ' aria-current="page"' : ""}>${label}</a>`).join("")}</nav>
     <a class="nav-boundary" href="${prefix}about/#intent-boundary">Intent: not assessed</a>
     <div class="mobile-navigation">
-      <a class="mobile-cases-link" href="${prefix}cases/"${current === "cases" ? ' aria-current="page"' : ""}>Practice</a>
+      <a class="mobile-cases-link" href="${prefix}tools/#agent-claim-check-v1"${current === "tools" ? ' aria-current="page"' : ""}>Claim Check</a>
       <details class="mobile-menu"><summary><span class="menu-lines" aria-hidden="true"><span></span><span></span><span></span></span>Menu</summary>
         <nav aria-label="Mobile primary">${items.slice(1).map(([id, label, href]) => `<a href="${href}"${current === id ? ' aria-current="page"' : ""}>${label}</a>`).join("")}<a href="${prefix}about/#intent-boundary">Intent boundary</a></nav>
       </details>
@@ -292,7 +291,7 @@ ${alternateData ? `  <link rel="alternate" href="${alternateData}" type="applica
   <main id="main">${breadcrumbs.length ? breadcrumbNav(prefix, breadcrumbs) : ""}${content}</main>
   <footer class="site-footer"><div class="shell footer-grid">
     <p>Mike-led public investigation, developed transparently with AI assistance. Six synthetic cases compare observable claims with observable evidence. Intent: not assessed.</p>
-    <div class="footer-links"><a href="${prefix}tools/">Use the checker</a><a href="${prefix}challenge/">Submit evidence</a><a href="${prefix}about/">About</a><a href="${PROJECT_URL}">Source</a><a href="${PROJECT_URL}/blob/main/LICENSING.md">Licensing</a></div>
+    <div class="footer-links"><a href="${prefix}tools/#agent-claim-check-v1">Claim Check</a><a href="${prefix}cases/">Teaching cases</a><a href="${prefix}challenge/">Submit evidence</a><a href="${prefix}about/">About</a><a href="${PROJECT_URL}">Source</a><a href="${PROJECT_URL}/blob/main/LICENSING.md">Licensing</a></div>
   </div></footer>
   <script type="module" src="${prefix}assets/app.mjs"></script>
 </body>
@@ -392,7 +391,16 @@ function featuredCasePanel(record) {
   </a>`;
 }
 
-function home(pack) {
+function checkerReceiptExcerpt(finding) {
+  return JSON.stringify({ finding, intent_assessment: "not-assessed", downstream_action_authorized: false }, null, 2);
+}
+
+function checkerPreview(example) {
+  const input = JSON.stringify({ claim: { text: example.input.claim.text }, evidence: example.input.evidence.map(({ requirement, state }) => ({ requirement, state })) }, null, 2);
+  return `<aside class="checker-preview" aria-label="Synthetic checker input and result"><div class="checker-preview-heading"><span class="panel-label">Agent Claim Check v1</span><strong>One claim. A bounded result.</strong><span>Visibly synthetic example · not a live run</span></div><div class="checker-preview-body"><h2>Input excerpt</h2><pre tabindex="0" aria-label="Synthetic checker input excerpt"><code>${escapeHtml(input)}</code></pre><h2>Receipt excerpt</h2><pre tabindex="0" aria-label="Synthetic checker receipt excerpt"><code>${escapeHtml(checkerReceiptExcerpt("supported"))}</code></pre><p>The supplied record supports the claim. This does not prove execution or authorize an action.</p><a href="tools/#example-supported">See the complete valid input and command ${arrowIcon()}</a></div></aside>`;
+}
+
+function home(pack, checkerExamples) {
   const introIndex = pack.cases.findIndex((record) => record.id === "unsupported-citation");
   const intro = pack.cases[introIndex];
   if (!intro) throw new Error("home preview case unsupported-citation is missing");
@@ -403,13 +411,18 @@ function home(pack) {
     ["Report the result", "Classify the relationship and keep intent separate."],
   ];
   return page({
-    title: "Detecting AI Deception: Check AI Claims Against Evidence",
-    description: "Check whether an AI answer or citation is supported by evidence using six synthetic practice cases and a reproducible four-step method. Intent is not assessed.",
+    title: "Agent Claim Check: Check an Agent’s Claim Against Evidence",
+    description: "Run Agent Claim Check locally on a structured claim and supplied evidence. Get a deterministic supported, contradicted or insufficient_evidence receipt without inferring intent.",
     prefix: "./",
     path: "",
-    content: `<section class="home-opening"><div class="shell"><div class="opening-grid"><div class="opening-copy"><h1>Check whether an AI answer is backed by the evidence.</h1><p class="hero-explanation">AI answers can sound certain even when their sources are missing, contradictory or too weak to support them. This site helps anyone reviewing an AI answer compare the claim with the evidence it would need and the record that exists. You will learn to classify the result as Supported, Contradicted or Insufficient evidence without guessing at intent.</p><div class="hero-actions"><a class="primary-button" href="cases/unsupported-citation/"><span>Try a practice case</span>${arrowIcon()}</a><a class="secondary-button" href="#method-overview"><span>See the four-step method</span>${arrowIcon()}</a></div></div>${featuredCasePanel(intro)}</div></div></section>
+    content: `<section class="home-opening"><div class="shell"><div class="opening-grid"><div class="opening-copy"><span class="checker-kicker">Offline · deterministic · structured evidence</span><h1>Check an agent’s claim against the evidence.</h1><p class="hero-explanation">Run Agent Claim Check locally. Supply one structured claim and the evidence you captured; get a receipt that classifies their relationship as supported, contradicted or insufficient evidence.</p><p class="checker-boundary">You supply the record. The checker does not discover evidence, analyze arbitrary answers, detect intent or prove that an action ran.</p><div class="hero-actions"><a class="primary-button" href="tools/#agent-claim-check-v1"><span>Run Agent Claim Check locally</span>${arrowIcon()}</a><a class="secondary-button" href="tools/#example-supported"><span>See an example</span>${arrowIcon()}</a></div></div>${checkerPreview(checkerExamples[0])}</div></div></section>
+      <section class="checker-start band band-white" id="checker-quickstart"><div class="shell"><div class="section-intro"><span class="section-number">Start locally</span><div><h2>A small command. An inspectable receipt.</h2><p>Node.js &gt;=24.19.0 &lt;25 and Git to clone. No dependency installation. After cloning, checks run offline with no model, API key or account.</p></div></div><pre class="code-block" tabindex="0" aria-label="Clone and run the supported example"><code>git clone https://github.com/TheDarkniteFalls/detecting-ai-deception.git
+cd detecting-ai-deception
+node tools/check-agent-claim.mjs examples/agent-claim-check-v1/supported.json</code></pre><p>Start with the supplied JSON, then record your own claim and evidence using the input contract.</p><a class="text-link" href="tools/#your-own-evidence">Use your own structured evidence ${arrowIcon()}</a></div></section>
+      <section class="checker-examples band"><div class="shell"><div class="section-intro"><span class="section-number">Three results</span><div><h2>See what each finding means.</h2><p>These are synthetic checker inputs. Each produces a receipt you can reproduce locally.</p></div></div><div class="checker-result-grid">${checkerExamples.map((example) => `<a class="checker-result" href="tools/#example-${example.id}"><span class="panel-label">${example.state}</span><h3>${example.label}</h3><p>${example.summary}</p><span class="text-link">Inspect input and result ${arrowIcon()}</span></a>`).join("")}</div></div></section>
       <section class="method-band" id="method-overview" aria-labelledby="method-overview-title"><div class="shell"><div class="method-heading"><h2 id="method-overview-title">How the method helps you reach a defensible result.</h2><p>The four steps keep a confident answer from substituting for evidence. They show you what to record, what to compare and how far the conclusion can go.</p></div><ol class="method-steps">${methodSteps.map(([title, description], index) => `<li><span class="method-number">0${index + 1}</span><div><h3>${title}</h3><p>${description}</p></div></li>`).join("")}</ol><a class="text-link method-link" href="method/">Read the complete method ${arrowIcon()}</a></div></section>
       ${homeCaseArchive(pack.cases)}
+      <section class="teaching-preview band"><div class="shell utility-heading-grid"><div><h2>Prefer to learn by comparing a claim and a record?</h2><p>The six teaching cases use a separate teaching schema. They explain the method; they are not files to pass to Agent Claim Check.</p><a class="text-link" href="cases/">Browse the teaching cases ${arrowIcon()}</a></div>${featuredCasePanel(intro)}</div></section>
       <section class="trust-band"><div class="shell"><div class="section-intro"><span class="section-number">Boundary</span><div><h2>Know what the evidence can—and cannot—tell you.</h2><p>This site shows how far the available record supports a claim. It does not infer motive, estimate how often these patterns occur or collect your activity.</p></div></div><ul class="trust-list"><li><strong>Six visibly synthetic cases</strong><span>Teaching examples, not a prevalence estimate or allegation about a real incident.</span></li><li><strong>One deterministic rule</strong><span>The browser and local checker import the same classifier.</span></li><li><strong>Exact public revisions</strong><span>Every source keeps its revision and reviewed-through date beside the claim.</span></li><li><strong>No hidden collection</strong><span>No account, analytics, tracker, backend or live model receives your choices.</span></li></ul></div></section>
       <section class="challenge-band"><div class="shell challenge-layout"><div><h2>Challenge a result with evidence.</h2><p>Run the checker, inspect an exact revision, or supply a public-safe counterexample. The record should change when the evidence does.</p></div><div class="challenge-actions"><a class="primary-button" href="challenge/"><span>Challenge the record</span>${arrowIcon()}</a><a class="secondary-button" href="tools/"><span>Open the evidence tools</span>${arrowIcon()}</a></div></div></section>`,
   });
@@ -497,18 +510,22 @@ else:
   });
 }
 
-function toolsPage(sourceMap) {
+function toolsPage(sourceMap, checkerExamples) {
   const routes = sourceMap.sources.filter((source) => source.id !== "reliability-navigator");
   return page({
-    title: "AI Evidence-Checking Tools and Exact Sources",
-    description: "Inspect exact public revisions and tools for checking AI claims, citations, missing evaluations, identity mismatches and ambiguous external actions.",
+    title: "Run Agent Claim Check Locally: Quickstart and Examples",
+    description: "Run the offline deterministic Agent Claim Check CLI with valid JSON examples, inspect its receipts and map your own structured evidence to the input contract.",
     path: "tools/", prefix: "../", current: "tools",
     dateModified: USAGE_SURFACE_UPDATED,
-    breadcrumbs: [{ name: "Tools", route: "tools/" }],
-    content: `<header class="utility-page-header"><div class="shell utility-heading-grid"><div><h1 class="page-title">Follow the evidence deeper.</h1><p class="lead">Choose a practice case, run DAID's local checker, or inspect the exact schemas and source revisions.</p></div><div class="utility-actions"><a class="primary-button" href="../cases/unsupported-citation/"><span>Try a practice case</span>${arrowIcon()}</a><a class="secondary-button" href="#agent-claim-check-v1"><span>Run the local checker</span>${arrowIcon()}</a><a class="secondary-button" href="#schemas-and-source"><span>Inspect schemas and source</span>${arrowIcon()}</a></div></div></header>
-<section class="band band-white" id="agent-claim-check-v1"><div class="narrow prose"><h2>Run Agent Claim Check v1</h2><p>Agent Claim Check is DAID's dependency-free, offline and deterministic harness check for one bounded claim and its observable evidence.</p><pre class="code-block"><code>node tools/check-agent-claim.mjs examples/agent-claim-check-v1/supported.json</code></pre><p>The example returns <code>supported</code>. Read that result only with these machine boundaries:</p><pre class="code-block"><code>intent_assessment: "not-assessed"
+    breadcrumbs: [{ name: "Claim Check", route: "tools/" }],
+    content: `<header class="utility-page-header"><div class="shell utility-heading-grid"><div><span class="checker-kicker">Agent Claim Check v1</span><h1 class="page-title">Run the check. Inspect the receipt.</h1><p class="lead">An offline, deterministic CLI for one supplied structured claim and its evidence. No model, backend or browser upload.</p></div><div class="utility-actions"><a class="primary-button" href="#agent-claim-check-v1"><span>Start locally</span>${arrowIcon()}</a><a class="secondary-button" href="#checker-examples"><span>See checker examples</span>${arrowIcon()}</a><a class="secondary-button" href="#your-own-evidence"><span>Use your own evidence</span>${arrowIcon()}</a></div></div></header>
+<section class="band band-white" id="agent-claim-check-v1"><div class="narrow prose"><h2>Run Agent Claim Check v1</h2><p>Agent Claim Check is DAID's dependency-free, offline and deterministic harness check for one bounded claim and its observable evidence.</p><h3>1. Get the source</h3><p>Requirements: <strong>Node.js &gt;=24.19.0 &lt;25</strong> and Git to clone. No dependency installation, API key or account is needed. Cloning needs a network connection; the checker runs offline after that.</p><pre class="code-block" tabindex="0" aria-label="Get the source"><code>git clone https://github.com/TheDarkniteFalls/detecting-ai-deception.git
+cd detecting-ai-deception</code></pre><h3>2. Run a synthetic example</h3><pre class="code-block" tabindex="0" aria-label="Run the supported example"><code>node tools/check-agent-claim.mjs examples/agent-claim-check-v1/supported.json</code></pre><p>The example returns <code>supported</code>. The receipt is JSON on stdout; a valid supported, contradicted or insufficient-evidence input exits 0. A rejected contract input exits 2; CLI or file-read errors exit 1.</p><p>Read the result with these machine boundaries (receipt field excerpt):</p><pre class="code-block" tabindex="0" aria-label="Receipt boundaries"><code>intent_assessment: "not-assessed"
 downstream_action_authorized: false
-does_not_establish: ["correctness", "safety", "identity", "successful-execution", "authority", "permission"]</code></pre><p>A supported finding describes only the declared claim/evidence relationship. It is not permission to act.</p><h3 id="schemas-and-source">Guide, examples, and contracts</h3><ul><li><a href="${PROJECT_URL}/blob/main/docs/agent-claim-check-v1.md">Read the canonical Agent Claim Check v1 guide</a>.</li><li>Run the source examples: <a href="${PROJECT_URL}/blob/main/examples/agent-claim-check-v1/supported.json">supported</a>, <a href="${PROJECT_URL}/blob/main/examples/agent-claim-check-v1/contradicted.json">contradicted</a>, <a href="${PROJECT_URL}/blob/main/examples/agent-claim-check-v1/insufficient-evidence.json">insufficient evidence</a>, and <a href="${PROJECT_URL}/blob/main/examples/agent-claim-check-v1/invalid-input.json">invalid input</a>.</li><li>Inspect the <a href="${PROJECT_URL}/blob/main/tools/check-agent-claim.mjs">CLI</a> and <a href="${PROJECT_URL}/blob/main/src/agent-claim-check.mjs">core</a>.</li><li>Use the canonical <a href="${SITE_URL}schemas/agent-claim-check-input-v1.schema.json">input</a>, <a href="${SITE_URL}schemas/agent-claim-check-receipt-v1.schema.json">receipt</a>, and <a href="${SITE_URL}schemas/agent-claim-check-error-v1.schema.json">error</a> schemas.</li><li>Review <a href="${PROJECT_URL}/blob/main/LICENSING.md">licensing</a>, <a href="${PROJECT_URL}/blob/main/SECURITY.md">security reporting</a>, or the existing <a href="${SITE_URL}challenge/">public-safe Challenge route</a>.</li></ul></div></section>
+does_not_establish: ["correctness", "safety", "identity", "successful-execution", "authority", "permission"]</code></pre><p>A supported finding describes only the declared claim/evidence relationship. It is not permission to act.</p><h3 id="your-own-evidence">3. Use your own structured evidence</h3><p>Copy the valid example into a local input file, then edit it to record your actual claim, required evidence, observations and capture completeness. The copy below is still synthetic until you replace its fields.</p><pre class="code-block" tabindex="0" aria-label="Prepare your own structured input"><code>cp examples/agent-claim-check-v1/supported.json my-claim.json
+# Edit my-claim.json using the input schema before running:
+node tools/check-agent-claim.mjs my-claim.json</code></pre><p>The checker accepts structured JSON, not arbitrary answer text. It does not find evidence, inspect your workspace or verify that an action actually ran. You are responsible for the supplied observations. Keep missing or unresolved evidence explicit.</p><p>Use <code>daid_agent_claim_check_input_v1</code>. The six teaching cases use a separate schema and cannot be passed directly to this CLI. The receipt value is <code>insufficient_evidence</code>; teaching-case labels use <code>insufficient-evidence</code>.</p><h3 id="schemas-and-source">Guide, examples, and contracts</h3><ul><li><a href="${PROJECT_URL}/blob/main/docs/agent-claim-check-v1.md">Read the canonical Agent Claim Check v1 guide</a>.</li><li>Run the source examples: <a href="${PROJECT_URL}/blob/main/examples/agent-claim-check-v1/supported.json">supported</a>, <a href="${PROJECT_URL}/blob/main/examples/agent-claim-check-v1/contradicted.json">contradicted</a>, <a href="${PROJECT_URL}/blob/main/examples/agent-claim-check-v1/insufficient-evidence.json">insufficient evidence</a>, and <a href="${PROJECT_URL}/blob/main/examples/agent-claim-check-v1/invalid-input.json">invalid input</a>.</li><li>Inspect the <a href="${PROJECT_URL}/blob/main/tools/check-agent-claim.mjs">CLI</a> and <a href="${PROJECT_URL}/blob/main/src/agent-claim-check.mjs">core</a>.</li><li>Use the canonical <a href="${SITE_URL}schemas/agent-claim-check-input-v1.schema.json">input</a>, <a href="${SITE_URL}schemas/agent-claim-check-receipt-v1.schema.json">receipt</a>, and <a href="${SITE_URL}schemas/agent-claim-check-error-v1.schema.json">error</a> schemas.</li><li>Review <a href="${PROJECT_URL}/blob/main/LICENSING.md">licensing</a>, <a href="${PROJECT_URL}/blob/main/SECURITY.md">security reporting</a>, or the existing <a href="${SITE_URL}challenge/">public-safe Challenge route</a>.</li></ul></div></section>
+<section class="band checker-examples" id="checker-examples"><div class="narrow prose"><h2>Three reproducible checker examples</h2><p>All inputs below are visibly synthetic. Input blocks are complete, valid JSON from the existing source examples; result blocks are selected fields from their actual CLI receipts.</p>${checkerExamples.map((example) => `<article class="checker-example" id="example-${example.id}"><span class="checker-kicker">${example.state} evidence</span><h3>${example.label}</h3><p>${example.summary}</p><pre class="code-block" tabindex="0" aria-label="Run ${example.label} example"><code>node tools/check-agent-claim.mjs examples/agent-claim-check-v1/${example.id}.json</code></pre><details><summary>Complete synthetic input JSON</summary><pre class="code-block" tabindex="0" aria-label="${example.label} input JSON"><code data-checker-input="${example.id}">${escapeHtml(JSON.stringify(example.input, null, 2))}</code></pre></details><h4>Receipt excerpt</h4><pre class="code-block" tabindex="0" aria-label="${example.label} receipt excerpt"><code data-checker-receipt="${example.id}">${escapeHtml(checkerReceiptExcerpt(example.finding))}</code></pre></article>`).join("")}<p>Want to practice the reasoning first? <a href="../cases/">Explore the six teaching cases</a> or <a href="../method/">read the method and its limits</a>.</p></div></section>
 <section class="band"><div class="shell"><h2>Supporting evidence routes</h2><p>Each route below has an exact reviewed public revision and a narrow role. This site does not copy or silently extend those projects.</p><ol class="route-list">${routes.map((source, index) => `<li><a class="route-link" href="${source.revision_url}"><span class="route-index">${String(index + 1).padStart(2, "0")}</span><span><strong>${escapeHtml(source.id.replaceAll("-", " "))}</strong>${escapeHtml(source.role)}</span><span>Exact revision<br>${source.revision.slice(0, 12)}</span></a></li>`).join("")}</ol></div></section><section class="band band-white"><div class="narrow"><h2>Need the complete toolkit?</h2><p>The Reliability Navigator covers the wider public set of guides, starters and runnable checks. Its route recommendation is not certification that a tool fits every setup.</p><a class="primary-button" href="https://thedarknitefalls.github.io/local-assistant-reliability-lab/">Open the Reliability Navigator</a><p class="source-revision"><a href="${sourceMap.sources.find((source) => source.id === "reliability-navigator").revision_url}">Public baseline reviewed for this map</a></p></div></section>`,
   });
 }
@@ -544,9 +561,9 @@ function llmsText(pack) {
   }).join("\n");
   return `# Detecting AI Deception
 
-> Check whether an AI answer or citation is backed by the available evidence without guessing at intent.
+> Check an agent’s claim against supplied structured evidence with the offline Agent Claim Check CLI.
 
-Detecting AI Deception (DAID) is a static public teaching site. It contains exactly six synthetic practice cases and one deterministic rule for classifying the relationship between a claim and its required evidence as Supported, Contradicted or Insufficient evidence.
+Detecting AI Deception (DAID) is a static public front door to Agent Claim Check, an offline deterministic CLI. It classifies supplied structured claims and evidence; it does not discover evidence, analyze arbitrary answers, prove execution or authorize action. The site also provides teaching material. It contains exactly six synthetic practice cases and one deterministic rule for classifying the relationship between a claim and its required evidence as Supported, Contradicted or Insufficient evidence.
 
 All six linked records are synthetic teaching cases reviewed through ${pack.reviewed_through}. Their finding distribution is three Contradicted, two Insufficient evidence and one Supported. Claim → Required evidence → Observed record → Finding is the public evidence model. Intent is always not assessed. The records do not establish motive, estimate prevalence, evaluate a live model, rank products or provide certification.
 
@@ -554,7 +571,9 @@ This file follows an experimental agent-discovery convention. It does not claim 
 
 ## Start
 
-- [Visitor overview](${SITE_URL}): Understand the problem, inspect the featured citation case and choose a practice case.
+- [Run Agent Claim Check locally](${new URL("tools/#agent-claim-check-v1", SITE_URL).href}): Requirements, clone and run commands, and your own structured JSON input.
+- [Checker examples](${new URL("tools/#checker-examples", SITE_URL).href}): Three existing synthetic inputs and reproducible receipt excerpts.
+- [Visitor overview](${SITE_URL}): Inspect the local checker, its boundaries and supporting teaching cases.
 - [Evidence-checking method](${new URL("method/", SITE_URL).href}): Learn how to record a claim, define required evidence, compare the observed record and report the narrowest finding.
 - [Six practice cases](${new URL("cases/", SITE_URL).href}): Compare each claim with the required and observed evidence before revealing its finding.
 
@@ -626,11 +645,18 @@ export async function build(outRoot) {
   const errors = validatePack(pack);
   if (errors.length) throw new Error(errors.join("\n"));
 
-  await write(outRoot, "index.html", home(pack));
+  const checkerExamples = [];
+  for (const example of [
+    { id: "supported", label: "Supported", finding: "supported", state: "Supports", summary: "The supplied synthetic artifact record supports the declared file-creation claim." },
+    { id: "contradicted", label: "Contradicted", finding: "contradicted", state: "Contradictory", summary: "The supplied synthetic artifact hash conflicts with the requested bytes." },
+    { id: "insufficient-evidence", label: "Insufficient evidence", finding: "insufficient_evidence", state: "Absent", summary: "The supplied synthetic evaluation capture ends before a terminal result." },
+  ]) checkerExamples.push({ ...example, input: JSON.parse(await readFile(join(ROOT, "examples", "agent-claim-check-v1", `${example.id}.json`), "utf8")) });
+
+  await write(outRoot, "index.html", home(pack, checkerExamples));
   await write(outRoot, "cases/index.html", casesIndex(pack));
   for (const [index, record] of pack.cases.entries()) await write(outRoot, `cases/${record.id}/index.html`, casePage(record, index, pack.cases));
   await write(outRoot, "method/index.html", methodPage());
-  await write(outRoot, "tools/index.html", toolsPage(sourceMap));
+  await write(outRoot, "tools/index.html", toolsPage(sourceMap, checkerExamples));
   await write(outRoot, "challenge/index.html", challengePage());
   await write(outRoot, "about/index.html", aboutPage());
 

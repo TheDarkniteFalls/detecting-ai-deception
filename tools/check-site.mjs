@@ -106,7 +106,7 @@ export async function checkSite(root = join(ROOT, "dist")) {
       '<link rel="describedby"', '<noscript>', 'data-cases-url=', 'Intent: not assessed',
     ]) if (!html.includes(marker)) errors.push(`${pagePath}: missing ${marker}`);
     const globalHeader = html.match(/<header class="site-header">[\s\S]*?<\/header>/)?.[0] ?? "";
-    const navPositions = ["Practice", "How to check", "Use the checker", "Submit evidence", "About"]
+    const navPositions = ["Claim Check", "Examples", "Method", "Source"]
       .map((label) => globalHeader.indexOf(`>${label}</a>`));
     if (!navPositions.every((position, index) => position >= 0 && (index === 0 || position > navPositions[index - 1]))) {
       errors.push(`${pagePath}: expanded primary navigation is missing or out of order`);
@@ -115,7 +115,7 @@ export async function checkSite(root = join(ROOT, "dist")) {
       if (!globalHeader.includes(marker)) errors.push(`${pagePath}: navigation is missing ${marker}`);
     }
     const current = html.match(/<body data-page="([^"]+)"/)?.[1] ?? "home";
-    const expectedCurrentCount = current === "home" ? 0 : 2;
+    const expectedCurrentCount = ["tools", "method"].includes(current) ? 2 : 0;
     if ((globalHeader.match(/aria-current="page"/g) ?? []).length !== expectedCurrentCount) {
       errors.push(`${pagePath}: navigation current-page semantics are incorrect`);
     }
@@ -223,13 +223,23 @@ export async function checkSite(root = join(ROOT, "dist")) {
     errors.push("home preview is not clearly identified as synthetic case 03");
   }
   for (const required of [
-    "Check whether an AI answer is backed by the evidence.",
-    "This site helps anyone reviewing an AI answer compare the claim with the evidence it would need and the record that exists.",
+    "Check an agent’s claim against the evidence.",
+    "Run Agent Claim Check locally.",
+    "Run Agent Claim Check locally</span>",
+    "See an example</span>",
+    'class="checker-preview"',
+    "Input excerpt",
+    "Receipt excerpt",
+    "Visibly synthetic example · not a live run",
+    "The checker does not discover evidence, analyze arbitrary answers, detect intent or prove that an action ran.",
+    'href="tools/#your-own-evidence"',
+    'href="tools/#example-supported"',
+    "Node.js &gt;=24.19.0 &lt;25",
     "How the method helps you reach a defensible result.",
     "Practice with six synthetic cases.",
     "Know what the evidence can—and cannot—tell you.",
     "Challenge a result with evidence.",
-    'href="#method-overview"',
+    'href="tools/#agent-claim-check-v1"',
     'id="method-overview"',
     'id="practice-cases"',
   ]) if (!home.includes(required)) errors.push(`home is missing visitor-first contract: ${required}`);
@@ -244,17 +254,17 @@ export async function checkSite(root = join(ROOT, "dist")) {
   if (home.includes("hero-evidence-object")) errors.push("home still renders the evidence sculpture");
   if (home.includes("case-index-band")) errors.push("home still renders the duplicate detailed case inventory");
   if ((home.match(/class="home-case-index"/g) ?? []).length !== 1) errors.push("home must contain exactly one compact practice-case inventory");
-  const homeSectionOrder = ["home-opening", "method-band", "home-case-index", "trust-band", "challenge-band"]
+  const homeSectionOrder = ["home-opening", "checker-start", "checker-examples", "method-band", "home-case-index", "teaching-preview", "trust-band", "challenge-band"]
     .map((className) => home.indexOf(`class="${className}`));
   if (!homeSectionOrder.every((position, index) => position >= 0 && (index === 0 || position > homeSectionOrder[index - 1]))) {
     errors.push("home visitor-first sections are out of order");
   }
 
   const expectedTitles = new Map([
-    ["index.html", "Detecting AI Deception: Check AI Claims Against Evidence"],
+    ["index.html", "Agent Claim Check: Check an Agent’s Claim Against Evidence"],
     ["cases/index.html", "Practice Checking AI Claims Against Evidence · Detecting AI Deception"],
     ["method/index.html", "How to Check AI Claims Against Evidence · Detecting AI Deception"],
-    ["tools/index.html", "AI Evidence-Checking Tools and Exact Sources · Detecting AI Deception"],
+    ["tools/index.html", "Run Agent Claim Check Locally: Quickstart and Examples · Detecting AI Deception"],
     ["challenge/index.html", "Reproduce or Challenge an AI Evidence Finding · Detecting AI Deception"],
     ["about/index.html", "How Detecting AI Deception Produces Reproducible Findings · Detecting AI Deception"],
   ]);
@@ -315,7 +325,7 @@ export async function checkSite(root = join(ROOT, "dist")) {
     const structured = JSON.parse(html.match(/<script type="application\/ld\+json">([^<]+)<\/script>/)[1]);
     const webPage = structured["@graph"].find((item) => item["@type"] === "WebPage");
     const resource = structured["@graph"].find((item) => item["@type"] === "LearningResource");
-    if (webPage?.dateModified !== "2026-08-27") errors.push(`${relative(root, path)}: WebPage dateModified must reflect the discovery-page change`);
+    if (webPage?.dateModified !== "2026-09-23") errors.push(`${relative(root, path)}: WebPage dateModified must reflect the discovery-page change`);
     if (html.includes('<link rel="alternate"') && html.includes('type="application/json"')) errors.push(`${relative(root, path)}: case page incorrectly treats the six-case pack as its alternate representation`);
     if (!resource) errors.push(`${relative(root, path)}: missing LearningResource structured data`);
     else {
@@ -333,7 +343,7 @@ export async function checkSite(root = join(ROOT, "dist")) {
   if (llms.includes(INDEXNOW_KEY)) errors.push("llms.txt must not expose the IndexNow key location");
   for (const marker of [
     "# Detecting AI Deception",
-    "> Check whether an AI answer or citation is backed by the available evidence without guessing at intent.",
+    "> Check an agent’s claim against supplied structured evidence with the offline Agent Claim Check CLI.",
     "## Start",
     "## Exact practice-case records",
     "## Machine-readable evidence",
@@ -380,7 +390,7 @@ export async function checkSite(root = join(ROOT, "dist")) {
     .map((match) => ({ url: match[1], lastmod: match[2] }));
   if (sitemapEntries.length !== 12) errors.push(`sitemap must contain 12 dated routes, found ${sitemapEntries.length}`);
   for (const entry of sitemapEntries) {
-    const expectedDate = entry.url === `${SITE_URL}tools/` ? "2026-08-30" : "2026-08-27";
+    const expectedDate = entry.url === `${SITE_URL}tools/` ? "2026-09-23" : "2026-09-23";
     if (entry.lastmod !== expectedDate) errors.push(`sitemap lastmod mismatch for ${entry.url}: ${entry.lastmod}`);
   }
   if (/<(?:priority|changefreq)>/.test(sitemap)) errors.push("sitemap includes ignored priority or changefreq fields");
@@ -415,6 +425,16 @@ export async function checkSite(root = join(ROOT, "dist")) {
     if (href.endsWith("tools/#agent-claim-check-v1")) continue;
     if (!tools.includes(`href="${href}"`)) errors.push(`Tools is missing exact Agent Claim Check href ${href}`);
   }
+  for (const marker of [
+    'id="your-own-evidence"', 'id="checker-examples"',
+    'id="example-supported"', 'id="example-contradicted"', 'id="example-insufficient-evidence"',
+    'Node.js &gt;=24.19.0 &lt;25', 'No dependency installation',
+    'git clone https://github.com/TheDarkniteFalls/detecting-ai-deception.git',
+    'node tools/check-agent-claim.mjs my-claim.json',
+    'daid_agent_claim_check_input_v1', 'The six teaching cases use a separate schema',
+    'The checker accepts structured JSON, not arbitrary answer text.',
+    'It does not find evidence, inspect your workspace or verify that an action actually ran.',
+  ]) if (!tools.includes(marker)) errors.push(`Tools is missing practical checker contract: ${marker}`);
   if (/<(?:form|input|textarea|select)\b/i.test(tools)) errors.push("Tools introduces an input or upload surface");
 
   const challenge = await readFile(join(root, "challenge", "index.html"), "utf8");

@@ -311,6 +311,42 @@ p { margin: 0 0 1rem; }
 }
 .hero-actions .primary-button:hover { border-color: var(--bone); background: var(--bone); color: var(--black); }
 
+/* Local checker entry and examples */
+.checker-kicker { display: block; margin-bottom: 1rem; color: var(--acid); font: 700 0.72rem/1.4 var(--mono); text-transform: uppercase; letter-spacing: 0.06em; }
+.checker-boundary { max-width: 42rem; color: var(--bone-dim); font-size: 0.95rem; }
+.checker-preview { min-width: 0; border: 1px solid var(--line-bright); }
+.checker-preview-heading { display: grid; gap: 0.6rem; padding: 1.2rem; background: var(--bone); color: var(--black); }
+.checker-preview-heading .panel-label { padding: 0; background: transparent; color: inherit; }
+.checker-preview-heading strong { font: 900 1.6rem/1 var(--display); text-transform: uppercase; }
+.checker-preview-heading > span:last-child { font-size: 0.75rem; }
+.checker-preview-body { padding: 1.2rem; }
+.checker-preview-body h2 { margin: 0 0 0.55rem; font: 700 0.7rem/1.2 var(--mono); text-transform: uppercase; }
+.checker-preview-body pre { margin: 0 0 1.1rem; padding: 0; overflow: auto; font: 0.72rem/1.45 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+.checker-preview-body h2:nth-of-type(2), .checker-preview-body h2:nth-of-type(2) + pre { color: var(--acid); }
+.checker-preview-body p { font-size: 0.8rem; color: var(--bone-dim); }
+.checker-preview-body a { display: flex; align-items: center; gap: 0.65rem; font-size: 0.8rem; font-weight: 700; }
+.checker-start .code-block { max-width: 60rem; }
+.checker-start .text-link { color: var(--black); }
+.checker-start .section-number { color: var(--cobalt); }
+.checker-start .section-intro p { color: #4e504c; }
+.checker-result-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--line-bright); border-left: 1px solid var(--line-bright); }
+.checker-result { min-width: 0; padding: 1.5rem; border-right: 1px solid var(--line-bright); border-bottom: 1px solid var(--line-bright); text-decoration: none; }
+.checker-result:hover { background: var(--black-raised); }
+.checker-result .panel-label { display: inline-block; margin-bottom: 1rem; }
+.checker-result h3 { font: 900 clamp(1.5rem, 2vw, 2.25rem)/1 var(--display); text-transform: uppercase; }
+.checker-result p { color: var(--bone-dim); }
+.checker-result .text-link { font-size: 0.85rem; }
+.checker-example { padding: 2rem 0; border-top: 1px solid var(--line-bright); scroll-margin-top: 1rem; }
+.checker-example details { margin-bottom: 1.5rem; }
+.checker-example summary { padding: 0.85rem 0; cursor: pointer; font-weight: 700; }
+.checker-example h4 { font: 700 0.8rem/1.4 var(--mono); text-transform: uppercase; }
+.checker-example .code-block { font-size: 0.8rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+#agent-claim-check-v1, #checker-examples, #your-own-evidence { scroll-margin-top: 1rem; }
+@media (max-width: 52rem) {
+  .checker-result-grid { grid-template-columns: 1fr; }
+  .checker-preview { width: 100%; }
+}
+
 .featured-case-panel {
   display: block;
   min-width: 0;

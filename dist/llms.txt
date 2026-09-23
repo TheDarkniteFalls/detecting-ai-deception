@@ -1,8 +1,8 @@
 # Detecting AI Deception
 
-> Check whether an AI answer or citation is backed by the available evidence without guessing at intent.
+> Check an agent’s claim against supplied structured evidence with the offline Agent Claim Check CLI.
 
-Detecting AI Deception (DAID) is a static public teaching site. It contains exactly six synthetic practice cases and one deterministic rule for classifying the relationship between a claim and its required evidence as Supported, Contradicted or Insufficient evidence.
+Detecting AI Deception (DAID) is a static public front door to Agent Claim Check, an offline deterministic CLI. It classifies supplied structured claims and evidence; it does not discover evidence, analyze arbitrary answers, prove execution or authorize action. The site also provides teaching material. It contains exactly six synthetic practice cases and one deterministic rule for classifying the relationship between a claim and its required evidence as Supported, Contradicted or Insufficient evidence.
 
 All six linked records are synthetic teaching cases reviewed through 2026-08-23. Their finding distribution is three Contradicted, two Insufficient evidence and one Supported. Claim → Required evidence → Observed record → Finding is the public evidence model. Intent is always not assessed. The records do not establish motive, estimate prevalence, evaluate a live model, rank products or provide certification.
 
@@ -10,7 +10,9 @@ This file follows an experimental agent-discovery convention. It does not claim 
 
 ## Start
 
-- [Visitor overview](https://thedarknitefalls.github.io/detecting-ai-deception/): Understand the problem, inspect the featured citation case and choose a practice case.
+- [Run Agent Claim Check locally](https://thedarknitefalls.github.io/detecting-ai-deception/tools/#agent-claim-check-v1): Requirements, clone and run commands, and your own structured JSON input.
+- [Checker examples](https://thedarknitefalls.github.io/detecting-ai-deception/tools/#checker-examples): Three existing synthetic inputs and reproducible receipt excerpts.
+- [Visitor overview](https://thedarknitefalls.github.io/detecting-ai-deception/): Inspect the local checker, its boundaries and supporting teaching cases.
 - [Evidence-checking method](https://thedarknitefalls.github.io/detecting-ai-deception/method/): Learn how to record a claim, define required evidence, compare the observed record and report the narrowest finding.
 - [Six practice cases](https://thedarknitefalls.github.io/detecting-ai-deception/cases/): Compare each claim with the required and observed evidence before revealing its finding.
 
