@@ -1,8 +1,9 @@
 # Bazel BEP artifact-created adapter v1
 
-This dependency-free, offline adapter maps one already-captured
-Bazel BEP JSON `8.7.0` stream into the unchanged Agent Claim Check v1 contract. It answers one
-narrow question: does the supplied, hash-bound event stream support the claim
+Bazel’s Build Event Protocol (BEP) records events from a build. This offline
+adapter reads a captured Bazel BEP JSON `8.7.0` stream and turns selected
+observations into an Agent Claim Check v1 input. It needs no dependencies.
+It answers one question: does the supplied, hash-bound event stream support the claim
 that one exact Bazel invocation recorded one selected artifact and completed
 successfully?
 
@@ -24,7 +25,7 @@ node tools/adapt-bazel-bep-artifact-created.mjs \
 node --test tests/bazel-bep-artifact-created-adapter.test.mjs
 ```
 
-The CLI takes exactly two local input paths: the DAID request and the captured
+The CLI takes exactly two local input paths: the adapter request and the captured
 BEP JSONL file. It writes exactly one canonical JSON document and one terminal
 line feed to stdout.
 
@@ -35,7 +36,7 @@ line feed to stdout.
 Expected receipts and adapter errors leave stderr empty. There is no retry,
 repair, sampling, truncation, upload, cache, or telemetry path.
 
-## Exact job and fixed claim
+## What claim gets checked
 
 The request selects one invocation UUID, base target/configuration, the
 `default` output group, and one artifact path, configured digest, and byte
@@ -51,7 +52,7 @@ and discards the raw selected path and URI before invoking Agent Claim Check.
 The words configured digest are deliberate: BEP's `File.digest` does not name
 the configured algorithm, so this adapter does not call it SHA-256.
 
-## Frozen source profile
+## Supported Bazel format
 
 The accepted input is protobuf JSON produced for Bazel `8.7.0` by
 `--build_event_json_file`. The adapter supports one stream, one base target,
@@ -154,7 +155,7 @@ third-party example, protocol-source, documentation, or real-trace bytes are
 redistributed. Links and compatibility identifiers do not imply ownership,
 endorsement, or authentication.
 
-## Non-claims
+## What this example shows
 
 Even `supported` establishes only that the supplied hash-bound BEP observations
 support the exact constructed claim. The adapter does not run Bazel, does not read the claimed artifact, does not dereference a URI, does not use the network,

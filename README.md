@@ -1,80 +1,26 @@
-# Detecting AI Deception
+# Agent Claim Check
 
-<!-- toolkit-trust-card:start -->
-> **Public contract:** Experimental Pattern · about 5 min · Node.js >=24.19.0 <25 · no model · no network
->
-> **Operation:** Read-only check; examples may use temporary files
->
-> **A pass establishes:** The dependency-free classifier shared by the browser and Node.js tests deterministically reproduces the declared findings for exactly six synthetic teaching cases; the static investigation uses no model, backend, account, analytics, or submitted data.
->
-> **It does not establish:** Intent is not-assessed: it does not infer deliberate lying, consciousness, or malicious intent, and six synthetic cases do not establish real-world prevalence, production behavior, or whole-system safety.
->
-> **First check:** `npm test`
-<!-- toolkit-trust-card:end -->
+**Compare an agent’s claim with the evidence you provide.**
 
-**Check whether an AI answer or citation is backed by the available evidence.**
+An agent says it created a file. What does your record show? Agent Claim Check
+compares one structured claim with the observations you supply and returns
+`supported`, `contradicted` or `insufficient_evidence`.
 
-[Open the live investigation](https://thedarknitefalls.github.io/detecting-ai-deception/) ·
-[Try a synthetic case](https://thedarknitefalls.github.io/detecting-ai-deception/cases/unsupported-citation/) ·
-[Read the four-step method](https://thedarknitefalls.github.io/detecting-ai-deception/method/)
+I lead this project and its public framing, with AI assistance for drafting,
+implementation and testing. You can start with the offline checker below, or
+[try a synthetic teaching case](https://thedarknitefalls.github.io/detecting-ai-deception/cases/unsupported-citation/)
+to work through the comparison in your browser.
 
-Detecting AI Deception (DAID) is a public, Mike-led investigation developed
-transparently with AI assistance. It helps people reviewing an AI answer make
-one bounded comparison: what exactly was claimed, what evidence would that
-claim require, and what does the observable record support?
-
-This is useful when an answer sounds certain but a file is missing, an
-evaluation omits cases, a citation says something else, evidence belongs to a
-different product version, or the result of an external action is unknown.
-Terms such as *AI hallucination* and *fabricated citation* can blur those
-different failures. Detecting AI Deception (DAID) asks the narrower question:
-how does the exact claim relate to the available evidence? It is a practical
-AI answer verification method for claim checking and citation verification,
-and it reports that relationship without guessing why the output was produced.
-
-## The method
-
-1. **Record the claim.** Capture the exact statement before interpreting it.
-2. **Define the required evidence.** State what would need to be observable for
-   the claim to hold.
-3. **Compare the record.** Mark each required observation as supporting,
-   contradictory, absent, unknown, stale or inapplicable.
-4. **Report the narrowest finding.** Keep the evidence relationship separate
-   from intent.
-
-The deterministic rule produces three findings:
-
-- **Supported:** every declared required observation supports the claim.
-- **Contradicted:** at least one required observation directly conflicts with
-  the claim.
-- **Insufficient evidence:** required evidence is absent, unknown, stale or
-  inapplicable, and none of the available required observations contradicts
-  the claim.
-
-Every case records intent as `not-assessed`. A **Supported** finding
-establishes only that the declared evidence supports the bounded claim. It does
-not by itself establish correctness, safety, identity, successful execution,
-authority or permission.
-
-## Start here
-
-- **If you want the plain-language version:** open the
-  [visitor overview](https://thedarknitefalls.github.io/detecting-ai-deception/),
-  then compare your answer with the
-  [six synthetic practice cases](https://thedarknitefalls.github.io/detecting-ai-deception/cases/).
-- **If you review claims or citations:** use the
-  [complete method](https://thedarknitefalls.github.io/detecting-ai-deception/method/)
-  and inspect the claim, required evidence, observed record, source revision,
-  limitations and non-claims on each case page.
-- **If you want to reproduce or challenge the work:** run the local checker,
-  inspect the machine-readable records, or use a
-  [public-safe challenge route](https://thedarknitefalls.github.io/detecting-ai-deception/challenge/).
+The checker does not gather or authenticate evidence, inspect your workspace,
+or determine intent. You choose the requirements and record the observations.
+[Open the guide](https://thedarknitefalls.github.io/detecting-ai-deception/) for
+examples and the four-step method.
 
 ## Run Agent Claim Check v1
 
-Agent Claim Check v1 is the dependency-free, offline harness check for one
-bounded claim and its observable evidence. After cloning the repository, run
-the supported example from a file or the contradicted example through stdin:
+You need Node.js `>=24.19.0 <25` and Git to clone. No dependency installation
+is required. After cloning, run the supported example from a file or the
+contradicted example through standard input:
 
 ```sh
 git clone https://github.com/TheDarkniteFalls/detecting-ai-deception.git
@@ -97,14 +43,62 @@ only the declared claim/evidence relationship; it is not permission to act.
 | `insufficient-evidence.json` | 0 | `insufficient_evidence` |
 | `invalid-input.json` | 2 | `unknown_enum`; no finding |
 
-Read the [canonical Agent Claim Check v1 guide](docs/agent-claim-check-v1.md)
+Read the [Agent Claim Check v1 guide](docs/agent-claim-check-v1.md)
 for the input contract, receipt fields, harness mapping, schemas, provenance,
 licensing and public-safe challenge route.
 
-See the [Bazel BEP artifact-created proving ground](docs/bazel-bep-artifact-created-adapter-v1.md)
+See the [Bazel build-event adapter example](docs/bazel-bep-artifact-created-adapter-v1.md)
 for one version-pinned real-format adapter and its synthetic offline fixtures.
 
-## Six synthetic cases—not a benchmark
+<!-- toolkit-trust-card:placement -->
+
+<!-- toolkit-trust-card:start -->
+> **Public contract:** Experimental Pattern · about 5 min · Node.js >=24.19.0 <25 · no model · no network
+>
+> **Operation:** Read-only check; examples may use temporary files
+>
+> **A pass establishes:** The dependency-free classifier shared by the browser and Node.js tests deterministically reproduces the declared findings for exactly six synthetic teaching cases; the static investigation uses no model, backend, account, analytics, or submitted data.
+>
+> **It does not establish:** Intent is not-assessed: it does not infer deliberate lying, consciousness, or malicious intent, and six synthetic cases do not establish real-world prevalence, production behavior, or whole-system safety.
+>
+> **First check:** `npm test`
+<!-- toolkit-trust-card:end -->
+
+## About the name
+
+The project was previously called Detecting AI Deception (DAID). Its earlier
+introduction said, “Detecting AI Deception (DAID) asks the narrower question:
+how does the exact claim relate to the available evidence?” Agent Claim Check
+names that task more directly. Repository URLs and technical identifiers remain
+unchanged.
+
+## The method
+
+1. **Record the claim.** Capture the exact statement before interpreting it.
+2. **Define the required evidence.** State what would need to be observable for
+   the claim to hold.
+3. **Compare the record.** Mark each required observation as supporting,
+   contradictory, absent, unknown, stale or inapplicable.
+4. **Report the narrowest finding.** Keep the evidence relationship separate
+   from intent.
+
+The deterministic rule produces three findings:
+
+- **Supported:** every declared required observation supports the claim.
+- **Contradicted:** at least one required observation directly conflicts with
+  the claim.
+- **Insufficient evidence:** required evidence is absent, unknown, stale or
+  inapplicable, and none of the available required observations contradicts
+  the claim.
+
+For AI answer verification, claim checking and citation verification, use the
+observations you can inspect. Labels such as *AI hallucination* do not explain
+why a result occurred. Every case records intent as `not-assessed`. A **Supported** finding
+establishes only that the declared evidence supports the bounded claim. It does
+not by itself establish correctness, safety, identity, successful execution,
+authority or permission.
+
+## What the teaching examples show
 
 The public case pack contains exactly six synthetic teaching cases: three
 `contradicted`, two `insufficient-evidence` and one `supported`. They illustrate
@@ -190,14 +184,13 @@ crawling, indexing or ranking.
 
 ## Relationship to the Reliability Lab
 
-DAID is the public inquiry and visitor front door for this claim-and-evidence
-method. Its [Tools](https://thedarknitefalls.github.io/detecting-ai-deception/tools/)
+Agent Claim Check brings the checker and its teaching examples together. Its [Tools](https://thedarknitefalls.github.io/detecting-ai-deception/tools/)
 page links to supporting projects at exact reviewed revisions, each with a
 narrow role and an explicit non-claim. Those tools do not individually prove
-DAID's wider framing or make the connected workflow safe.
+the wider method or make the connected workflow safe.
 
 The broader
-[Reliability Navigator route to DAID](https://thedarknitefalls.github.io/local-assistant-reliability-lab/?journey=bound_and_prove&problem=detecting-ai-deception&help_type=runnable_check&runtime=node&local=1&no_model=1&read_only=1&path=ground-model-output)
+[Reliability Navigator route to Agent Claim Check](https://thedarknitefalls.github.io/local-assistant-reliability-lab/?journey=bound_and_prove&problem=detecting-ai-deception&help_type=runnable_check&runtime=node&local=1&no_model=1&read_only=1&path=ground-model-output)
 describes it as an experimental, local, no-model, read-only Node.js check and
 shows its proof and limitation beside related public tools. A route
 recommendation is not certification that a tool fits every setup.

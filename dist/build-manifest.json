@@ -14,8 +14,8 @@
     },
     {
       "path": "about/index.html",
-      "sha256": "8518fcb1c1ceba9a0b2492bdac47251322b368732e4ae7cc3389676b372b33ec",
-      "bytes": 9358
+      "sha256": "e163bda8981690dda2f774daff72dcf19ca155facf9e36375a5466dac5d89a69",
+      "bytes": 9762
     },
     {
       "path": "assets/app.mjs",
@@ -34,8 +34,8 @@
     },
     {
       "path": "assets/favicon.svg",
-      "sha256": "477a2ffe4a719efe9b7679bcc1c14be40caf6002dce38c627c9f7257a3a73b84",
-      "bytes": 331
+      "sha256": "7a71402ee48fc36fa087596315f0e82a0314ad115141ff7024bac649c8ec41d3",
+      "bytes": 326
     },
     {
       "path": "assets/styles.css",
@@ -44,43 +44,43 @@
     },
     {
       "path": "cases/index.html",
-      "sha256": "ffdda8534ac886a5174d67be427f8a41882cd1e44854bbf172c7dc55605349e3",
-      "bytes": 18529
+      "sha256": "13538380a504920af43c1ee1cedc4fe1f995661b5ffda7ed0c3d1c7c09bd0bcd",
+      "bytes": 18472
     },
     {
       "path": "cases/lost-response/index.html",
-      "sha256": "f6e4255d6003195f45b9aca682755e3a8cb7e10f58fe3f8246ed769e50a71843",
-      "bytes": 18464
+      "sha256": "2eacb7c5e6c7616f2e39634263a5661c8aee87408ab04c572140215d6e0f9e7b",
+      "bytes": 18365
     },
     {
       "path": "cases/missing-file/index.html",
-      "sha256": "aabdea1a20f3ae32eeb085e95ffd4592b6169402be6d856cdbba784b477d0c61",
-      "bytes": 17956
+      "sha256": "4f286d742d8e5beafa9c18f22227dab52dc917cc3a32d858f6b7865ad97ac740",
+      "bytes": 17857
     },
     {
       "path": "cases/reassuring-average/index.html",
-      "sha256": "be1fd5a32ca1de1e54f401ef83fdfeddeac03c067f6980201a35c4cf5dfa21f1",
-      "bytes": 19497
+      "sha256": "93067d62806a2cdd8104dd0238da3763325c2f70f24df3533996914da01b9cda",
+      "bytes": 19398
     },
     {
       "path": "cases/revision-bound-claim/index.html",
-      "sha256": "e6ac026180422ab94e682704c44f374d5fe8b0641afde363b3b25981ce7b70eb",
-      "bytes": 18669
+      "sha256": "4f70b2bfc01119a5ca95f770227fd3b0bc477e21cee044157bfe7e93ba479119",
+      "bytes": 18570
     },
     {
       "path": "cases/unsupported-citation/index.html",
-      "sha256": "bf2f62c504db28bde4ef101a48a33c6f1ef5070f55e6fb4e5ae84d2ebd42d74a",
-      "bytes": 18898
+      "sha256": "958ed0287bd66bebe6408fe2c5be85e400d5e1b15e298af32b8298a0b6f18597",
+      "bytes": 18799
     },
     {
       "path": "cases/wrong-product-identity/index.html",
-      "sha256": "de995637ffcc46284c1156d853e26fbe45ce5b818e34b635f08dc899b3e32cb9",
-      "bytes": 18377
+      "sha256": "1e2d03c606637ed3625e93457acd1d3c49093822ab961f2a7b71718cd5438f32",
+      "bytes": 18278
     },
     {
       "path": "challenge/index.html",
-      "sha256": "0f0f783b9ede2fcd24aa26291c265c2dcfaca879cd7a4c083852f74ba65e9d07",
-      "bytes": 9081
+      "sha256": "43c55c7e54d17f353e68c20170b44fb4db9413f4d4f425b9f0ad1da4f1445b99",
+      "bytes": 9034
     },
     {
       "path": "data/deception-cases.v1.json",
@@ -94,18 +94,18 @@
     },
     {
       "path": "index.html",
-      "sha256": "b5d7a235519dd21575a67e9679014a3a5691873a2daa8a31b9280f51a0b255fe",
-      "bytes": 21882
+      "sha256": "aef20a97de4fbda454653798a744ea86920802d1a3596f52424fccdb76cf09e0",
+      "bytes": 21799
     },
     {
       "path": "llms.txt",
-      "sha256": "0a8c463a40a85a92a74e02898b99350c9db59631611c081e9a77025d22d078fc",
-      "bytes": 6477
+      "sha256": "2559605b343b2472f544a41ccbfe0b91dd2a1e032440788773d76897b4b004a0",
+      "bytes": 6397
     },
     {
       "path": "method/index.html",
-      "sha256": "c71bc17034ce411e6d14e2a8a27450d276c53fe6c0e56889b2996f69f2fc12bf",
-      "bytes": 12698
+      "sha256": "938939fa912e3091cb2318c3610cb36d7dace9eb7309f09e1b48ee0000aab049",
+      "bytes": 12646
     },
     {
       "path": "robots.txt",
@@ -139,8 +139,8 @@
     },
     {
       "path": "tools/index.html",
-      "sha256": "5a63c820e34c85b763d57946b2937a836bc2b742940555b571bca8534b001fcc",
-      "bytes": 20145
+      "sha256": "7793f455f2bae1d769d8155d6883af6791f67ead1284b064d111f5010d7ffe96",
+      "bytes": 20080
     }
   ]
 }

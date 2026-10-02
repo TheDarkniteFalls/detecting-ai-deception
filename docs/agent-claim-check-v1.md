@@ -1,10 +1,11 @@
 # Agent Claim Check v1
 
-## Job and boundary
+## What you can check
 
-Agent Claim Check v1 compares one bounded agent claim with the observable
-evidence that claim requires. It is dependency-free, offline and
-deterministic. It does not execute an action, call a model, provide a network
+Agent Claim Check v1 compares one specific agent claim with the observations
+you supply. Start with the synthetic example below, then replace its fields with your own
+claim and evidence. The checker does not collect or authenticate those
+observations. It is dependency-free, offline and deterministic. It does not execute an action, call a model, provide a network
 service, or use the separate teaching-case schema.
 
 For every accepted result, read these boundaries together:
@@ -78,7 +79,7 @@ uses evidence state `supported` instead of `supports`; it exits 2 with
 empty stderr. CLI misuse or a file-read failure is different: it exits 1 and
 writes the error to stderr.
 
-## Read the receipt
+## What the result tells you
 
 - `accepted` distinguishes a valid contract input from a fail-closed error.
 - `finding` exists only on an accepted input and is `supported`,
@@ -97,7 +98,7 @@ Human prose may say “intent: not assessed”; the machine value is
 teaching-case schema uses `insufficient-evidence`; the two contracts are not
 one pack.
 
-## Map a harness observation
+## Record an observation from your agent workflow
 
 Record the exact claim text and claim type. Declare one observable requirement
 per evidence item, then record its state and any available provenance fields.

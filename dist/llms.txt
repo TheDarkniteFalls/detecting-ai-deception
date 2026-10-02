@@ -1,8 +1,8 @@
-# Detecting AI Deception
+# Agent Claim Check
 
-> Check an agent’s claim against supplied structured evidence with the offline Agent Claim Check CLI.
+> Compare an agent’s claim with the evidence you provide.
 
-Detecting AI Deception (DAID) is a static public front door to Agent Claim Check, an offline deterministic CLI. It classifies supplied structured claims and evidence; it does not discover evidence, analyze arbitrary answers, prove execution or authorize action. The site also provides teaching material. It contains exactly six synthetic practice cases and one deterministic rule for classifying the relationship between a claim and its required evidence as Supported, Contradicted or Insufficient evidence.
+Agent Claim Check is an offline command-line checker with a static public guide. It classifies supplied structured claims and evidence; it does not discover evidence, analyze arbitrary answers, prove execution or authorize action. The site also provides teaching material. It contains exactly six synthetic practice cases and one deterministic rule for classifying the relationship between a claim and its required evidence as Supported, Contradicted or Insufficient evidence.
 
 All six linked records are synthetic teaching cases reviewed through 2026-08-23. Their finding distribution is three Contradicted, two Insufficient evidence and one Supported. Claim → Required evidence → Observed record → Finding is the public evidence model. Intent is always not assessed. The records do not establish motive, estimate prevalence, evaluate a live model, rank products or provide certification.
 
