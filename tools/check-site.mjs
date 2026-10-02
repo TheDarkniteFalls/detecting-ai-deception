@@ -132,7 +132,7 @@ export async function checkSite(root = join(ROOT, "dist")) {
         else {
           const website = graph.find((item) => item["@type"] === "WebSite");
           const webPage = graph.find((item) => item["@type"] === "WebPage");
-          if (website?.name !== "Detecting AI Deception" || website?.alternateName !== "DAID") errors.push(`${pagePath}: missing stable WebSite identity`);
+          if (website?.name !== "Agent Claim Check" || website?.alternateName !== "Agent Claim Check") errors.push(`${pagePath}: missing stable WebSite identity`);
           if (!webPage?.dateModified) errors.push(`${pagePath}: WebPage lacks deterministic dateModified`);
           const breadcrumb = graph.find((item) => item["@type"] === "BreadcrumbList");
           if (pagePath) {
@@ -223,7 +223,7 @@ export async function checkSite(root = join(ROOT, "dist")) {
     errors.push("home preview is not clearly identified as synthetic case 03");
   }
   for (const required of [
-    "Check an agent’s claim against the evidence.",
+    "Compare an agent’s claim with the evidence you provide.",
     "Run Agent Claim Check locally.",
     "Run Agent Claim Check locally</span>",
     "See an example</span>",
@@ -235,9 +235,9 @@ export async function checkSite(root = join(ROOT, "dist")) {
     'href="tools/#your-own-evidence"',
     'href="tools/#example-supported"',
     "Node.js &gt;=24.19.0 &lt;25",
-    "How the method helps you reach a defensible result.",
+    "Work through the claim in four steps.",
     "Practice with six synthetic cases.",
-    "Know what the evidence can—and cannot—tell you.",
+    "What this example shows",
     "Challenge a result with evidence.",
     'href="tools/#agent-claim-check-v1"',
     'id="method-overview"',
@@ -262,11 +262,11 @@ export async function checkSite(root = join(ROOT, "dist")) {
 
   const expectedTitles = new Map([
     ["index.html", "Agent Claim Check: Check an Agent’s Claim Against Evidence"],
-    ["cases/index.html", "Practice Checking AI Claims Against Evidence · Detecting AI Deception"],
-    ["method/index.html", "How to Check AI Claims Against Evidence · Detecting AI Deception"],
-    ["tools/index.html", "Run Agent Claim Check Locally: Quickstart and Examples · Detecting AI Deception"],
-    ["challenge/index.html", "Reproduce or Challenge an AI Evidence Finding · Detecting AI Deception"],
-    ["about/index.html", "How Detecting AI Deception Produces Reproducible Findings · Detecting AI Deception"],
+    ["cases/index.html", "Practice Checking AI Claims Against Evidence · Agent Claim Check"],
+    ["method/index.html", "How to Check AI Claims Against Evidence · Agent Claim Check"],
+    ["tools/index.html", "Run Agent Claim Check Locally: Quickstart and Examples · Agent Claim Check"],
+    ["challenge/index.html", "Reproduce or Challenge an AI Evidence Finding · Agent Claim Check"],
+    ["about/index.html", "How Agent Claim Check Produces Reproducible Findings · Agent Claim Check"],
   ]);
   for (const [path, expected] of expectedTitles) {
     const html = await readFile(join(root, path), "utf8");
@@ -342,8 +342,8 @@ export async function checkSite(root = join(ROOT, "dist")) {
   const llms = await readFile(join(root, "llms.txt"), "utf8");
   if (llms.includes(INDEXNOW_KEY)) errors.push("llms.txt must not expose the IndexNow key location");
   for (const marker of [
-    "# Detecting AI Deception",
-    "> Check an agent’s claim against supplied structured evidence with the offline Agent Claim Check CLI.",
+    "# Agent Claim Check",
+    "> Compare an agent’s claim with the evidence you provide.",
     "## Start",
     "## Exact practice-case records",
     "## Machine-readable evidence",
@@ -367,7 +367,7 @@ export async function checkSite(root = join(ROOT, "dist")) {
     const lines = section.split("\n").slice(1).filter(Boolean);
     if (!lines.length || lines.some((line) => !/^- \[[^\]]+\]\(https:\/\/[^)]+\): .+/.test(line))) errors.push("llms.txt H2 sections must contain only descriptive file links");
   }
-  if ((llms.match(/^# /gm) ?? []).length !== 1 || !/^# Detecting AI Deception\n\n> /m.test(llms)) errors.push("llms.txt must have one H1 followed by one blockquote summary");
+  if ((llms.match(/^# /gm) ?? []).length !== 1 || !/^# Agent Claim Check\n\n> /m.test(llms)) errors.push("llms.txt must have one H1 followed by one blockquote summary");
   if (!llms.includes("It does not claim search ranking or inclusion.")) errors.push("llms.txt lacks its no-ranking boundary");
   for (const target of [
     "https://thedarknitefalls.github.io/detecting-ai-deception/tools/#agent-claim-check-v1",

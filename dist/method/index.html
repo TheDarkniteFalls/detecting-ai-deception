@@ -3,25 +3,25 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>How to Check AI Claims Against Evidence · Detecting AI Deception</title>
+  <title>How to Check AI Claims Against Evidence · Agent Claim Check</title>
   <meta name="description" content="Learn a four-step method for checking AI claims and citations against evidence, distinguishing contradiction from insufficient evidence without inferring intent.">
   <meta name="robots" content="index,follow,max-snippet:-1">
   <link rel="canonical" href="https://thedarknitefalls.github.io/detecting-ai-deception/method/">
   <link rel="describedby" href="../llms.txt" type="text/markdown">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="How to Check AI Claims Against Evidence · Detecting AI Deception">
+  <meta property="og:title" content="How to Check AI Claims Against Evidence · Agent Claim Check">
   <meta property="og:description" content="Learn a four-step method for checking AI claims and citations against evidence, distinguishing contradiction from insufficient evidence without inferring intent.">
   <meta property="og:url" content="https://thedarknitefalls.github.io/detecting-ai-deception/method/">
-  <meta property="og:site_name" content="Detecting AI Deception">
+  <meta property="og:site_name" content="Agent Claim Check">
   <link rel="icon" href="../assets/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../assets/styles.css">
   <script>document.documentElement.classList.add("js")</script>
-  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Person","@id":"https://github.com/TheDarkniteFalls/detecting-ai-deception#mike-parsons","name":"Mike Parsons"},{"@type":"WebSite","@id":"https://thedarknitefalls.github.io/detecting-ai-deception/#website","url":"https://thedarknitefalls.github.io/detecting-ai-deception/","name":"Detecting AI Deception","alternateName":"DAID","description":"Run Agent Claim Check locally to classify a supplied structured claim and evidence. Offline, deterministic, and non-authorizing; intent is not assessed.","inLanguage":"en","creator":{"@id":"https://github.com/TheDarkniteFalls/detecting-ai-deception#mike-parsons"},"license":"https://creativecommons.org/licenses/by/4.0/"},{"@type":"BreadcrumbList","@id":"https://thedarknitefalls.github.io/detecting-ai-deception/method/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://thedarknitefalls.github.io/detecting-ai-deception/"},{"@type":"ListItem","position":2,"name":"Method","item":"https://thedarknitefalls.github.io/detecting-ai-deception/method/"}]},{"@type":"WebPage","@id":"https://thedarknitefalls.github.io/detecting-ai-deception/method/#webpage","url":"https://thedarknitefalls.github.io/detecting-ai-deception/method/","name":"How to Check AI Claims Against Evidence · Detecting AI Deception","description":"Learn a four-step method for checking AI claims and citations against evidence, distinguishing contradiction from insufficient evidence without inferring intent.","inLanguage":"en","dateModified":"2026-08-27","isPartOf":{"@id":"https://thedarknitefalls.github.io/detecting-ai-deception/#website"},"creator":{"@id":"https://github.com/TheDarkniteFalls/detecting-ai-deception#mike-parsons"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true,"breadcrumb":{"@id":"https://thedarknitefalls.github.io/detecting-ai-deception/method/#breadcrumb"}}]}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"Person","@id":"https://github.com/TheDarkniteFalls/detecting-ai-deception#mike-parsons","name":"Mike Parsons"},{"@type":"WebSite","@id":"https://thedarknitefalls.github.io/detecting-ai-deception/#website","url":"https://thedarknitefalls.github.io/detecting-ai-deception/","name":"Agent Claim Check","alternateName":"Agent Claim Check","description":"Compare an agent’s claim with the evidence you provide. Run the offline checker or explore six synthetic teaching cases; intent is not assessed.","inLanguage":"en","creator":{"@id":"https://github.com/TheDarkniteFalls/detecting-ai-deception#mike-parsons"},"license":"https://creativecommons.org/licenses/by/4.0/"},{"@type":"BreadcrumbList","@id":"https://thedarknitefalls.github.io/detecting-ai-deception/method/#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://thedarknitefalls.github.io/detecting-ai-deception/"},{"@type":"ListItem","position":2,"name":"Method","item":"https://thedarknitefalls.github.io/detecting-ai-deception/method/"}]},{"@type":"WebPage","@id":"https://thedarknitefalls.github.io/detecting-ai-deception/method/#webpage","url":"https://thedarknitefalls.github.io/detecting-ai-deception/method/","name":"How to Check AI Claims Against Evidence · Agent Claim Check","description":"Learn a four-step method for checking AI claims and citations against evidence, distinguishing contradiction from insufficient evidence without inferring intent.","inLanguage":"en","dateModified":"2026-08-27","isPartOf":{"@id":"https://thedarknitefalls.github.io/detecting-ai-deception/#website"},"creator":{"@id":"https://github.com/TheDarkniteFalls/detecting-ai-deception#mike-parsons"},"license":"https://creativecommons.org/licenses/by/4.0/","isAccessibleForFree":true,"breadcrumb":{"@id":"https://thedarknitefalls.github.io/detecting-ai-deception/method/#breadcrumb"}}]}</script>
 </head>
 <body data-page="method" data-cases-url="../data/deception-cases.v1.json">
   <a class="skip-link" href="#main">Skip to main content</a>
   <header class="site-header"><div class="nav-shell">
-    <a class="wordmark" href="../" aria-label="Detecting AI Deception"><span class="wordmark-full">Detecting AI Deception</span><span class="wordmark-short" aria-hidden="true">DAID</span></a>
+    <a class="wordmark" href="../" aria-label="Agent Claim Check"><span class="wordmark-full">Agent Claim Check</span><span class="wordmark-short" aria-hidden="true">Claim Check</span></a>
     <nav class="site-nav" aria-label="Primary"><a href="../tools/#agent-claim-check-v1">Claim Check</a><a href="../tools/#checker-examples">Examples</a><a href="../method/" aria-current="page">Method</a><a href="https://github.com/TheDarkniteFalls/detecting-ai-deception">Source</a></nav>
     <a class="nav-boundary" href="../about/#intent-boundary">Intent: not assessed</a>
     <div class="mobile-navigation">
@@ -57,7 +57,7 @@ else:
       <section class="method-next"><h2>Choose your next step</h2><div class="method-transfer-actions"><a class="primary-button" href="../cases/">Browse all six cases</a><a class="secondary-button" href="../challenge/">Challenge a result</a></div></section>
     </div></main>
   <footer class="site-footer"><div class="shell footer-grid">
-    <p>Mike-led public investigation, developed transparently with AI assistance. Six synthetic cases compare observable claims with observable evidence. Intent: not assessed.</p>
+    <p>Created by Mike Parsons with AI assistance. Six synthetic cases compare observable claims with observable evidence. Intent: not assessed.</p>
     <div class="footer-links"><a href="../tools/#agent-claim-check-v1">Claim Check</a><a href="../cases/">Teaching cases</a><a href="../challenge/">Submit evidence</a><a href="../about/">About</a><a href="https://github.com/TheDarkniteFalls/detecting-ai-deception">Source</a><a href="https://github.com/TheDarkniteFalls/detecting-ai-deception/blob/main/LICENSING.md">Licensing</a></div>
   </div></footer>
   <script type="module" src="../assets/app.mjs"></script>

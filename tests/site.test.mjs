@@ -152,7 +152,7 @@ test("the visitor-first design stays bounded, useful and code-native", async () 
     assert.equal((home.match(/data-home-preview="unsupported-citation"/g) ?? []).length, 1);
     assert.equal((home.match(/data-synthetic-case/g) ?? []).length, 1);
     assert.equal((home.match(/data-spine-case=/g) ?? []).length, 6);
-    assert.match(home, /Check an agent’s claim against the evidence\./);
+    assert.match(home, /Compare an agent’s claim with the evidence you provide\./);
     assert.match(home, /Run Agent Claim Check locally\./);
     assert.match(home, /Featured synthetic case 03/);
     assert.match(home, /<dt>Claim<\/dt><dd>30 days<\/dd>/);
@@ -199,7 +199,7 @@ test("people and automated readers receive one truthful discovery contract", asy
     const sitemap = await readFile(join(root, "sitemap.xml"), "utf8");
 
     assert.match(home, /<title>Agent Claim Check: Check an Agent’s Claim Against Evidence<\/title>/);
-    assert.match(method, /<title>How to Check AI Claims Against Evidence · Detecting AI Deception<\/title>/);
+    assert.match(method, /<title>How to Check AI Claims Against Evidence · Agent Claim Check<\/title>/);
     assert.match(method, /How do I check whether an AI answer is supported\?/);
     assert.match(method, /How do I verify an AI citation\?/);
     assert.match(method, /What is the difference between contradicted and insufficient evidence\?/);
@@ -214,7 +214,7 @@ test("people and automated readers receive one truthful discovery contract", asy
       assert.match(html, /class="breadcrumbs" aria-label="Breadcrumb"/);
       assert.match(html, /"@type":"BreadcrumbList"/);
       assert.match(html, /"@type":"WebSite"/);
-      assert.match(html, /"alternateName":"DAID"/);
+      assert.match(html, /"alternateName":"Agent Claim Check"/);
       assert.match(html, /<link rel="describedby" href="[^"]*llms\.txt" type="text\/markdown">/);
     }
 
@@ -250,7 +250,7 @@ test("people and automated readers receive one truthful discovery contract", asy
     assert.match(cases, /<link rel="alternate" href="\.\.\/data\/deception-cases\.v1\.json" type="application\/json"/);
     assert.doesNotMatch(citation, /<link rel="alternate"[^>]+type="application\/json"/);
 
-    for (const marker of ["# Detecting AI Deception", "## Exact practice-case records", "## Machine-readable evidence", "## Evidence boundaries"]) {
+    for (const marker of ["# Agent Claim Check", "## Exact practice-case records", "## Machine-readable evidence", "## Evidence boundaries"]) {
       assert.ok(llms.includes(marker), `llms.txt omits ${marker}`);
     }
     for (const id of ["missing-file", "reassuring-average", "unsupported-citation", "wrong-product-identity", "lost-response", "revision-bound-claim"]) {
@@ -382,7 +382,7 @@ test("persona-flow repairs preserve blind practice, progressive disclosure and e
       const order = ["Claim Check", "Examples", "Method", "Source"].map((label) => header.indexOf(`>${label}</a>`));
       assert.ok(order.every((position, index) => position >= 0 && (index === 0 || position > order[index - 1])), `${path} nav order`);
       assert.match(header, /class="mobile-cases-link"/);
-      assert.match(header, /class="wordmark-short" aria-hidden="true">DAID<\/span>/);
+      assert.match(header, /class="wordmark-short" aria-hidden="true">Claim Check<\/span>/);
       assert.match(header, /aria-label="Mobile primary"/);
       assert.match(header, />Intent boundary<\/a>/);
       assert.match(header, /about\/#intent-boundary/);
